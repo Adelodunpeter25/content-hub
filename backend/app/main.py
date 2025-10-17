@@ -47,7 +47,7 @@ documentation = get_swaggerui_blueprint(
 
 @app.route('/swagger.json')
 def swagger_spec():
-    return send_from_directory('app', 'swagger.json')
+    return send_from_directory('.', 'swagger.json')
 
 # Register blueprints
 app.register_blueprint(documentation)
