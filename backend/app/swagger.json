@@ -3,7 +3,7 @@
   "info": {
     "title": "Content Hub API",
     "version": "0.1.0",
-    "description": "Personal feed aggregator that collects content from RSS feeds and web sources. CORS enabled for all origins."
+    "description": "Personal feed aggregator that collects content from RSS feeds and web sources."
   },
   "servers": [
     {
