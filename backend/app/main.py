@@ -6,7 +6,7 @@ from app.core.errors import register_error_handlers
 from app.core.logging_config import setup_logging
 
 # import blueprints
-from app.routes import rss, scrape, feeds
+from app.routes import rss, scrape, feeds, users
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -54,6 +54,7 @@ app.register_blueprint(documentation)
 app.register_blueprint(rss.bp)
 app.register_blueprint(scrape.bp)
 app.register_blueprint(feeds.bp)
+app.register_blueprint(users.bp)
 
 # Run the app
 if __name__ == '__main__':

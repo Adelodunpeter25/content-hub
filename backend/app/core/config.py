@@ -24,3 +24,6 @@ class Config:
         for url in os.getenv('SCRAPE_URLS', '').split(',') 
         if url.strip()
     ]
+    
+    # Database settings
+    DATABASE_URL = os.getenv('DATABASE_URL', '')
