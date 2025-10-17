@@ -2,6 +2,8 @@ from flask import Blueprint, jsonify, request, current_app
 from app.utils.rss_parser import fetch_rss_feeds
 from app.utils.scraper import scrape_websites
 from app.utils.feed_aggregator import aggregate_feeds
+from app.utils.pagination import paginate
+from app.utils.search_filter import search_articles, filter_by_source, filter_by_date_range
 from app.core.errors import InternalServerError
 
 # Create blueprint for unified feeds
@@ -14,17 +16,31 @@ def get_unified_feeds():
     
     Query Parameters:
         source: Filter by 'rss' or 'scrape' (optional)
-        limit: Maximum number of articles (optional)
+        limit: Maximum number of articles (optional, deprecated - use pagination)
+        page: Page number (default: 1)
+        per_page: Items per page (default: 20, max: 100)
+        search: Search keyword in title/summary (optional)
+        source_name: Filter by source name (e.g., 'TechCrunch') (optional)
+        start_date: Filter by start date (ISO format) (optional)
+        end_date: Filter by end date (ISO format) (optional)
         
     Returns:
-        JSON array of aggregated articles
+        JSON array of aggregated articles with pagination and filters
     """
     try:
         # Get query parameters
         source_filter = request.args.get('source')
         limit = request.args.get('limit', type=int)
+        page = request.args.get('page', 1, type=int)
+        per_page = request.args.get('per_page', 20, type=int)
         
-        current_app.logger.info(f'Fetching unified feeds (source={source_filter}, limit={limit})')
+        # Search and filter parameters
+        search_keyword = request.args.get('search')
+        source_name = request.args.get('source_name')
+        start_date = request.args.get('start_date')
+        end_date = request.args.get('end_date')
+        
+        current_app.logger.info(f'Fetching unified feeds (source={source_filter}, search={search_keyword}, page={page})')
         
         # Fetch RSS feeds
         rss_urls = current_app.config['RSS_FEEDS']
@@ -37,15 +53,33 @@ def get_unified_feeds():
         # Aggregate all feeds
         articles = aggregate_feeds(rss_articles, scraped_articles, source_filter, limit)
         
-        current_app.logger.info(f'Successfully aggregated {len(articles)} articles')
+        # Apply search
+        if search_keyword:
+            articles = search_articles(articles, search_keyword)
+        
+        # Apply source name filter
+        if source_name:
+            articles = filter_by_source(articles, source_name)
+        
+        # Apply date range filter
+        if start_date or end_date:
+            articles = filter_by_date_range(articles, start_date, end_date)
+        
+        # Apply pagination
+        paginated_data = paginate(articles, page, per_page)
+        
+        current_app.logger.info(f'Successfully aggregated {len(articles)} articles, returning page {page}')
         
         return jsonify({
-            'count': len(articles),
+            'articles': paginated_data['items'],
+            'pagination': paginated_data['pagination'],
             'filters': {
                 'source': source_filter,
-                'limit': limit
-            },
-            'articles': articles
+                'search': search_keyword,
+                'source_name': source_name,
+                'start_date': start_date,
+                'end_date': end_date
+            }
         })
         
     except Exception as e:

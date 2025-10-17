@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, send_from_directory
 from flask_swagger_ui import get_swaggerui_blueprint
+from flask_cors import CORS
 from app.core.config import Config
 from app.core.errors import register_error_handlers
 from app.core.logging_config import setup_logging
@@ -13,6 +14,8 @@ app = Flask(__name__)
 # Load configuration
 app.config.from_object(Config)
 
+# Enable CORS
+CORS(app)
 # Setup logging
 setup_logging(app)
 
@@ -44,7 +47,7 @@ documentation = get_swaggerui_blueprint(
 
 @app.route('/swagger.json')
 def swagger_spec():
-    return send_from_directory('.', 'swagger.json')
+    return send_from_directory('app', 'swagger.json')
 
 # Register blueprints
 app.register_blueprint(documentation)
