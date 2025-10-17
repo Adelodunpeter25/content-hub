@@ -1,4 +1,5 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, send_from_directory
+from flask_swagger_ui import get_swaggerui_blueprint
 from app.core.config import Config
 
 # import blueprints
@@ -15,12 +16,7 @@ app.config.from_object(Config)
 def home():
     return jsonify({
         'message': 'Content Hub API',
-        'version': '0.1.0',
-        'endpoints': {
-            'rss': '/api/rss',
-            'scrape': '/api/scrape',
-            'feeds': '/api/feeds'
-        }
+        'version': '0.1.0'
     })
 
 # Health check endpoint
@@ -28,7 +24,22 @@ def home():
 def health():
     return jsonify({'status': 'healthy'})
 
+# Swagger UI configuration
+SWAGGER_URL = '/docs'
+API_URL = '/swagger.json'
+
+documentation = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={'app_name': "Content Hub API"}
+)
+
+@app.route('/swagger.json')
+def swagger_spec():
+    return send_from_directory('.', 'swagger.json')
+
 # Register blueprints
+app.register_blueprint(documentation)
 app.register_blueprint(rss.bp)
 app.register_blueprint(scrape.bp)
 app.register_blueprint(feeds.bp)

@@ -1,0 +1,242 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Content Hub API",
+    "version": "0.1.0",
+    "description": "Personal feed aggregator that collects content from RSS feeds and web sources"
+  },
+  "servers": [
+    {
+      "url": "",
+      "description": "Development server"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Home endpoint",
+        "description": "Returns API information",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Content Hub API"
+                    },
+                    "version": {
+                      "type": "string",
+                      "example": "0.1.0"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health check",
+        "description": "Returns API health status",
+        "responses": {
+          "200": {
+            "description": "API is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "healthy"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/rss": {
+      "get": {
+        "summary": "Get RSS feeds",
+        "description": "Fetch and return articles from configured RSS feeds",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "count": {
+                      "type": "integer",
+                      "example": 50
+                    },
+                    "articles": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Article"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No RSS feeds configured"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/scrape": {
+      "get": {
+        "summary": "Get scraped content",
+        "description": "Scrape and return articles from configured websites",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "count": {
+                      "type": "integer",
+                      "example": 42
+                    },
+                    "articles": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Article"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No scraping URLs configured"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/feeds": {
+      "get": {
+        "summary": "Get unified feeds",
+        "description": "Get combined and deduplicated articles from all sources",
+        "parameters": [
+          {
+            "name": "source",
+            "in": "query",
+            "description": "Filter by source type",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["rss", "scrape"]
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of articles to return",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "count": {
+                      "type": "integer",
+                      "example": 80
+                    },
+                    "filters": {
+                      "type": "object",
+                      "properties": {
+                        "source": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "limit": {
+                          "type": "integer",
+                          "nullable": true
+                        }
+                      }
+                    },
+                    "articles": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Article"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Article": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Example Article Title"
+          },
+          "link": {
+            "type": "string",
+            "example": "https://example.com/article"
+          },
+          "summary": {
+            "type": "string",
+            "example": "Brief description of the article"
+          },
+          "source": {
+            "type": "string",
+            "example": "TechCrunch"
+          },
+          "published": {
+            "type": "string",
+            "example": "2024-01-15T10:30:00Z"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["rss", "scrape"],
+            "example": "rss"
+          }
+        }
+      }
+    }
+  }
+}
