@@ -27,3 +27,16 @@ class Config:
     
     # Database settings
     DATABASE_URL = os.getenv('DATABASE_URL', '')
+    
+    # Social media sources
+    REDDIT_SUBREDDITS = [
+        sub.strip() 
+        for sub in os.getenv('REDDIT_SUBREDDITS', '').split(',') 
+        if sub.strip()
+    ]
+    
+    YOUTUBE_CHANNELS = [
+        channel.strip() 
+        for channel in os.getenv('YOUTUBE_CHANNELS', '').split(',') 
+        if channel.strip()
+    ]

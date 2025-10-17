@@ -4,6 +4,12 @@ from app.models.user import User
 from app.models.preferences import UserFeedPreferences
 from app.schemas.user import UserCreate, UserResponse, PreferencesUpdate, PreferencesResponse
 from app.core.errors import BadRequestError, NotFoundError, InternalServerError
+from app.utils.rss_parser import fetch_rss_feeds
+from app.utils.scraper import scrape_websites
+from app.utils.feed_aggregator import aggregate_feeds
+from app.utils.personalization import filter_by_user_preferences
+from app.utils.pagination import paginate
+from app.utils.search_filter import search_articles, filter_by_source, filter_by_date_range
 from sqlalchemy.exc import IntegrityError
 from pydantic import ValidationError
 
@@ -155,3 +161,97 @@ def update_user_preferences(user_id):
     except Exception as e:
         current_app.logger.error(f'Error updating preferences: {str(e)}')
         raise InternalServerError('Failed to update preferences')
+
+@bp.route('/<user_id>/feeds', methods=['GET'])
+def get_personalized_feeds(user_id):
+    """
+    Get personalized feed based on user preferences
+    
+    Query Parameters:
+        page: Page number (default: 1)
+        per_page: Items per page (default: 20, max: 100)
+        search: Search keyword (optional)
+        source_name: Filter by source name (optional)
+        start_date: Filter by start date (optional)
+        end_date: Filter by end date (optional)
+    """
+    try:
+        # Get query parameters
+        page = request.args.get('page', 1, type=int)
+        per_page = request.args.get('per_page', 20, type=int)
+        search_keyword = request.args.get('search')
+        source_name = request.args.get('source_name')
+        start_date = request.args.get('start_date')
+        end_date = request.args.get('end_date')
+        
+        with get_db() as db:
+            # Get user
+            user = db.query(User).filter(User.id == user_id).first()
+            if not user:
+                raise NotFoundError('User not found')
+            
+            # Get user preferences
+            preferences = db.query(UserFeedPreferences).filter(
+                UserFeedPreferences.user_id == user_id
+            ).first()
+            
+            if not preferences:
+                raise NotFoundError('User preferences not found')
+            
+            current_app.logger.info(f'Fetching personalized feeds for user: {user_id}')
+            
+            # Fetch RSS feeds
+            rss_urls = current_app.config['RSS_FEEDS']
+            rss_articles = fetch_rss_feeds(rss_urls) if rss_urls else []
+            
+            # Scrape websites
+            scrape_urls = current_app.config['SCRAPE_URLS']
+            scraped_articles = scrape_websites(scrape_urls) if scrape_urls else []
+            
+            # Aggregate all feeds
+            articles = aggregate_feeds(rss_articles, scraped_articles)
+            
+            # Apply user preferences
+            articles = filter_by_user_preferences(
+                articles,
+                preferences.feed_sources,
+                preferences.feed_types
+            )
+            
+            # Apply search
+            if search_keyword:
+                articles = search_articles(articles, search_keyword)
+            
+            # Apply source name filter
+            if source_name:
+                articles = filter_by_source(articles, source_name)
+            
+            # Apply date range filter
+            if start_date or end_date:
+                articles = filter_by_date_range(articles, start_date, end_date)
+            
+            # Apply pagination
+            paginated_data = paginate(articles, page, per_page)
+            
+            current_app.logger.info(f'Returning {len(paginated_data["items"])} personalized articles for user: {user_id}')
+            
+            return jsonify({
+                'articles': paginated_data['items'],
+                'pagination': paginated_data['pagination'],
+                'preferences': {
+                    'feed_sources': preferences.feed_sources,
+                    'feed_types': preferences.feed_types
+                },
+                'filters': {
+                    'search': search_keyword,
+                    'source_name': source_name,
+                    'start_date': start_date,
+                    'end_date': end_date
+                }
+            })
+    
+    except (NotFoundError):
+        raise
+    except Exception as e:
+        current_app.logger.error(f'Error fetching personalized feeds: {str(e)}')
+        raise InternalServerError('Failed to fetch personalized feeds')

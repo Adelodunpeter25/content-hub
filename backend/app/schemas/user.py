@@ -9,7 +9,7 @@ class UserCreate(BaseModel):
 
 class UserResponse(BaseModel):
     """Schema for user response"""
-    id: str
+    id: int
     email: str
     name: Optional[str] = None
     created_at: Optional[str] = None
@@ -24,8 +24,8 @@ class PreferencesUpdate(BaseModel):
 
 class PreferencesResponse(BaseModel):
     """Schema for preferences response"""
-    id: str
-    user_id: str
+    id: int
+    user_id: int
     feed_sources: list[str] = []
     feed_types: list[str] = []
     created_at: Optional[str] = None

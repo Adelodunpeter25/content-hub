@@ -11,9 +11,24 @@
       "description": "Development server"
     }
   ],
+  "tags": [
+    {
+      "name": "System",
+      "description": "System health and information"
+    },
+    {
+      "name": "Users",
+      "description": "User management and preferences"
+    },
+    {
+      "name": "Feeds",
+      "description": "Content feeds from RSS and web scraping"
+    }
+  ],
   "paths": {
     "/": {
       "get": {
+        "tags": ["System"],
         "summary": "Home endpoint",
         "description": "Returns API information",
         "responses": {
@@ -25,11 +40,11 @@
                   "type": "object",
                   "properties": {
                     "message": {
-                      "type": "string",
+                                    "type": "integer",
                       "example": "Content Hub API"
                     },
                     "version": {
-                      "type": "string",
+                                    "type": "integer",
                       "example": "0.1.0"
                     }
                   }
@@ -40,8 +55,197 @@
         }
       }
     },
+    "/api/users": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Create user",
+        "description": "Create a new user account",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                                  "type": "integer",
+                    "format": "email",
+                    "example": "user@example.com"
+                  },
+                  "name": {
+                                  "type": "integer",
+                    "example": "John Doe"
+                  }
+                },
+                "required": ["email"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created successfully"
+          },
+          "400": {
+            "description": "Invalid input or user already exists"
+          }
+        }
+      }
+    },
+    "/api/users/{user_id}": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get user",
+        "description": "Get user by ID",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+                            "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User found"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
+    "/api/users/{user_id}/preferences": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get user preferences",
+        "description": "Get user feed preferences",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+                            "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Preferences found"
+          },
+          "404": {
+            "description": "User or preferences not found"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Users"],
+        "summary": "Update user preferences",
+        "description": "Update user feed preferences",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+                            "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "feed_sources": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "example": ["TechCrunch", "The Verge"]
+                  },
+                  "feed_types": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "example": ["rss", "scrape"]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Preferences updated"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
+    "/api/users/{user_id}/feeds": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get personalized feeds",
+        "description": "Get personalized feed based on user preferences",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+                            "type": "integer",
+              "example": 1
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Personalized feed"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
+        "tags": ["System"],
         "summary": "Health check",
         "description": "Returns API health status",
         "responses": {
@@ -53,7 +257,7 @@
                   "type": "object",
                   "properties": {
                     "status": {
-                      "type": "string",
+                                    "type": "integer",
                       "example": "healthy"
                     }
                   }
@@ -66,6 +270,7 @@
     },
     "/api/rss": {
       "get": {
+        "tags": ["Feeds"],
         "summary": "Get RSS feeds",
         "description": "Fetch and return articles from configured RSS feeds with pagination",
         "parameters": [
@@ -123,6 +328,7 @@
     },
     "/api/scrape": {
       "get": {
+        "tags": ["Feeds"],
         "summary": "Get scraped content",
         "description": "Scrape and return articles from configured websites with pagination",
         "parameters": [
@@ -180,6 +386,7 @@
     },
     "/api/feeds": {
       "get": {
+        "tags": ["Feeds"],
         "summary": "Get unified feeds",
         "description": "Get combined and deduplicated articles from all sources with pagination",
         "parameters": [
@@ -189,7 +396,7 @@
             "description": "Filter by source type",
             "required": false,
             "schema": {
-              "type": "string",
+                            "type": "integer",
               "enum": ["rss", "scrape"]
             }
           },
@@ -219,7 +426,7 @@
             "description": "Search keyword in title or summary",
             "required": false,
             "schema": {
-              "type": "string",
+                            "type": "integer",
               "example": "AI"
             }
           },
@@ -229,7 +436,7 @@
             "description": "Filter by source name (e.g., TechCrunch)",
             "required": false,
             "schema": {
-              "type": "string",
+                            "type": "integer",
               "example": "TechCrunch"
             }
           },
@@ -239,7 +446,7 @@
             "description": "Filter by start date (ISO format)",
             "required": false,
             "schema": {
-              "type": "string",
+                            "type": "integer",
               "format": "date",
               "example": "2024-01-01"
             }
@@ -250,7 +457,7 @@
             "description": "Filter by end date (ISO format)",
             "required": false,
             "schema": {
-              "type": "string",
+                            "type": "integer",
               "format": "date",
               "example": "2024-12-31"
             }
@@ -277,23 +484,23 @@
                       "type": "object",
                       "properties": {
                         "source": {
-                          "type": "string",
+                                        "type": "integer",
                           "nullable": true
                         },
                         "search": {
-                          "type": "string",
+                                        "type": "integer",
                           "nullable": true
                         },
                         "source_name": {
-                          "type": "string",
+                                        "type": "integer",
                           "nullable": true
                         },
                         "start_date": {
-                          "type": "string",
+                                        "type": "integer",
                           "nullable": true
                         },
                         "end_date": {
-                          "type": "string",
+                                        "type": "integer",
                           "nullable": true
                         }
                       }
@@ -316,27 +523,27 @@
         "type": "object",
         "properties": {
           "title": {
-            "type": "string",
+                          "type": "integer",
             "example": "Example Article Title"
           },
           "link": {
-            "type": "string",
+                          "type": "integer",
             "example": "https://example.com/article"
           },
           "summary": {
-            "type": "string",
+                          "type": "integer",
             "example": "Brief description of the article"
           },
           "source": {
-            "type": "string",
+                          "type": "integer",
             "example": "TechCrunch"
           },
           "published": {
-            "type": "string",
+                          "type": "integer",
             "example": "2024-01-15T10:30:00Z"
           },
           "type": {
-            "type": "string",
+                          "type": "integer",
             "enum": ["rss", "scrape"],
             "example": "rss"
           }
