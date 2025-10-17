@@ -1,6 +1,8 @@
 from flask import Flask, jsonify, send_from_directory
 from flask_swagger_ui import get_swaggerui_blueprint
 from app.core.config import Config
+from app.core.errors import register_error_handlers
+from app.core.logging_config import setup_logging
 
 # import blueprints
 from app.routes import rss, scrape, feeds
@@ -10,6 +12,12 @@ app = Flask(__name__)
 
 # Load configuration
 app.config.from_object(Config)
+
+# Setup logging
+setup_logging(app)
+
+# Register error handlers
+register_error_handlers(app)
 
 # Home route - shows API is running
 @app.route('/')
@@ -46,4 +54,5 @@ app.register_blueprint(feeds.bp)
 
 # Run the app
 if __name__ == '__main__':
+    app.logger.info('Starting Content Hub API on port 5000')
     app.run(debug=app.config['DEBUG'], port=5000)
