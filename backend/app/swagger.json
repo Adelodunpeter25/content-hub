@@ -455,6 +455,76 @@
         }
       }
     },
+    "/api/recommendations": {
+      "get": {
+        "tags": ["Feeds"],
+        "summary": "Get personalized recommendations",
+        "description": "Get article recommendations based on read history and bookmarks",
+        "security": [{"BearerAuth": []}],
+        "parameters": [
+          {"name": "page", "in": "query", "schema": {"type": "integer", "default": 1}},
+          {"name": "per_page", "in": "query", "schema": {"type": "integer", "default": 20, "maximum": 100}}
+        ],
+        "responses": {
+          "200": {"description": "Recommended articles"}
+        }
+      }
+    },
+    "/api/trending": {
+      "get": {
+        "tags": ["Feeds"],
+        "summary": "Get trending articles",
+        "description": "Get most popular articles across all users",
+        "parameters": [
+          {"name": "days", "in": "query", "schema": {"type": "integer", "default": 7}},
+          {"name": "page", "in": "query", "schema": {"type": "integer", "default": 1}},
+          {"name": "per_page", "in": "query", "schema": {"type": "integer", "default": 20, "maximum": 100}}
+        ],
+        "responses": {
+          "200": {"description": "Trending articles"}
+        }
+      }
+    },
+    "/api/stats": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get reading statistics",
+        "description": "Get user reading stats including articles read, favorite categories, sources, and reading streak",
+        "security": [{"BearerAuth": []}],
+        "responses": {
+          "200": {
+            "description": "Reading statistics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "reads": {
+                      "type": "object",
+                      "properties": {
+                        "today": {"type": "integer"},
+                        "week": {"type": "integer"},
+                        "month": {"type": "integer"},
+                        "total": {"type": "integer"}
+                      }
+                    },
+                    "bookmarks": {
+                      "type": "object",
+                      "properties": {
+                        "total": {"type": "integer"}
+                      }
+                    },
+                    "favorite_categories": {"type": "object"},
+                    "favorite_sources": {"type": "object"},
+                    "reading_streak": {"type": "integer"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/read-history": {
       "get": {
         "tags": ["Read History"],

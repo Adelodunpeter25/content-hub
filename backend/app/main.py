@@ -10,7 +10,7 @@ from app.core.scheduler import init_scheduler, shutdown_scheduler
 import atexit
 
 # import blueprints
-from app.routes import rss, scrape, feeds, users, social, auth, bookmarks, read_history
+from app.routes import rss, scrape, feeds, users, social, auth, bookmarks, read_history, recommendations, trending, stats
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -76,6 +76,9 @@ app.register_blueprint(users.bp)
 app.register_blueprint(social.bp)
 app.register_blueprint(bookmarks.bp)
 app.register_blueprint(read_history.bp)
+app.register_blueprint(recommendations.bp)
+app.register_blueprint(trending.bp)
+app.register_blueprint(stats.bp)
 
 # Run the app
 if __name__ == '__main__':
