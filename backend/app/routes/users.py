@@ -5,14 +5,9 @@ from app.models.preferences import UserFeedPreferences
 from app.schemas.user import PreferencesUpdate, UserProfileUpdate, DeleteAccountRequest
 from app.core.auth import require_auth
 from app.core.errors import BadRequestError, NotFoundError, InternalServerError
-from app.utils.rss_parser import fetch_rss_feeds
-from app.utils.scraper import scrape_websites
-from app.utils.feed_aggregator import aggregate_feeds
-from app.utils.personalization import filter_by_user_preferences
+from app.services.feed_service import get_personalized_feeds
 from app.utils.pagination import paginate
 from app.utils.search_filter import search_articles, filter_by_source, filter_by_date_range
-from app.utils.categorizer import add_categories_to_articles
-from app.core.cache import cache_get, cache_set
 from pydantic import ValidationError
 
 bp = Blueprint('users', __name__, url_prefix='/api/users')
@@ -132,36 +127,8 @@ def get_personalized_feeds():
             
             current_app.logger.info(f'Fetching personalized feeds for user: {user_id}')
             
-            # Try to get from cache
-            cache_key = 'feeds:all'
-            articles = cache_get(cache_key)
-            
-            if articles is None:
-                # Fetch RSS feeds
-                rss_urls = current_app.config['RSS_FEEDS']
-                rss_articles = fetch_rss_feeds(rss_urls) if rss_urls else []
-                
-                # Scrape websites
-                scrape_urls = current_app.config['SCRAPE_URLS']
-                scraped_articles = scrape_websites(scrape_urls) if scrape_urls else []
-                
-                # Aggregate all feeds
-                articles = aggregate_feeds(rss_articles, scraped_articles)
-                
-                # Add categories
-                articles = add_categories_to_articles(articles)
-                
-                # Cache with configured TTL
-                cache_set(cache_key, articles)
-            else:
-                current_app.logger.info('Feeds retrieved from cache')
-            
-            # Apply user preferences
-            articles = filter_by_user_preferences(
-                articles,
-                preferences.feed_sources,
-                preferences.feed_types
-            )
+            # Get personalized feeds from service layer
+            articles = get_personalized_feeds(preferences)
             
             # Apply search
             if search_keyword:

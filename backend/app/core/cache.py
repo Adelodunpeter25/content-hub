@@ -1,6 +1,7 @@
 import redis
 import json
 from functools import wraps
+from app.core.config import Config
 
 # Initialize Redis/Valkey client
 redis_client = None
