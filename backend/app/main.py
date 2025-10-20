@@ -6,6 +6,8 @@ from app.core.errors import register_error_handlers
 from app.core.logging_config import setup_logging
 from app.core.oauth import init_oauth
 from app.core.cache import init_cache
+from app.core.scheduler import init_scheduler, shutdown_scheduler
+import atexit
 
 # import blueprints
 from app.routes import rss, scrape, feeds, users, social, auth, bookmarks, read_history
@@ -27,6 +29,12 @@ init_oauth(app)
 
 # Initialize cache
 init_cache()
+
+# Initialize background scheduler
+init_scheduler()
+
+# Shutdown scheduler on app exit
+atexit.register(shutdown_scheduler)
 
 # Register error handlers
 register_error_handlers(app)

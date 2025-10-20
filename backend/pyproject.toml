@@ -5,6 +5,7 @@ description = "Personal feed aggregator that collects content from RSS feeds and
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
+    "apscheduler>=3.10.4",
     "authlib>=1.6.5",
     "bcrypt>=5.0.0",
     "beautifulsoup4>=4.14.2",
