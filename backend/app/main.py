@@ -4,9 +4,10 @@ from flask_cors import CORS
 from app.core.config import Config
 from app.core.errors import register_error_handlers
 from app.core.logging_config import setup_logging
+from app.core.oauth import init_oauth
 
 # import blueprints
-from app.routes import rss, scrape, feeds, users, social
+from app.routes import rss, scrape, feeds, users, social, auth
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -18,6 +19,9 @@ app.config.from_object(Config)
 CORS(app)
 # Setup logging
 setup_logging(app)
+
+# Initialize OAuth
+init_oauth(app)
 
 # Register error handlers
 register_error_handlers(app)
@@ -51,6 +55,7 @@ def swagger_spec():
 
 # Register blueprints
 app.register_blueprint(documentation)
+app.register_blueprint(auth.bp)
 app.register_blueprint(rss.bp)
 app.register_blueprint(scrape.bp)
 app.register_blueprint(feeds.bp)

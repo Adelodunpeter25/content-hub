@@ -40,3 +40,12 @@ class Config:
         for channel in os.getenv('YOUTUBE_CHANNELS', '').split(',') 
         if channel.strip()
     ]
+    
+    # Authentication settings
+    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'dev-secret-key')
+    JWT_EXPIRATION_HOURS = int(os.getenv('JWT_EXPIRATION_HOURS', '24'))
+    
+    # Google OAuth settings
+    GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID', '')
+    GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET', '')
+    GOOGLE_REDIRECT_URI = os.getenv('GOOGLE_REDIRECT_URI', 'http://localhost:5000/api/auth/google/callback')

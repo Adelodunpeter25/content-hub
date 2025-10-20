@@ -5,6 +5,8 @@ description = "Personal feed aggregator that collects content from RSS feeds and
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
+    "authlib>=1.6.5",
+    "bcrypt>=5.0.0",
     "beautifulsoup4>=4.14.2",
     "email-validator>=2.3.0",
     "feedparser>=6.0.12",
@@ -13,6 +15,7 @@ dependencies = [
     "flask-swagger-ui>=5.21.0",
     "psycopg2-binary>=2.9.11",
     "pydantic>=2.12.3",
+    "pyjwt>=2.10.1",
     "python-dotenv>=1.1.1",
     "requests>=2.32.5",
     "sqlalchemy>=2.0.44",
