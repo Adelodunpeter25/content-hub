@@ -28,6 +28,9 @@ class Config:
     # Database settings
     DATABASE_URL = os.getenv('DATABASE_URL', '')
     
+    # Redis/Valkey settings
+    REDIS_URL = os.getenv('REDIS_URL', '')
+    
     # Social media sources
     REDDIT_SUBREDDITS = [
         sub.strip() 

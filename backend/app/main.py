@@ -5,6 +5,7 @@ from app.core.config import Config
 from app.core.errors import register_error_handlers
 from app.core.logging_config import setup_logging
 from app.core.oauth import init_oauth
+from app.core.cache import init_cache
 
 # import blueprints
 from app.routes import rss, scrape, feeds, users, social, auth, bookmarks, read_history
@@ -23,6 +24,9 @@ setup_logging(app)
 
 # Initialize OAuth
 init_oauth(app)
+
+# Initialize cache
+init_cache()
 
 # Register error handlers
 register_error_handlers(app)

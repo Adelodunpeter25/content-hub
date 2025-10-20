@@ -12,6 +12,7 @@ from app.utils.personalization import filter_by_user_preferences
 from app.utils.pagination import paginate
 from app.utils.search_filter import search_articles, filter_by_source, filter_by_date_range
 from app.utils.categorizer import add_categories_to_articles
+from app.core.cache import cache_get, cache_set
 from pydantic import ValidationError
 
 bp = Blueprint('users', __name__, url_prefix='/api/users')
@@ -131,19 +132,29 @@ def get_personalized_feeds():
             
             current_app.logger.info(f'Fetching personalized feeds for user: {user_id}')
             
-            # Fetch RSS feeds
-            rss_urls = current_app.config['RSS_FEEDS']
-            rss_articles = fetch_rss_feeds(rss_urls) if rss_urls else []
+            # Try to get from cache
+            cache_key = 'feeds:all'
+            articles = cache_get(cache_key)
             
-            # Scrape websites
-            scrape_urls = current_app.config['SCRAPE_URLS']
-            scraped_articles = scrape_websites(scrape_urls) if scrape_urls else []
-            
-            # Aggregate all feeds
-            articles = aggregate_feeds(rss_articles, scraped_articles)
-            
-            # Add categories
-            articles = add_categories_to_articles(articles)
+            if articles is None:
+                # Fetch RSS feeds
+                rss_urls = current_app.config['RSS_FEEDS']
+                rss_articles = fetch_rss_feeds(rss_urls) if rss_urls else []
+                
+                # Scrape websites
+                scrape_urls = current_app.config['SCRAPE_URLS']
+                scraped_articles = scrape_websites(scrape_urls) if scrape_urls else []
+                
+                # Aggregate all feeds
+                articles = aggregate_feeds(rss_articles, scraped_articles)
+                
+                # Add categories
+                articles = add_categories_to_articles(articles)
+                
+                # Cache for 15 minutes
+                cache_set(cache_key, articles, ttl=900)
+            else:
+                current_app.logger.info('Feeds retrieved from cache')
             
             # Apply user preferences
             articles = filter_by_user_preferences(
