@@ -114,7 +114,7 @@ def get_personalized_feeds():
         
         # Get query parameters
         page = request.args.get('page', 1, type=int)
-        per_page = request.args.get('per_page', 20, type=int)
+        per_page = min(request.args.get('per_page', 20, type=int), 100)
         search_keyword = request.args.get('search')
         source_name = request.args.get('source_name')
         start_date = request.args.get('start_date')

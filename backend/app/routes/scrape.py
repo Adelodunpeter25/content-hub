@@ -21,7 +21,7 @@ def get_scraped_content():
     try:
         # Get query parameters
         page = request.args.get('page', 1, type=int)
-        per_page = request.args.get('per_page', 20, type=int)
+        per_page = min(request.args.get('per_page', 20, type=int), 100)
         
         # Get scraping URLs from config
         scrape_urls = current_app.config['SCRAPE_URLS']

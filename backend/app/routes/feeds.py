@@ -34,7 +34,7 @@ def get_unified_feeds():
         source_filter = request.args.get('source')
         limit = request.args.get('limit', type=int)
         page = request.args.get('page', 1, type=int)
-        per_page = request.args.get('per_page', 20, type=int)
+        per_page = min(request.args.get('per_page', 20, type=int), 100)
         
         # Search and filter parameters
         search_keyword = request.args.get('search')

@@ -24,7 +24,7 @@ def get_social_content():
         # Get query parameters
         platform = request.args.get('platform')
         page = request.args.get('page', 1, type=int)
-        per_page = request.args.get('per_page', 20, type=int)
+        per_page = min(request.args.get('per_page', 20, type=int), 100)
         search_keyword = request.args.get('search')
         
         current_app.logger.info(f'Fetching social media content (platform={platform})')

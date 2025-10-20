@@ -50,7 +50,7 @@ def get_read_history():
     """Get user's read history"""
     try:
         page = request.args.get('page', 1, type=int)
-        per_page = request.args.get('per_page', 50, type=int)
+        per_page = min(request.args.get('per_page', 50, type=int), 100)
         
         with get_db() as db:
             query = db.query(ReadHistory).filter(ReadHistory.user_id == g.user_id)

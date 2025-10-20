@@ -52,7 +52,7 @@ def get_bookmarks():
     """Get user's bookmarks"""
     try:
         page = request.args.get('page', 1, type=int)
-        per_page = request.args.get('per_page', 20, type=int)
+        per_page = min(request.args.get('per_page', 20, type=int), 100)
         
         with get_db() as db:
             query = db.query(Bookmark).filter(Bookmark.user_id == g.user_id)
