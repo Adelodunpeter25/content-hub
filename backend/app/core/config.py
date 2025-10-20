@@ -43,7 +43,13 @@ class Config:
     
     # Authentication settings
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'dev-secret-key')
-    JWT_EXPIRATION_HOURS = int(os.getenv('JWT_EXPIRATION_HOURS', '24'))
+    JWT_ACCESS_TOKEN_MINUTES = int(os.getenv('JWT_ACCESS_TOKEN_MINUTES', '60'))
+    JWT_REFRESH_TOKEN_DAYS = int(os.getenv('JWT_REFRESH_TOKEN_DAYS', '30'))
+    
+    # Email settings (Resend)
+    RESEND_API_KEY = os.getenv('RESEND_API_KEY', '')
+    RESEND_FROM_EMAIL = os.getenv('RESEND_FROM_EMAIL', 'noreply@yourdomain.com')
+    FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:3000')
     
     # Google OAuth settings
     GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID', '')

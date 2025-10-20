@@ -5,37 +5,84 @@ from flask import request, current_app, g
 from app.core.config import Config
 from app.core.errors import BadRequestError, NotFoundError
 
-def generate_token(user_id):
+def generate_access_token(user_id):
     """
-    Generate JWT token for user
+    Generate JWT access token for user
     
     Args:
         user_id: User ID
         
     Returns:
-        JWT token string
+        JWT access token string
     """
     payload = {
         'user_id': user_id,
-        'exp': datetime.utcnow() + timedelta(hours=Config.JWT_EXPIRATION_HOURS),
+        'type': 'access',
+        'exp': datetime.utcnow() + timedelta(minutes=Config.JWT_ACCESS_TOKEN_MINUTES),
         'iat': datetime.utcnow()
     }
     
     token = jwt.encode(payload, Config.JWT_SECRET_KEY, algorithm='HS256')
     return token
 
-def decode_token(token):
+def generate_refresh_token_jwt(user_id):
+    """
+    Generate JWT refresh token for user
+    
+    Args:
+        user_id: User ID
+        
+    Returns:
+        JWT refresh token string
+    """
+    payload = {
+        'user_id': user_id,
+        'type': 'refresh',
+        'exp': datetime.utcnow() + timedelta(days=Config.JWT_REFRESH_TOKEN_DAYS),
+        'iat': datetime.utcnow()
+    }
+    
+    token = jwt.encode(payload, Config.JWT_SECRET_KEY, algorithm='HS256')
+    return token
+
+def generate_reset_token(user_id):
+    """
+    Generate password reset token
+    
+    Args:
+        user_id: User ID
+        
+    Returns:
+        Reset token string
+    """
+    payload = {
+        'user_id': user_id,
+        'type': 'reset',
+        'exp': datetime.utcnow() + timedelta(hours=1),
+        'iat': datetime.utcnow()
+    }
+    
+    token = jwt.encode(payload, Config.JWT_SECRET_KEY, algorithm='HS256')
+    return token
+
+def decode_token(token, token_type=None):
     """
     Decode and verify JWT token
     
     Args:
         token: JWT token string
+        token_type: Expected token type ('access', 'refresh', 'reset')
         
     Returns:
         Decoded payload dict
     """
     try:
         payload = jwt.decode(token, Config.JWT_SECRET_KEY, algorithms=['HS256'])
+        
+        # Verify token type if specified
+        if token_type and payload.get('type') != token_type:
+            raise BadRequestError(f'Invalid token type. Expected {token_type}')
+        
         return payload
     except jwt.ExpiredSignatureError:
         raise BadRequestError('Token has expired')
