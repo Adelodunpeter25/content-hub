@@ -2,8 +2,8 @@
   "openapi": "3.0.0",
   "info": {
     "title": "Content Hub API",
-    "version": "0.1.0",
-    "description": "Personal feed aggregator that collects content from RSS feeds and web sources."
+    "version": "0.2.0",
+    "description": "Personal feed aggregator with RSS feeds, web scraping, social media, user authentication, bookmarks, and read history."
   },
   "servers": [
     {
@@ -17,229 +17,65 @@
       "description": "System health and information"
     },
     {
+      "name": "Authentication",
+      "description": "User authentication and authorization"
+    },
+    {
       "name": "Users",
       "description": "User management and preferences"
     },
     {
       "name": "Feeds",
       "description": "Content feeds from RSS and web scraping"
+    },
+    {
+      "name": "Bookmarks",
+      "description": "Save and manage favorite articles"
+    },
+    {
+      "name": "Read History",
+      "description": "Track read articles"
     }
   ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "Article": {
+        "type": "object",
+        "properties": {
+          "title": {"type": "string"},
+          "link": {"type": "string"},
+          "summary": {"type": "string"},
+          "source": {"type": "string"},
+          "published": {"type": "string"},
+          "type": {"type": "string", "enum": ["rss", "scrape", "reddit", "youtube"]},
+          "categories": {"type": "array", "items": {"type": "string"}}
+        }
+      },
+      "Pagination": {
+        "type": "object",
+        "properties": {
+          "page": {"type": "integer"},
+          "per_page": {"type": "integer"},
+          "total": {"type": "integer"},
+          "pages": {"type": "integer"}
+        }
+      }
+    }
+  },
   "paths": {
     "/": {
       "get": {
         "tags": ["System"],
-        "summary": "Home endpoint",
-        "description": "Returns API information",
+        "summary": "API information",
         "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                                    "type": "integer",
-                      "example": "Content Hub API"
-                    },
-                    "version": {
-                                    "type": "integer",
-                      "example": "0.1.0"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/users": {
-      "post": {
-        "tags": ["Users"],
-        "summary": "Create user",
-        "description": "Create a new user account",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "email": {
-                                  "type": "integer",
-                    "format": "email",
-                    "example": "user@example.com"
-                  },
-                  "name": {
-                                  "type": "integer",
-                    "example": "John Doe"
-                  }
-                },
-                "required": ["email"]
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "User created successfully"
-          },
-          "400": {
-            "description": "Invalid input or user already exists"
-          }
-        }
-      }
-    },
-    "/api/users/{user_id}": {
-      "get": {
-        "tags": ["Users"],
-        "summary": "Get user",
-        "description": "Get user by ID",
-        "parameters": [
-          {
-            "name": "user_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-                            "type": "integer",
-              "example": 1
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "User found"
-          },
-          "404": {
-            "description": "User not found"
-          }
-        }
-      }
-    },
-    "/api/users/{user_id}/preferences": {
-      "get": {
-        "tags": ["Users"],
-        "summary": "Get user preferences",
-        "description": "Get user feed preferences",
-        "parameters": [
-          {
-            "name": "user_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-                            "type": "integer",
-              "example": 1
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Preferences found"
-          },
-          "404": {
-            "description": "User or preferences not found"
-          }
-        }
-      },
-      "put": {
-        "tags": ["Users"],
-        "summary": "Update user preferences",
-        "description": "Update user feed preferences",
-        "parameters": [
-          {
-            "name": "user_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-                            "type": "integer",
-              "example": 1
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "feed_sources": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
-                    "example": ["TechCrunch", "The Verge"]
-                  },
-                  "feed_types": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
-                    "example": ["rss", "scrape"]
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Preferences updated"
-          },
-          "404": {
-            "description": "User not found"
-          }
-        }
-      }
-    },
-    "/api/users/{user_id}/feeds": {
-      "get": {
-        "tags": ["Users"],
-        "summary": "Get personalized feeds",
-        "description": "Get personalized feed based on user preferences",
-        "parameters": [
-          {
-            "name": "user_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-                            "type": "integer",
-              "example": 1
-            }
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "default": 1
-            }
-          },
-          {
-            "name": "per_page",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "default": 20
-            }
-          },
-          {
-            "name": "search",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Personalized feed"
-          },
-          "404": {
-            "description": "User not found"
-          }
+          "200": {"description": "API info"}
         }
       }
     },
@@ -247,19 +83,278 @@
       "get": {
         "tags": ["System"],
         "summary": "Health check",
-        "description": "Returns API health status",
+        "responses": {
+          "200": {"description": "API is healthy"}
+        }
+      }
+    },
+    "/api/auth/signup": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Sign up",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password", "name"],
+                "properties": {
+                  "email": {"type": "string", "format": "email"},
+                  "password": {"type": "string", "minLength": 8},
+                  "name": {"type": "string"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {"description": "User created with tokens"},
+          "400": {"description": "Invalid input"}
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Login",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": {"type": "string"},
+                  "password": {"type": "string"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {"description": "Login successful with tokens"}
+        }
+      }
+    },
+    "/api/auth/refresh": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Refresh access token",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["refresh_token"],
+                "properties": {
+                  "refresh_token": {"type": "string"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {"description": "New access token"}
+        }
+      }
+    },
+    "/api/auth/forgot-password": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Request password reset",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email"],
+                "properties": {
+                  "email": {"type": "string"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {"description": "Reset email sent"}
+        }
+      }
+    },
+    "/api/auth/reset-password": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Reset password",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["token", "new_password"],
+                "properties": {
+                  "token": {"type": "string"},
+                  "new_password": {"type": "string"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {"description": "Password reset successful"}
+        }
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "tags": ["Authentication"],
+        "summary": "Get current user",
+        "security": [{"BearerAuth": []}],
+        "responses": {
+          "200": {"description": "Current user info"}
+        }
+      }
+    },
+    "/api/auth/google": {
+      "get": {
+        "tags": ["Authentication"],
+        "summary": "Google OAuth login",
+        "description": "Redirects to Google OAuth consent screen",
+        "responses": {
+          "302": {"description": "Redirect to Google"}
+        }
+      }
+    },
+    "/api/auth/google/callback": {
+      "get": {
+        "tags": ["Authentication"],
+        "summary": "Google OAuth callback",
+        "description": "Handles Google OAuth callback and returns tokens",
+        "responses": {
+          "200": {"description": "Login successful with tokens"}
+        }
+      }
+    },
+    "/api/users/preferences": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get user preferences",
+        "security": [{"BearerAuth": []}],
+        "responses": {
+          "200": {"description": "User preferences"}
+        }
+      },
+      "put": {
+        "tags": ["Users"],
+        "summary": "Update preferences",
+        "security": [{"BearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "feed_sources": {"type": "array", "items": {"type": "string"}},
+                  "feed_types": {"type": "array", "items": {"type": "string"}}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {"description": "Preferences updated"}
+        }
+      }
+    },
+    "/api/users/feeds": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get personalized feeds",
+        "security": [{"BearerAuth": []}],
+        "parameters": [
+          {"name": "page", "in": "query", "schema": {"type": "integer", "default": 1}},
+          {"name": "per_page", "in": "query", "schema": {"type": "integer", "default": 20, "maximum": 100}},
+          {"name": "search", "in": "query", "schema": {"type": "string"}},
+          {"name": "category", "in": "query", "schema": {"type": "string"}}
+        ],
+        "responses": {
+          "200": {"description": "Personalized feed"}
+        }
+      }
+    },
+    "/api/users/profile": {
+      "put": {
+        "tags": ["Users"],
+        "summary": "Update profile",
+        "security": [{"BearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {"type": "string"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {"description": "Profile updated"}
+        }
+      }
+    },
+    "/api/users/account": {
+      "delete": {
+        "tags": ["Users"],
+        "summary": "Delete account",
+        "security": [{"BearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "password": {"type": "string"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {"description": "Account deleted"}
+        }
+      }
+    },
+    "/api/feeds": {
+      "get": {
+        "tags": ["Feeds"],
+        "summary": "Get all feeds",
+        "parameters": [
+          {"name": "page", "in": "query", "schema": {"type": "integer", "default": 1}},
+          {"name": "per_page", "in": "query", "schema": {"type": "integer", "default": 20, "maximum": 100}},
+          {"name": "search", "in": "query", "schema": {"type": "string"}},
+          {"name": "category", "in": "query", "schema": {"type": "string", "enum": ["AI", "Security", "Cloud", "Mobile", "Web", "Hardware", "Gaming", "Startup", "Programming", "General"]}},
+          {"name": "source_name", "in": "query", "schema": {"type": "string"}},
+          {"name": "start_date", "in": "query", "schema": {"type": "string", "format": "date"}},
+          {"name": "end_date", "in": "query", "schema": {"type": "string", "format": "date"}}
+        ],
         "responses": {
           "200": {
-            "description": "API is healthy",
+            "description": "Unified feeds with categories",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "status": {
-                                    "type": "integer",
-                      "example": "healthy"
-                    }
+                    "articles": {"type": "array", "items": {"$ref": "#/components/schemas/Article"}},
+                    "pagination": {"$ref": "#/components/schemas/Pagination"}
                   }
                 }
               }
@@ -272,57 +367,12 @@
       "get": {
         "tags": ["Feeds"],
         "summary": "Get RSS feeds",
-        "description": "Fetch and return articles from configured RSS feeds with pagination",
         "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "description": "Page number",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 1
-            }
-          },
-          {
-            "name": "per_page",
-            "in": "query",
-            "description": "Items per page (max 100)",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 20
-            }
-          }
+          {"name": "page", "in": "query", "schema": {"type": "integer"}},
+          {"name": "per_page", "in": "query", "schema": {"type": "integer", "maximum": 100}}
         ],
         "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "articles": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/Article"
-                      }
-                    },
-                    "pagination": {
-                      "$ref": "#/components/schemas/Pagination"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "No RSS feeds configured"
-          },
-          "500": {
-            "description": "Server error"
-          }
+          "200": {"description": "RSS articles"}
         }
       }
     },
@@ -330,57 +380,12 @@
       "get": {
         "tags": ["Feeds"],
         "summary": "Get scraped content",
-        "description": "Scrape and return articles from configured websites with pagination",
         "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "description": "Page number",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 1
-            }
-          },
-          {
-            "name": "per_page",
-            "in": "query",
-            "description": "Items per page (max 100)",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 20
-            }
-          }
+          {"name": "page", "in": "query", "schema": {"type": "integer"}},
+          {"name": "per_page", "in": "query", "schema": {"type": "integer", "maximum": 100}}
         ],
         "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "articles": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/Article"
-                      }
-                    },
-                    "pagination": {
-                      "$ref": "#/components/schemas/Pagination"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "No scraping URLs configured"
-          },
-          "500": {
-            "description": "Server error"
-          }
+          "200": {"description": "Scraped articles"}
         }
       }
     },
@@ -388,284 +393,101 @@
       "get": {
         "tags": ["Feeds"],
         "summary": "Get social media content",
-        "description": "Fetch content from Reddit and YouTube with pagination",
         "parameters": [
-          {
-            "name": "platform",
-            "in": "query",
-            "description": "Filter by platform",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "enum": ["reddit", "youtube"]
-            }
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "description": "Page number",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 1
-            }
-          },
-          {
-            "name": "per_page",
-            "in": "query",
-            "description": "Items per page (max 100)",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 20
-            }
-          },
-          {
-            "name": "search",
-            "in": "query",
-            "description": "Search keyword in title",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
+          {"name": "platform", "in": "query", "schema": {"type": "string", "enum": ["reddit", "youtube"]}},
+          {"name": "page", "in": "query", "schema": {"type": "integer"}},
+          {"name": "per_page", "in": "query", "schema": {"type": "integer", "maximum": 100}},
+          {"name": "search", "in": "query", "schema": {"type": "string"}}
         ],
         "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "articles": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/Article"
-                      }
-                    },
-                    "pagination": {
-                      "$ref": "#/components/schemas/Pagination"
-                    },
-                    "filters": {
-                      "type": "object",
-                      "properties": {
-                        "platform": {
-                          "type": "string",
-                          "nullable": true
-                        },
-                        "search": {
-                          "type": "string",
-                          "nullable": true
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "No social media sources configured"
-          },
-          "500": {
-            "description": "Server error"
-          }
+          "200": {"description": "Social media posts"}
         }
       }
     },
-    "/api/feeds": {
+    "/api/bookmarks": {
       "get": {
-        "tags": ["Feeds"],
-        "summary": "Get unified feeds",
-        "description": "Get combined and deduplicated articles from all sources with pagination",
+        "tags": ["Bookmarks"],
+        "summary": "Get bookmarks",
+        "security": [{"BearerAuth": []}],
         "parameters": [
-          {
-            "name": "source",
-            "in": "query",
-            "description": "Filter by source type",
-            "required": false,
-            "schema": {
-                            "type": "integer",
-              "enum": ["rss", "scrape"]
-            }
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "description": "Page number",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 1
-            }
-          },
-          {
-            "name": "per_page",
-            "in": "query",
-            "description": "Items per page (max 100)",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 20
-            }
-          },
-          {
-            "name": "search",
-            "in": "query",
-            "description": "Search keyword in title or summary",
-            "required": false,
-            "schema": {
-                            "type": "integer",
-              "example": "AI"
-            }
-          },
-          {
-            "name": "source_name",
-            "in": "query",
-            "description": "Filter by source name (e.g., TechCrunch)",
-            "required": false,
-            "schema": {
-                            "type": "integer",
-              "example": "TechCrunch"
-            }
-          },
-          {
-            "name": "start_date",
-            "in": "query",
-            "description": "Filter by start date (ISO format)",
-            "required": false,
-            "schema": {
-                            "type": "integer",
-              "format": "date",
-              "example": "2024-01-01"
-            }
-          },
-          {
-            "name": "end_date",
-            "in": "query",
-            "description": "Filter by end date (ISO format)",
-            "required": false,
-            "schema": {
-                            "type": "integer",
-              "format": "date",
-              "example": "2024-12-31"
-            }
-          }
+          {"name": "page", "in": "query", "schema": {"type": "integer"}},
+          {"name": "per_page", "in": "query", "schema": {"type": "integer", "maximum": 100}}
         ],
         "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "articles": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/Article"
-                      }
-                    },
-                    "pagination": {
-                      "$ref": "#/components/schemas/Pagination"
-                    },
-                    "filters": {
-                      "type": "object",
-                      "properties": {
-                        "source": {
-                                        "type": "integer",
-                          "nullable": true
-                        },
-                        "search": {
-                                        "type": "integer",
-                          "nullable": true
-                        },
-                        "source_name": {
-                                        "type": "integer",
-                          "nullable": true
-                        },
-                        "start_date": {
-                                        "type": "integer",
-                          "nullable": true
-                        },
-                        "end_date": {
-                                        "type": "integer",
-                          "nullable": true
-                        }
-                      }
-                    }
-                  }
+          "200": {"description": "User bookmarks"}
+        }
+      },
+      "post": {
+        "tags": ["Bookmarks"],
+        "summary": "Create bookmark",
+        "security": [{"BearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["article_url", "title"],
+                "properties": {
+                  "article_url": {"type": "string"},
+                  "title": {"type": "string"},
+                  "source": {"type": "string"}
                 }
               }
             }
-          },
-          "500": {
-            "description": "Server error"
           }
+        },
+        "responses": {
+          "201": {"description": "Bookmark created"}
         }
       }
-    }
-  },
-  "components": {
-    "schemas": {
-      "Article": {
-        "type": "object",
-        "properties": {
-          "title": {
-                          "type": "integer",
-            "example": "Example Article Title"
-          },
-          "link": {
-                          "type": "integer",
-            "example": "https://example.com/article"
-          },
-          "summary": {
-                          "type": "integer",
-            "example": "Brief description of the article"
-          },
-          "source": {
-                          "type": "integer",
-            "example": "TechCrunch"
-          },
-          "published": {
-                          "type": "integer",
-            "example": "2024-01-15T10:30:00Z"
-          },
-          "type": {
-                          "type": "integer",
-            "enum": ["rss", "scrape"],
-            "example": "rss"
-          }
+    },
+    "/api/bookmarks/{bookmark_id}": {
+      "delete": {
+        "tags": ["Bookmarks"],
+        "summary": "Delete bookmark",
+        "security": [{"BearerAuth": []}],
+        "parameters": [
+          {"name": "bookmark_id", "in": "path", "required": true, "schema": {"type": "integer"}}
+        ],
+        "responses": {
+          "200": {"description": "Bookmark deleted"}
+        }
+      }
+    },
+    "/api/read-history": {
+      "get": {
+        "tags": ["Read History"],
+        "summary": "Get read history",
+        "security": [{"BearerAuth": []}],
+        "parameters": [
+          {"name": "page", "in": "query", "schema": {"type": "integer"}},
+          {"name": "per_page", "in": "query", "schema": {"type": "integer", "maximum": 100}}
+        ],
+        "responses": {
+          "200": {"description": "Read history"}
         }
       },
-      "Pagination": {
-        "type": "object",
-        "properties": {
-          "page": {
-            "type": "integer",
-            "example": 1
-          },
-          "per_page": {
-            "type": "integer",
-            "example": 20
-          },
-          "total_items": {
-            "type": "integer",
-            "example": 80
-          },
-          "total_pages": {
-            "type": "integer",
-            "example": 4
-          },
-          "has_next": {
-            "type": "boolean",
-            "example": true
-          },
-          "has_prev": {
-            "type": "boolean",
-            "example": false
+      "post": {
+        "tags": ["Read History"],
+        "summary": "Mark article as read",
+        "security": [{"BearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["article_url"],
+                "properties": {
+                  "article_url": {"type": "string"}
+                }
+              }
+            }
           }
+        },
+        "responses": {
+          "201": {"description": "Marked as read"}
         }
       }
     }
