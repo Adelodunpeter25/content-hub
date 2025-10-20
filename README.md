@@ -9,7 +9,6 @@ A personal feed aggregator that collects content from RSS feeds, web scraping, a
 - JWT access tokens (60 min) + refresh tokens (30 days)
 - Google OAuth integration
 - Password reset via email (Resend)
-- Profile management and account deletion
 
 ### 📰 Content Aggregation
 - **RSS Feeds**: TechCrunch, The Verge, Ars Technica
@@ -22,7 +21,6 @@ A personal feed aggregator that collects content from RSS feeds, web scraping, a
 ### 🎯 Personalization
 - User feed preferences (sources and types)
 - Personalized feed based on preferences
-- **AI Recommendations**: Smart article suggestions based on reading history
 - **Trending Articles**: Most popular content across all users
 - **Reading Stats**: Daily/weekly/monthly reads, favorite categories, reading streaks
 
@@ -35,9 +33,7 @@ A personal feed aggregator that collects content from RSS feeds, web scraping, a
 ### 🔒 Security
 - Bcrypt password hashing
 - JWT token validation
-- Database indexes for performance
 - Rate limiting
-- CORS configuration
 
 ## Tech Stack
 
@@ -46,11 +42,8 @@ A personal feed aggregator that collects content from RSS feeds, web scraping, a
 - **Cache**: Redis/Valkey
 - **ORM**: SQLAlchemy 2.0
 - **Authentication**: JWT, OAuth (Authlib)
-- **Email**: Resend API
 - **Validation**: Pydantic
 - **Scheduler**: APScheduler
-- **Testing**: unittest
-- **Documentation**: Swagger/OpenAPI
 
 ## Quick Start
 
@@ -159,32 +152,6 @@ uv run python -m app.scripts.init_db
 # Clean all data
 uv run python -m app.scripts.clean_db
 ```
-
-## Performance
-
-- **Cache Hit**: ~50ms response time
-- **Cache Miss**: ~5000ms (first request only)
-- **Background Jobs**: Auto-refresh every 15 minutes
-- **Redis Storage**: ~1-5MB for cached feeds
-
-## Features Roadmap
-
-### Implemented ✅
-- RSS feed aggregation
-- Web scraping
-- Social media integration
-- User authentication (email + Google OAuth)
-- Personalized feeds
-- Bookmarks and read history
-- Auto-categorization
-- Redis caching
-- Background jobs
-- AI recommendations
-- Trending articles
-- Reading statistics
-- Pagination
-- Search and filters
-
 ## Contributing
 
 1. Fork the repository
