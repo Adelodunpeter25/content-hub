@@ -1,6 +1,5 @@
 import redis
 import json
-from app.core.config import Config
 from functools import wraps
 
 # Initialize Redis/Valkey client
@@ -46,8 +45,11 @@ def cache_get(key):
     except Exception:
         return None
 
-def cache_set(key, value, ttl=900):
-    """Set value in cache with TTL (default 15 minutes)"""
+def cache_set(key, value, ttl=None):
+    """Set value in cache with TTL (uses CACHE_TTL from config if not specified)"""
+    if ttl is None:
+        from app.core.config import Config
+        ttl = Config.CACHE_TTL
     try:
         client = get_cache()
         if not client:
@@ -70,8 +72,11 @@ def cache_delete(key):
     except Exception:
         return False
 
-def cached(ttl=900, key_prefix=''):
+def cached(ttl=None, key_prefix=''):
     """Decorator to cache function results"""
+    if ttl is None:
+        from app.core.config import Config
+        ttl = Config.CACHE_TTL
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):

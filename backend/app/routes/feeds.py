@@ -64,8 +64,8 @@ def get_unified_feeds():
             # Add categories to articles
             articles = add_categories_to_articles(articles)
             
-            # Cache for 15 minutes
-            cache_set(cache_key, articles, ttl=900)
+            # Cache with configured TTL
+            cache_set(cache_key, articles)
             current_app.logger.info('Feeds fetched from sources and cached')
         else:
             current_app.logger.info('Feeds retrieved from cache')

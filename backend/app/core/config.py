@@ -30,6 +30,7 @@ class Config:
     
     # Redis/Valkey settings
     REDIS_URL = os.getenv('REDIS_URL', '')
+    CACHE_TTL = int(os.getenv('CACHE_TTL' ''))  # Default 15 minutes
     
     # Social media sources
     REDDIT_SUBREDDITS = [

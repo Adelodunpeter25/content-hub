@@ -151,8 +151,8 @@ def get_personalized_feeds():
                 # Add categories
                 articles = add_categories_to_articles(articles)
                 
-                # Cache for 15 minutes
-                cache_set(cache_key, articles, ttl=900)
+                # Cache with configured TTL
+                cache_set(cache_key, articles)
             else:
                 current_app.logger.info('Feeds retrieved from cache')
             
