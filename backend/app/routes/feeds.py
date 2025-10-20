@@ -4,6 +4,7 @@ from app.utils.scraper import scrape_websites
 from app.utils.feed_aggregator import aggregate_feeds
 from app.utils.pagination import paginate
 from app.utils.search_filter import search_articles, filter_by_source, filter_by_date_range
+from app.utils.categorizer import add_categories_to_articles
 from app.core.errors import InternalServerError
 
 # Create blueprint for unified feeds
@@ -39,6 +40,7 @@ def get_unified_feeds():
         source_name = request.args.get('source_name')
         start_date = request.args.get('start_date')
         end_date = request.args.get('end_date')
+        category = request.args.get('category')
         
         current_app.logger.info(f'Fetching unified feeds (source={source_filter}, search={search_keyword}, page={page})')
         
@@ -53,6 +55,9 @@ def get_unified_feeds():
         # Aggregate all feeds
         articles = aggregate_feeds(rss_articles, scraped_articles, source_filter, limit)
         
+        # Add categories to articles
+        articles = add_categories_to_articles(articles)
+        
         # Apply search
         if search_keyword:
             articles = search_articles(articles, search_keyword)
@@ -64,6 +69,10 @@ def get_unified_feeds():
         # Apply date range filter
         if start_date or end_date:
             articles = filter_by_date_range(articles, start_date, end_date)
+        
+        # Apply category filter
+        if category:
+            articles = [a for a in articles if category in a.get('categories', [])]
         
         # Apply pagination
         paginated_data = paginate(articles, page, per_page)
@@ -78,7 +87,8 @@ def get_unified_feeds():
                 'search': search_keyword,
                 'source_name': source_name,
                 'start_date': start_date,
-                'end_date': end_date
+                'end_date': end_date,
+                'category': category
             }
         })
         

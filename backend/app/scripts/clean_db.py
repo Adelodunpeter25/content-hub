@@ -6,6 +6,8 @@ def clean_database():
     """Remove all data from all tables."""
     engine = get_engine()
     with engine.connect() as conn:
+        conn.execute(text("DELETE FROM read_history"))
+        conn.execute(text("DELETE FROM bookmarks"))
         conn.execute(text("DELETE FROM refresh_tokens"))
         conn.execute(text("DELETE FROM user_feed_preferences"))
         conn.execute(text("DELETE FROM users"))

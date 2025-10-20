@@ -7,7 +7,7 @@ from app.core.logging_config import setup_logging
 from app.core.oauth import init_oauth
 
 # import blueprints
-from app.routes import rss, scrape, feeds, users, social, auth
+from app.routes import rss, scrape, feeds, users, social, auth, bookmarks, read_history
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -62,6 +62,8 @@ app.register_blueprint(scrape.bp)
 app.register_blueprint(feeds.bp)
 app.register_blueprint(users.bp)
 app.register_blueprint(social.bp)
+app.register_blueprint(bookmarks.bp)
+app.register_blueprint(read_history.bp)
 
 # Run the app
 if __name__ == '__main__':

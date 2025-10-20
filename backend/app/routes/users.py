@@ -11,6 +11,7 @@ from app.utils.feed_aggregator import aggregate_feeds
 from app.utils.personalization import filter_by_user_preferences
 from app.utils.pagination import paginate
 from app.utils.search_filter import search_articles, filter_by_source, filter_by_date_range
+from app.utils.categorizer import add_categories_to_articles
 from pydantic import ValidationError
 
 bp = Blueprint('users', __name__, url_prefix='/api/users')
@@ -117,6 +118,7 @@ def get_personalized_feeds():
         source_name = request.args.get('source_name')
         start_date = request.args.get('start_date')
         end_date = request.args.get('end_date')
+        category = request.args.get('category')
         
         with get_db() as db:
             # Get user preferences
@@ -140,6 +142,9 @@ def get_personalized_feeds():
             # Aggregate all feeds
             articles = aggregate_feeds(rss_articles, scraped_articles)
             
+            # Add categories
+            articles = add_categories_to_articles(articles)
+            
             # Apply user preferences
             articles = filter_by_user_preferences(
                 articles,
@@ -159,6 +164,10 @@ def get_personalized_feeds():
             if start_date or end_date:
                 articles = filter_by_date_range(articles, start_date, end_date)
             
+            # Apply category filter
+            if category:
+                articles = [a for a in articles if category in a.get('categories', [])]
+            
             # Apply pagination
             paginated_data = paginate(articles, page, per_page)
             
@@ -175,7 +184,8 @@ def get_personalized_feeds():
                     'search': search_keyword,
                     'source_name': source_name,
                     'start_date': start_date,
-                    'end_date': end_date
+                    'end_date': end_date,
+                    'category': category
                 }
             })
     
