@@ -118,11 +118,6 @@ SCRAPE_URLS=https://www.techmeme.com
 REDDIT_SUBREDDITS=technology,programming,python
 YOUTUBE_CHANNELS=channel_id_1,channel_id_2
 ```
-
-## API Documentation
-
-Interactive API documentation available at: `http://localhost:5000/docs`
-
 ## Architecture
 
 ```
