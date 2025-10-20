@@ -38,7 +38,7 @@ def sort_by_date(articles):
         try:
             dt = datetime.fromisoformat(published.replace('Z', '+00:00'))
             return dt.replace(tzinfo=None)
-        except:
+        except Exception:
             return datetime.min.replace(tzinfo=None)
     
     return sorted(articles, key=get_date, reverse=True)

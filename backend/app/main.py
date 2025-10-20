@@ -17,6 +17,7 @@ app.config.from_object(Config)
 
 # Enable CORS
 CORS(app)
+
 # Setup logging
 setup_logging(app)
 

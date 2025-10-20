@@ -129,7 +129,7 @@ def refresh():
         with get_db() as db:
             token_record = db.query(RefreshToken).filter(
                 RefreshToken.token == refresh_data.refresh_token,
-                RefreshToken.revoked == False
+                not RefreshToken.revoked
             ).first()
             
             if not token_record:

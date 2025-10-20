@@ -85,7 +85,7 @@ def filter_by_date_range(articles, start_date=None, end_date=None):
                     continue
             
             filtered.append(article)
-        except:
+        except Exception:
             continue
     
     return filtered
