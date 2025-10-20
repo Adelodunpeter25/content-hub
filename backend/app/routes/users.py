@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request, current_app, g
 from app.core.database import get_db
 from app.models.user import User
 from app.models.preferences import UserFeedPreferences
-from app.schemas.user import PreferencesUpdate
+from app.schemas.user import PreferencesUpdate, UserProfileUpdate, DeleteAccountRequest
 from app.core.auth import require_auth
 from app.core.errors import BadRequestError, NotFoundError, InternalServerError
 from app.utils.rss_parser import fetch_rss_feeds
@@ -184,3 +184,92 @@ def get_personalized_feeds():
     except Exception as e:
         current_app.logger.error(f'Error fetching personalized feeds: {str(e)}')
         raise InternalServerError('Failed to fetch personalized feeds')
+
+@bp.route('/profile', methods=['PUT'])
+@require_auth
+def update_profile():
+    """
+    Update current user's profile (name only)
+    
+    Body:
+        name: User's name
+    """
+    try:
+        user_id = g.user_id
+        data = request.get_json()
+        
+        try:
+            profile_data = UserProfileUpdate(**data)
+        except ValidationError as e:
+            raise BadRequestError(str(e))
+        
+        with get_db() as db:
+            user = db.query(User).filter(User.id == user_id).first()
+            
+            if not user:
+                raise NotFoundError('User not found')
+            
+            if profile_data.name is not None:
+                user.name = profile_data.name
+            
+            db.flush()
+            
+            current_app.logger.info(f'Profile updated for user: {user_id}')
+            
+            return jsonify(user.to_dict())
+    
+    except (BadRequestError, NotFoundError):
+        raise
+    except Exception as e:
+        current_app.logger.error(f'Error updating profile: {str(e)}')
+        raise InternalServerError('Failed to update profile')
+
+@bp.route('/account', methods=['DELETE'])
+@require_auth
+def delete_account():
+    """
+    Delete current user's account
+    
+    Body:
+        password: User password for confirmation (required for non-Google users)
+    """
+    try:
+        user_id = g.user_id
+        data = request.get_json()
+        
+        with get_db() as db:
+            user = db.query(User).filter(User.id == user_id).first()
+            
+            if not user:
+                raise NotFoundError('User not found')
+            
+            # Verify password if user has one (not Google OAuth)
+            if user.password_hash:
+                try:
+                    delete_data = DeleteAccountRequest(**data)
+                except ValidationError as e:
+                    raise BadRequestError(str(e))
+                
+                if not user.check_password(delete_data.password):
+                    raise BadRequestError('Invalid password')
+            
+            # Delete preferences first
+            preferences = db.query(UserFeedPreferences).filter(
+                UserFeedPreferences.user_id == user_id
+            ).first()
+            if preferences:
+                db.delete(preferences)
+            
+            # Delete user (cascade will delete refresh tokens)
+            db.delete(user)
+            db.flush()
+            
+            current_app.logger.info(f'Account deleted for user: {user.email}')
+            
+            return jsonify({'message': 'Account deleted successfully'})
+    
+    except (BadRequestError, NotFoundError):
+        raise
+    except Exception as e:
+        current_app.logger.error(f'Error deleting account: {str(e)}')
+        raise InternalServerError('Failed to delete account')

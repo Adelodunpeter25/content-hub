@@ -5,9 +5,7 @@ Run this script to create all tables in Supabase:
     python init_db.py
 """
 
-from app.core.database import create_tables, get_engine
-from app.models.user import User
-from app.models.preferences import UserFeedPreferences
+from app.core.database import create_tables
 
 def main():
     print("Creating database tables...")

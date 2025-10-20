@@ -1,6 +1,5 @@
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
-from datetime import datetime
 
 class UserCreate(BaseModel):
     """Schema for creating a user"""
@@ -16,6 +15,10 @@ class UserResponse(BaseModel):
     
     class Config:
         from_attributes = True
+
+class UserProfileUpdate(BaseModel):
+    """Schema for updating user profile"""
+    name: Optional[str] = Field(None, description="User's name")
 
 class PreferencesUpdate(BaseModel):
     """Schema for updating user preferences"""
@@ -33,3 +36,7 @@ class PreferencesResponse(BaseModel):
     
     class Config:
         from_attributes = True
+
+class DeleteAccountRequest(BaseModel):
+    """Schema for delete account request"""
+    password: str = Field(..., description="User password for confirmation")

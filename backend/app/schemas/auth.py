@@ -12,7 +12,22 @@ class LoginRequest(BaseModel):
     email: EmailStr
     password: str
 
+class ForgotPasswordRequest(BaseModel):
+    """Schema for forgot password request"""
+    email: EmailStr
+
+class ResetPasswordRequest(BaseModel):
+    """Schema for reset password request"""
+    token: str
+    new_password: str = Field(..., min_length=6, description="New password must be at least 6 characters")
+
+class RefreshTokenRequest(BaseModel):
+    """Schema for refresh token request"""
+    refresh_token: str
+
 class AuthResponse(BaseModel):
     """Schema for authentication response"""
-    token: str
+    access_token: str
+    refresh_token: str
     user: dict
+    needs_onboarding: bool

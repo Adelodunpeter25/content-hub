@@ -1,9 +1,9 @@
 import jwt
 from datetime import datetime, timedelta
 from functools import wraps
-from flask import request, current_app, g
+from flask import request, g
 from app.core.config import Config
-from app.core.errors import BadRequestError, NotFoundError
+from app.core.errors import BadRequestError
 
 def generate_access_token(user_id):
     """

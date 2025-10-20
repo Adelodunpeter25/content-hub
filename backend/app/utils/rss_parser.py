@@ -1,5 +1,4 @@
 import feedparser
-from datetime import datetime
 
 def fetch_rss_feeds(feed_urls):
     """
