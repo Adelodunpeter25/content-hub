@@ -16,6 +16,7 @@ export default function BookmarksPage() {
   const [readIds, setReadIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
+  const [removingId, setRemovingId] = useState<number | null>(null);
 
   const { getBookmarks, removeBookmark } = useBookmarks();
   const { markAsRead, getReadHistory } = useReadHistory();
@@ -58,10 +59,21 @@ export default function BookmarksPage() {
                   <div className="flex items-start justify-between mb-3">
                     <span className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700">{bookmark.source}</span>
                     <button
-                      onClick={() => removeBookmark(bookmark.id)}
-                      className="text-red-500 hover:text-red-700 text-sm font-medium"
+                      onClick={async () => {
+                        if (confirm('Remove this bookmark?')) {
+                          setRemovingId(bookmark.id);
+                          await removeBookmark(bookmark.id);
+                          setBookmarks(prev => prev.filter(b => b.id !== bookmark.id));
+                          setRemovingId(null);
+                        }
+                      }}
+                      disabled={removingId === bookmark.id}
+                      className="text-red-500 hover:text-red-700 text-sm font-medium disabled:opacity-50 flex items-center gap-1"
                       title="Remove bookmark"
                     >
+                      {removingId === bookmark.id && (
+                        <div className="w-3 h-3 border-2 border-red-500 border-t-transparent rounded-full animate-spin"></div>
+                      )}
                       Remove
                     </button>
                   </div>

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useToast } from '../context/ToastContext';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
 import { useAuthContext } from '../context/AuthContext';
@@ -17,20 +18,58 @@ import SkeletonCard from '../components/SkeletonCard';
 export default function FeedPage() {
   const navigate = useNavigate();
   const { showToast } = useToast();
-  const [category, setCategory] = useState('');
-  const [source, setSource] = useState('');
+  const [category, setCategory] = useState(() => localStorage.getItem('feedCategory') || '');
+  const [source, setSource] = useState(() => localStorage.getItem('feedSource') || '');
   const [page, setPage] = useState(1);
 
   useEffect(() => {
     setPage(1);
     setArticles([]);
+    localStorage.setItem('feedCategory', category);
+    localStorage.setItem('feedSource', source);
   }, [category, source]);
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    setPage(1);
+    setArticles([]);
+    await loadFeed();
+    setRefreshing(false);
+    showToast('Feed refreshed', 'success');
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (window.scrollY === 0) {
+      setPullStart(e.touches[0].clientY);
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (pullStart > 0) {
+      const distance = e.touches[0].clientY - pullStart;
+      if (distance > 0) {
+        setPullDistance(Math.min(distance, 100));
+      }
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (pullDistance > 60) {
+      handleRefresh();
+    }
+    setPullStart(0);
+    setPullDistance(0);
+  };
   const [articles, setArticles] = useState<Article[]>([]);
   const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
   const [readIds, setReadIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
   const [previewArticle, setPreviewArticle] = useState<Article | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+  const [pullStart, setPullStart] = useState(0);
+  const [pullDistance, setPullDistance] = useState(0);
+  const { showToast } = useToast();
   const observer = useRef<IntersectionObserver>();
   const lastArticleRef = useCallback((node: HTMLDivElement) => {
     if (loading) return;
@@ -82,25 +121,28 @@ export default function FeedPage() {
 
   const handleBookmark = async (url: string, title: string, source: string) => {
     if (bookmarkedIds.has(url)) {
-      await removeBookmark(url);
+      // Optimistic update
       setBookmarkedIds(prev => {
         const next = new Set(prev);
         next.delete(url);
         return next;
       });
       showToast('Bookmark removed', 'success');
+      await removeBookmark(url);
     } else {
-      await addBookmark(url, title, source);
+      // Optimistic update
       setBookmarkedIds(prev => new Set(prev).add(url));
       showToast('Article bookmarked', 'success');
+      await addBookmark(url, title, source);
     }
   };
 
   const handleRead = async (url: string) => {
-    await markAsRead(url);
+    // Optimistic update
     setReadIds(prev => new Set(prev).add(url));
     window.open(url, '_blank');
     showToast('Marked as read', 'info');
+    await markAsRead(url);
   };
 
   const categories = ['AI', 'Security', 'Cloud', 'Mobile', 'Web', 'Hardware', 'Gaming', 'Startup', 'Programming'];
@@ -108,7 +150,19 @@ export default function FeedPage() {
 
   return (
     <DashboardLayout>
-      <div>
+      <div
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        {pullDistance > 0 && (
+          <div
+            className="text-center py-2 text-gray-500 transition-all"
+            style={{ transform: `translateY(${pullDistance}px)` }}
+          >
+            {pullDistance > 60 ? '🔄 Release to refresh' : '⬇️ Pull to refresh'}
+          </div>
+        )}
         <div className="mb-6 flex gap-4">
           <select
             value={category}

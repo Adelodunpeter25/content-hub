@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthContext } from '../context/AuthContext';
 import SearchModal from './SearchModal';
+import ScrollToTopButton from './ScrollToTop';
 import type { ReactNode } from 'react';
 
 interface DashboardLayoutProps {
@@ -55,9 +56,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           <div className="flex items-center gap-4">
             <button
               onClick={handleSearch}
-              className="border rounded-lg px-4 py-2 w-64 text-left text-gray-500 hover:bg-gray-50"
+              className="border rounded-lg px-4 py-2 text-gray-500 hover:bg-gray-50 md:w-64 md:text-left"
             >
-              Search articles...
+              <span className="md:hidden text-xl">🔍</span>
+              <span className="hidden md:inline">Search articles...</span>
             </button>
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-600 hidden md:block">{user?.name}</span>
@@ -128,7 +130,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </div>
         )}
 
-        <main className="flex-1 p-6 pb-20 md:pb-6">
+        <main className="flex-1 p-6 pb-20 md:pb-6 page-transition">
           {children}
         </main>
       </div>
@@ -156,6 +158,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       </div>
 
       <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      <ScrollToTopButton />
     </div>
   );
 }

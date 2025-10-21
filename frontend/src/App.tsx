@@ -11,6 +11,7 @@ function ScrollToTop() {
 }
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
+import ErrorBoundary from './components/ErrorBoundary';
 import ProtectedRoute from './components/ProtectedRoute';
 import LandingPage from './pages/LandingPage';
 import ContactPage from './pages/ContactPage';
@@ -35,10 +36,11 @@ import ReadHistoryPage from './pages/ReadHistoryPage';
 
 function App() {
   return (
-    <BrowserRouter>
-      <ScrollToTop />
-      <ToastProvider>
-        <AuthProvider>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <ScrollToTop />
+        <ToastProvider>
+          <AuthProvider>
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/feeds" element={<FeedsPage />} />
@@ -93,9 +95,10 @@ function App() {
           } />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
-        </AuthProvider>
-      </ToastProvider>
-    </BrowserRouter>
+          </AuthProvider>
+        </ToastProvider>
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 }
 
