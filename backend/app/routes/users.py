@@ -92,7 +92,7 @@ def update_user_preferences():
 
 @bp.route('/feeds', methods=['GET'])
 @require_auth
-def get_personalized_feeds():
+def get_user_personalized_feeds():
     """
     Get personalized feed based on current user's preferences
     

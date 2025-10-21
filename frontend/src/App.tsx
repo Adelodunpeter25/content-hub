@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 
+{ /* Scroll to top on route change*/}
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => {
@@ -23,6 +24,10 @@ import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsOfServicePage from './pages/TermsOfServicePage';
 import AboutPage from './pages/AboutPage';
 import NotFoundPage from './pages/NotFoundPage';
+import FeedPage from './pages/FeedPage';
+import BookmarksPage from './pages/BookmarksPage';
+import SettingsPage from './pages/SettingsPage';
+import StatsPage from './pages/StatsPage';
 
 function App() {
   return (
@@ -44,6 +49,26 @@ function App() {
           <Route path="/dashboard" element={
             <ProtectedRoute>
               <DashboardPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/feed" element={
+            <ProtectedRoute>
+              <FeedPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/bookmarks" element={
+            <ProtectedRoute>
+              <BookmarksPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/settings" element={
+            <ProtectedRoute>
+              <SettingsPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/stats" element={
+            <ProtectedRoute>
+              <StatsPage />
             </ProtectedRoute>
           } />
           <Route path="*" element={<NotFoundPage />} />

@@ -1,54 +1,19 @@
-import { useState, useEffect } from 'react';
 import { request } from '../services/api';
-import type { FeedsResponse } from '../types';
 
-export const useFeeds = (params?: { category?: string; source?: string; source_name?: string; page?: number; per_page?: number }) => {
-  const [data, setData] = useState<FeedsResponse | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchFeeds = async () => {
-    setLoading(true);
-    setError(null);
+export const useFeeds = () => {
+  const getPersonalizedFeed = async (params: { category?: string; source?: string; page?: number; limit?: number } = {}) => {
     try {
-      const queryParams = new URLSearchParams(params as any).toString();
-      const response = await request(`/feeds?${queryParams}`);
-      setData(response);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      const query = new URLSearchParams();
+      if (params.category) query.append('category', params.category);
+      if (params.source) query.append('source', params.source);
+      if (params.page) query.append('page', params.page.toString());
+      if (params.limit) query.append('per_page', params.limit.toString());
+      return await request(`/users/feeds?${query}`);
+    } catch (err) {
+      console.error(err);
+      return null;
     }
   };
 
-  useEffect(() => {
-    fetchFeeds();
-  }, [params?.category, params?.source, params?.source_name, params?.page, params?.per_page]);
-
-  return { data, loading, error, refetch: fetchFeeds };
-};
-
-export const usePersonalizedFeeds = (page = 1, per_page = 20) => {
-  const [data, setData] = useState<FeedsResponse | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchFeeds = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await request(`/users/feeds?page=${page}&per_page=${per_page}`);
-      setData(response);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchFeeds();
-  }, [page, per_page]);
-
-  return { data, loading, error, refetch: fetchFeeds };
+  return { getPersonalizedFeed };
 };

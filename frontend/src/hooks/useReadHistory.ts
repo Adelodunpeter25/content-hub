@@ -1,41 +1,28 @@
-import { useState, useEffect } from 'react';
 import { request } from '../services/api';
-import type { ReadHistory, ReadHistoryCreate } from '../types';
 
-export const useReadHistory = (page = 1, per_page = 20) => {
-  const [data, setData] = useState<{ history: ReadHistory[]; pagination: any } | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchHistory = async () => {
-    setLoading(true);
-    setError(null);
+export const useReadHistory = () => {
+  const getReadHistory = async (params: { page?: number; limit?: number } = {}) => {
     try {
-      const response = await request(`/read-history?page=${page}&per_page=${per_page}`);
-      setData(response);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      const query = new URLSearchParams();
+      if (params.page) query.append('page', params.page.toString());
+      if (params.limit) query.append('per_page', params.limit.toString());
+      return await request(`/read-history?${query}`);
+    } catch (err) {
+      console.error(err);
+      return null;
     }
   };
 
-  const markAsRead = async (readData: ReadHistoryCreate) => {
+  const markAsRead = async (url: string) => {
     try {
       await request('/read-history', {
         method: 'POST',
-        body: JSON.stringify(readData),
+        body: JSON.stringify({ article_url: url }),
       });
-      fetchHistory();
-    } catch (err: any) {
-      setError(err.message);
-      throw err;
+    } catch (err) {
+      console.error(err);
     }
   };
 
-  useEffect(() => {
-    fetchHistory();
-  }, [page, per_page]);
-
-  return { data, loading, error, markAsRead, refetch: fetchHistory };
+  return { getReadHistory, markAsRead };
 };

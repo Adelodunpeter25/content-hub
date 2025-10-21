@@ -1,51 +1,37 @@
-import { useState, useEffect } from 'react';
 import { request } from '../services/api';
-import type { Bookmark, BookmarkCreate } from '../types';
+import type { BookmarkCreate } from '../types';
 
-export const useBookmarks = (page = 1, per_page = 20) => {
-  const [data, setData] = useState<{ bookmarks: Bookmark[]; pagination: any } | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchBookmarks = async () => {
-    setLoading(true);
-    setError(null);
+export const useBookmarks = () => {
+  const getBookmarks = async (params: { page?: number; limit?: number } = {}) => {
     try {
-      const response = await request(`/bookmarks?page=${page}&per_page=${per_page}`);
-      setData(response);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      const query = new URLSearchParams();
+      if (params.page) query.append('page', params.page.toString());
+      if (params.limit) query.append('per_page', params.limit.toString());
+      return await request(`/bookmarks?${query}`);
+    } catch (err) {
+      console.error(err);
+      return null;
     }
   };
 
-  const addBookmark = async (bookmark: BookmarkCreate) => {
+  const addBookmark = async (url: string, title: string, source: string) => {
     try {
       await request('/bookmarks', {
         method: 'POST',
-        body: JSON.stringify(bookmark),
+        body: JSON.stringify({ article_url: url, title, source }),
       });
-      fetchBookmarks();
-    } catch (err: any) {
-      setError(err.message);
-      throw err;
+    } catch (err) {
+      console.error(err);
     }
   };
 
-  const deleteBookmark = async (id: number) => {
+  const removeBookmark = async (bookmarkId: number) => {
     try {
-      await request(`/bookmarks/${id}`, { method: 'DELETE' });
-      fetchBookmarks();
-    } catch (err: any) {
-      setError(err.message);
-      throw err;
+      await request(`/bookmarks/${bookmarkId}`, { method: 'DELETE' });
+    } catch (err) {
+      console.error(err);
     }
   };
 
-  useEffect(() => {
-    fetchBookmarks();
-  }, [page, per_page]);
-
-  return { data, loading, error, addBookmark, deleteBookmark, refetch: fetchBookmarks };
+  return { getBookmarks, addBookmark, removeBookmark };
 };
