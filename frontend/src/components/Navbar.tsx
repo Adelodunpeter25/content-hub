@@ -15,6 +15,7 @@ export default function Navbar() {
           {/* Desktop Menu - Centered */}
           <div className="hidden md:flex items-center gap-6 absolute left-1/2 -translate-x-1/2">
             <Link to="/" className="text-gray-700 hover:text-gray-900 font-medium">Home</Link>
+            <Link to="/feeds" className="text-gray-700 hover:text-gray-900 font-medium">Explore</Link>
             <Link to="/contact" className="text-gray-700 hover:text-gray-900 font-medium">Contact</Link>
           </div>
           
@@ -59,6 +60,9 @@ export default function Navbar() {
               <div className="mt-12 flex flex-col gap-4">
                 <Link to="/" className="px-6 py-3 text-gray-700 hover:bg-gray-100 rounded-lg text-center font-medium">
                   Home
+                </Link>
+                <Link to="/feeds" className="px-6 py-3 text-gray-700 hover:bg-gray-100 rounded-lg text-center font-medium">
+                  Explore
                 </Link>
                 <Link to="/contact" className="px-6 py-3 text-gray-700 hover:bg-gray-100 rounded-lg text-center font-medium">
                   Contact

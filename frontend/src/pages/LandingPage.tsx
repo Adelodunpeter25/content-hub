@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import FAQ from '../components/FAQ';
@@ -53,9 +54,14 @@ export default function LandingPage() {
             Aggregate content from RSS feeds, Reddit, YouTube, and web scraping.
             Get AI-powered recommendations tailored just for you.
           </p>
-          <button className="px-10 py-5 bg-gradient-to-r from-cyan-500 to-blue-500 text-white text-xl font-bold rounded-xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all">
-            Get Started Free →
-          </button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button className="px-10 py-5 bg-gradient-to-r from-cyan-500 to-blue-500 text-white text-xl font-bold rounded-xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all">
+              Get Started Free →
+            </button>
+            <Link to="/feeds" className="px-10 py-5 bg-white border-2 border-gray-300 text-gray-700 text-xl font-bold rounded-xl hover:border-gray-400 hover:shadow-lg transition-all text-center">
+              Explore Feeds
+            </Link>
+          </div>
           <div className="mt-32 grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
             <div className="p-8 bg-white/90 backdrop-blur-sm rounded-2xl border border-gray-200 shadow-lg hover:shadow-xl hover:scale-105 transition-all">
               <div className="text-5xl font-bold bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent mb-3">10+</div>
