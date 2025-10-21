@@ -59,10 +59,10 @@ export default function BookmarksPage() {
                     <span className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700">{bookmark.source}</span>
                     <button
                       onClick={() => removeBookmark(bookmark.id)}
-                      className="text-yellow-500 text-xl hover:text-yellow-600"
+                      className="text-red-500 hover:text-red-700 text-sm font-medium"
                       title="Remove bookmark"
                     >
-                      ★
+                      Remove
                     </button>
                   </div>
                   <h3 className="font-semibold text-lg mb-3 line-clamp-3">{bookmark.title}</h3>

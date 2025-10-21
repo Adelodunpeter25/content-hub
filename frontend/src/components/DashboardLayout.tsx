@@ -48,7 +48,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg">
               <span className="text-lg font-bold text-white">CH</span>
             </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent">
+            <span className="text-2xl font-bold bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent hidden md:block">
               Content Hub
             </span>
           </div>
@@ -60,7 +60,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               Search articles...
             </button>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">{user?.name}</span>
+              <span className="text-sm text-gray-600 hidden md:block">{user?.name}</span>
               <div className="w-8 h-8 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
                 {user?.name?.charAt(0).toUpperCase()}
               </div>

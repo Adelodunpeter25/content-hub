@@ -1,28 +1,18 @@
-import { useState, useEffect } from 'react';
 import { request } from '../services/api';
-import type { FeedsResponse } from '../types';
 
-export const useTrending = (days = 7, page = 1, per_page = 20) => {
-  const [data, setData] = useState<FeedsResponse | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchTrending = async () => {
-    setLoading(true);
-    setError(null);
+export const useTrending = () => {
+  const getTrending = async (params: { days?: number; page?: number; limit?: number } = {}) => {
     try {
-      const response = await request(`/trending?days=${days}&page=${page}&per_page=${per_page}`);
-      setData(response);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      const query = new URLSearchParams();
+      if (params.days) query.append('days', params.days.toString());
+      if (params.page) query.append('page', params.page.toString());
+      if (params.limit) query.append('per_page', params.limit.toString());
+      return await request(`/trending?${query}`);
+    } catch (err) {
+      console.error(err);
+      return null;
     }
   };
 
-  useEffect(() => {
-    fetchTrending();
-  }, [days, page, per_page]);
-
-  return { data, loading, error, refetch: fetchTrending };
+  return { getTrending };
 };
