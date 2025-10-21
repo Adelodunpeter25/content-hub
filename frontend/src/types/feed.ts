@@ -4,7 +4,7 @@ export interface Article {
   source: string;
   type: string;
   categories?: string[];
-  published_at?: string;
+  published?: string;
   description?: string;
   image_url?: string;
 }

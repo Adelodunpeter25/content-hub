@@ -6,6 +6,7 @@ import { useAuthContext } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { usePreferences } from '../hooks/usePreferences';
 import { useAccount } from '../hooks/useAccount';
+import ConfirmDialog from '../components/ConfirmDialog';
 
 export default function SettingsPage() {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ export default function SettingsPage() {
   const [feedSources, setFeedSources] = useState<string[]>([]);
   const [feedTypes, setFeedTypes] = useState<string[]>([]);
   const [deleting, setDeleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const sources = ['TechCrunch', 'The Verge', 'Ars Technica', 'Techmeme', 'Reddit', 'YouTube'];
   const types = ['rss', 'scrape', 'social'];
@@ -156,19 +158,7 @@ export default function SettingsPage() {
                   Logout
                 </button>
                 <button
-                  onClick={async () => {
-                    if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-                      setDeleting(true);
-                      const success = await deleteAccount();
-                      setDeleting(false);
-                      if (success) {
-                        showToast('Account deleted successfully', 'success');
-                        logout();
-                      } else {
-                        showToast('Failed to delete account', 'error');
-                      }
-                    }
-                  }}
+                  onClick={() => setShowDeleteConfirm(true)}
                   disabled={deleting}
                   className="bg-red-700 text-white px-6 py-2 rounded-lg hover:bg-red-800 disabled:opacity-50 flex items-center gap-2"
                 >
@@ -181,6 +171,28 @@ export default function SettingsPage() {
             </div>
           </div>
         )}
+
+        <ConfirmDialog
+          isOpen={showDeleteConfirm}
+          title="Delete Account"
+          message="Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently removed."
+          confirmText="Delete Account"
+          cancelText="Cancel"
+          danger
+          onConfirm={async () => {
+            setShowDeleteConfirm(false);
+            setDeleting(true);
+            const success = await deleteAccount();
+            setDeleting(false);
+            if (success) {
+              showToast('Account deleted successfully', 'success');
+              logout();
+            } else {
+              showToast('Failed to delete account', 'error');
+            }
+          }}
+          onCancel={() => setShowDeleteConfirm(false)}
+        />
       </div>
     </DashboardLayout>
   );

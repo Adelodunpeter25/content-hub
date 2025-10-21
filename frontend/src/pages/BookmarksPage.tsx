@@ -6,6 +6,7 @@ import { useReadHistory } from '../hooks/useReadHistory';
 
 import LoadingSpinner from '../components/LoadingSpinner';
 import EmptyState from '../components/EmptyState';
+import ConfirmDialog from '../components/ConfirmDialog';
 import type { Bookmark } from '../types/bookmark';
 
 import DashboardLayout from '../components/DashboardLayout';
@@ -17,6 +18,7 @@ export default function BookmarksPage() {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [removingId, setRemovingId] = useState<number | null>(null);
+  const [bookmarkToRemove, setBookmarkToRemove] = useState<number | null>(null);
 
   const { getBookmarks, removeBookmark } = useBookmarks();
   const { markAsRead, getReadHistory } = useReadHistory();
@@ -59,14 +61,7 @@ export default function BookmarksPage() {
                   <div className="flex items-start justify-between mb-3">
                     <span className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700">{bookmark.source}</span>
                     <button
-                      onClick={async () => {
-                        if (confirm('Remove this bookmark?')) {
-                          setRemovingId(bookmark.id);
-                          await removeBookmark(bookmark.id);
-                          setBookmarks(prev => prev.filter(b => b.id !== bookmark.id));
-                          setRemovingId(null);
-                        }
-                      }}
+                      onClick={() => setBookmarkToRemove(bookmark.id)}
                       disabled={removingId === bookmark.id}
                       className="text-red-500 hover:text-red-700 text-sm font-medium disabled:opacity-50 flex items-center gap-1"
                       title="Remove bookmark"
@@ -113,6 +108,25 @@ export default function BookmarksPage() {
             </div>
           </>
         )}
+
+        <ConfirmDialog
+          isOpen={bookmarkToRemove !== null}
+          title="Remove Bookmark"
+          message="Are you sure you want to remove this bookmark?"
+          confirmText="Remove"
+          cancelText="Cancel"
+          danger
+          onConfirm={async () => {
+            if (bookmarkToRemove) {
+              setRemovingId(bookmarkToRemove);
+              await removeBookmark(bookmarkToRemove);
+              setBookmarks(prev => prev.filter(b => b.id !== bookmarkToRemove));
+              setRemovingId(null);
+              setBookmarkToRemove(null);
+            }
+          }}
+          onCancel={() => setBookmarkToRemove(null)}
+        />
       </div>
     </DashboardLayout>
   );
