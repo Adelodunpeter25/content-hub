@@ -7,6 +7,7 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-gray-600">
           <p>&copy; 2025 Content Hub. All rights reserved.</p>
           <div className="flex gap-6">
+            <Link to="/about" className="hover:text-blue-500 transition-colors">About</Link>
             <Link to="/privacy" className="hover:text-blue-500 transition-colors">Privacy Policy</Link>
             <Link to="/terms" className="hover:text-blue-500 transition-colors">Terms of Service</Link>
           </div>
