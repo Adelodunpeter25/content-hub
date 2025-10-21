@@ -57,7 +57,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setIsSidebarOpen(true)}
-              className="md:hidden text-2xl text-gray-700 mr-2"
+              className="md:hidden text-2xl text-gray-700 dark:text-gray-300 mr-2"
             >
               ☰
             </button>
@@ -104,7 +104,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                   location.pathname === item.path
                     ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white'
-                    : 'text-gray-700 hover:bg-gray-100'
+                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                 }`}
               >
                 <span className="text-xl">{item.icon}</span>
@@ -157,9 +157,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </main>
       </div>
 
-      <footer className="bg-white dark:bg-gray-800 border-t dark:border-gray-700 py-4 text-center text-sm text-gray-600 dark:text-gray-400">
-        Content Hub © 2025 | Built by Peter Adelodun
-      </footer>
+      {!location.pathname.includes('/bookmarks') && !location.pathname.includes('/stats') && !location.pathname.includes('/trending') && (
+        <footer className="bg-white dark:bg-gray-800 border-t dark:border-gray-700 py-4 text-center text-sm text-gray-600 dark:text-gray-400">
+          Content Hub © 2025 | Built by Peter Adelodun
+        </footer>
+      )}
 
       {/* Mobile Bottom Tab Bar */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t dark:border-gray-700 z-30">
@@ -169,7 +171,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               key={item.path}
               onClick={() => navigate(item.path)}
               className={`flex flex-col items-center gap-1 px-4 py-2 ${
-                location.pathname === item.path ? 'text-blue-500' : 'text-gray-600'
+                location.pathname === item.path ? 'text-blue-500' : 'text-gray-600 dark:text-gray-400'
               }`}
             >
               <span className="text-2xl">{item.icon}</span>

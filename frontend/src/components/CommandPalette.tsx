@@ -66,8 +66,8 @@ export default function CommandPalette({ isOpen, onClose }: CommandPaletteProps)
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center pt-32" onClick={onClose}>
-      <div className="bg-white rounded-lg w-full max-w-2xl mx-4 shadow-2xl" onClick={(e) => e.stopPropagation()}>
-        <div className="p-4 border-b">
+      <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-2xl mx-4 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+        <div className="p-4 border-b dark:border-gray-700">
           <input
             type="text"
             value={query}
@@ -76,7 +76,7 @@ export default function CommandPalette({ isOpen, onClose }: CommandPaletteProps)
               setSelectedIndex(0);
             }}
             placeholder="Type a command or search..."
-            className="w-full px-4 py-3 text-lg focus:outline-none"
+            className="w-full px-4 py-3 text-lg focus:outline-none bg-white dark:bg-gray-800 dark:text-white"
             autoFocus
           />
         </div>

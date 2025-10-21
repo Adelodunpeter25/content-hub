@@ -46,10 +46,10 @@ export default function DashboardPage() {
             ) : (
               <div className="space-y-4">
                 {articles.slice(0, 3).map((article, idx) => (
-                  <div key={idx} className="bg-white p-4 rounded-lg border">
-                    <span className="text-xs text-gray-500">{article.categories?.[0] || 'General'} • {article.source}</span>
-                    <h3 className="font-semibold mt-1">{article.title}</h3>
-                    <p className="text-sm text-gray-600 mt-2 line-clamp-2">{article.description}</p>
+                  <div key={idx} className="bg-white dark:bg-gray-800 p-4 rounded-lg border dark:border-gray-700">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">{article.categories?.[0] || 'General'} • {article.source}</span>
+                    <h3 className="font-semibold mt-1 dark:text-white">{article.title}</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 line-clamp-2">{article.description}</p>
                   </div>
                 ))}
                 <a href="/feed" className="text-blue-500 hover:underline text-sm">View all articles →</a>
@@ -57,28 +57,28 @@ export default function DashboardPage() {
             )}
           </div>
 
-          <div className="bg-white p-6 rounded-lg border h-fit">
-            <h3 className="font-semibold mb-4">Weather</h3>
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border dark:border-gray-700 h-fit">
+            <h3 className="font-semibold mb-4 dark:text-white">Weather</h3>
             <div className="text-center">
               <div className="text-5xl mb-2">🌤️</div>
-              <div className="text-3xl font-bold">{weather.temp}°C</div>
-              <div className="text-gray-600 mt-1">{weather.location}</div>
-              <div className="text-sm text-gray-500 mt-2">☀️ {weather.condition}</div>
-              <div className="text-sm text-gray-500">💨 Feels like {weather.feels}°C</div>
+              <div className="text-3xl font-bold dark:text-white">{weather.temp}°C</div>
+              <div className="text-gray-600 dark:text-gray-400 mt-1">{weather.location}</div>
+              <div className="text-sm text-gray-500 dark:text-gray-400 mt-2">☀️ {weather.condition}</div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">💨 Feels like {weather.feels}°C</div>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg border">
-          <h3 className="font-semibold mb-4">Quick Notes</h3>
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border dark:border-gray-700">
+          <h3 className="font-semibold mb-4 dark:text-white">Quick Notes</h3>
           <textarea
             placeholder="Draft new idea..."
-            className="w-full border rounded-lg p-3 mb-3"
+            className="w-full border dark:border-gray-700 rounded-lg p-3 mb-3 dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"
             rows={3}
           />
           <div className="flex gap-2">
             <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">Save</button>
-            <button className="px-4 py-2 border rounded-lg hover:bg-gray-50">Discard</button>
+            <button className="px-4 py-2 border dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-white">Discard</button>
           </div>
         </div>
       </div>

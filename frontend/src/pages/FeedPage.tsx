@@ -17,6 +17,7 @@ export default function FeedPage() {
   const [category, setCategory] = useState(() => localStorage.getItem('feedCategory') || '');
   const [source, setSource] = useState(() => localStorage.getItem('feedSource') || '');
   const [page, setPage] = useState(1);
+  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
     setPage(1);
@@ -156,24 +157,92 @@ export default function FeedPage() {
             {pullDistance > 60 ? '🔄 Release to refresh' : '⬇️ Pull to refresh'}
           </div>
         )}
-        <div className="mb-6 flex gap-4">
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="border rounded-lg px-4 py-2"
+        <div className="mb-6">
+          <button
+            onClick={() => setShowFilters(true)}
+            className="md:hidden w-full border dark:border-gray-700 rounded-lg px-4 py-3 dark:bg-gray-800 dark:text-white text-left flex items-center justify-between"
           >
-            <option value="">All Categories</option>
-            {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-          </select>
-          <select
-            value={source}
-            onChange={(e) => setSource(e.target.value)}
-            className="border rounded-lg px-4 py-2"
-          >
-            <option value="">All Sources</option>
-            {sources.map(src => <option key={src} value={src}>{src}</option>)}
-          </select>
+            <span>{category || source ? `${category || 'All'} • ${source || 'All'}` : 'Filter Articles'}</span>
+            <span>⚙️</span>
+          </button>
+          <div className="hidden md:flex gap-4">
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="border dark:border-gray-700 rounded-lg px-4 py-2 dark:bg-gray-800 dark:text-white"
+            >
+              <option value="">All Categories</option>
+              {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+            </select>
+            <select
+              value={source}
+              onChange={(e) => setSource(e.target.value)}
+              className="border dark:border-gray-700 rounded-lg px-4 py-2 dark:bg-gray-800 dark:text-white"
+            >
+              <option value="">All Sources</option>
+              {sources.map(src => <option key={src} value={src}>{src}</option>)}
+            </select>
+          </div>
         </div>
+
+        {showFilters && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end md:hidden">
+            <div className="bg-white dark:bg-gray-800 w-full rounded-t-2xl p-6 space-y-4">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-bold dark:text-white">Filter Articles</h3>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => { setCategory(''); setSource(''); setShowFilters(false); }}
+                    className="text-sm text-blue-500 font-medium"
+                  >
+                    Clear All
+                  </button>
+                  <button onClick={() => setShowFilters(false)} className="text-2xl dark:text-white">×</button>
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2 dark:text-gray-300">Category</label>
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  <button
+                    onClick={() => { setCategory(''); setShowFilters(false); }}
+                    className={`w-full text-left px-4 py-3 rounded-lg border dark:border-gray-700 ${!category ? 'bg-blue-500 text-white' : 'dark:text-white'}`}
+                  >
+                    All Categories
+                  </button>
+                  {categories.map(cat => (
+                    <button
+                      key={cat}
+                      onClick={() => { setCategory(cat); setShowFilters(false); }}
+                      className={`w-full text-left px-4 py-3 rounded-lg border dark:border-gray-700 ${category === cat ? 'bg-blue-500 text-white' : 'dark:text-white'}`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2 dark:text-gray-300">Source</label>
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  <button
+                    onClick={() => { setSource(''); setShowFilters(false); }}
+                    className={`w-full text-left px-4 py-3 rounded-lg border dark:border-gray-700 ${!source ? 'bg-blue-500 text-white' : 'dark:text-white'}`}
+                  >
+                    All Sources
+                  </button>
+                  {sources.map(src => (
+                    <button
+                      key={src}
+                      onClick={() => { setSource(src); setShowFilters(false); }}
+                      className={`w-full text-left px-4 py-3 rounded-lg border dark:border-gray-700 ${source === src ? 'bg-blue-500 text-white' : 'dark:text-white'}`}
+                    >
+                      {src}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {loading && page === 1 ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">

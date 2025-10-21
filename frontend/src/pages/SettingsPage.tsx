@@ -65,42 +65,42 @@ export default function SettingsPage() {
   return (
     <DashboardLayout>
       <div>
-        <h2 className="text-3xl font-bold mb-6">Settings</h2>
+        <h2 className="text-3xl font-bold mb-6 dark:text-white">Settings</h2>
 
         {loading ? (
           <LoadingSpinner />
         ) : (
           <div className="space-y-6">
-            <div className="bg-white p-6 rounded-lg border">
-              <h3 className="text-xl font-semibold mb-4">Profile</h3>
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border dark:border-gray-700">
+              <h3 className="text-xl font-semibold mb-4 dark:text-white">Profile</h3>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Name</label>
+                  <label className="block text-sm font-medium mb-2 dark:text-gray-300">Name</label>
                   <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full border rounded-lg px-4 py-2"
+                    className="w-full border dark:border-gray-700 rounded-lg px-4 py-2 dark:bg-gray-900 dark:text-white"
                     disabled
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Email</label>
+                  <label className="block text-sm font-medium mb-2 dark:text-gray-300">Email</label>
                   <input
                     type="email"
                     value={user?.email}
-                    className="w-full border rounded-lg px-4 py-2 bg-gray-50"
+                    className="w-full border dark:border-gray-700 rounded-lg px-4 py-2 bg-gray-50 dark:bg-gray-900 dark:text-white"
                     disabled
                   />
                 </div>
               </div>
             </div>
 
-            <div className="bg-white p-6 rounded-lg border">
-              <h3 className="text-xl font-semibold mb-4">Feed Preferences</h3>
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border dark:border-gray-700">
+              <h3 className="text-xl font-semibold mb-4 dark:text-white">Feed Preferences</h3>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Sources</label>
+                  <label className="block text-sm font-medium mb-2 dark:text-gray-300">Sources</label>
                   <div className="flex flex-wrap gap-2">
                     {sources.map(source => (
                       <button
@@ -109,7 +109,7 @@ export default function SettingsPage() {
                         className={`px-4 py-2 rounded-lg border transition-colors ${
                           feedSources.includes(source)
                             ? 'bg-blue-500 text-white border-blue-500'
-                            : 'bg-white text-gray-700 hover:bg-gray-50'
+                            : 'bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-700'
                         }`}
                       >
                         {source}
@@ -118,7 +118,7 @@ export default function SettingsPage() {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Content Types</label>
+                  <label className="block text-sm font-medium mb-2 dark:text-gray-300">Content Types</label>
                   <div className="flex flex-wrap gap-2">
                     {types.map(type => (
                       <button
@@ -127,7 +127,7 @@ export default function SettingsPage() {
                         className={`px-4 py-2 rounded-lg border transition-colors ${
                           feedTypes.includes(type)
                             ? 'bg-blue-500 text-white border-blue-500'
-                            : 'bg-white text-gray-700 hover:bg-gray-50'
+                            : 'bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-700'
                         }`}
                       >
                         {type.toUpperCase()}
@@ -148,8 +148,8 @@ export default function SettingsPage() {
               </div>
             </div>
 
-            <div className="bg-white p-6 rounded-lg border">
-              <h3 className="text-xl font-semibold mb-4 text-red-600">Danger Zone</h3>
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border dark:border-gray-700">
+              <h3 className="text-xl font-semibold mb-4 text-red-600 dark:text-red-400">Danger Zone</h3>
               <div className="flex gap-3">
                 <button
                   onClick={logout}

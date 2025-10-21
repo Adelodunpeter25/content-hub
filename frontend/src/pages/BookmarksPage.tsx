@@ -42,7 +42,7 @@ export default function BookmarksPage() {
   return (
     <DashboardLayout>
       <div>
-        <h2 className="text-3xl font-bold mb-6">Your Bookmarks</h2>
+        <h2 className="text-3xl font-bold mb-6 dark:text-white">Your Bookmarks</h2>
 
         {loading ? (
           <LoadingSpinner />
@@ -56,9 +56,9 @@ export default function BookmarksPage() {
           <>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {bookmarks.map(bookmark => (
-                <div key={bookmark.id} className="bg-white border rounded-lg p-5 hover:shadow-lg transition-shadow">
+                <div key={bookmark.id} className="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg p-5 hover:shadow-lg transition-shadow">
                   <div className="flex items-start justify-between mb-3">
-                    <span className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700">{bookmark.source}</span>
+                    <span className="text-xs px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300">{bookmark.source}</span>
                     <button
                       onClick={() => setBookmarkToRemove(bookmark.id)}
                       disabled={removingId === bookmark.id}
@@ -71,9 +71,9 @@ export default function BookmarksPage() {
                       Remove
                     </button>
                   </div>
-                  <h3 className="font-semibold text-lg mb-3 line-clamp-3">{bookmark.title}</h3>
+                  <h3 className="font-semibold text-lg mb-3 line-clamp-3 dark:text-white">{bookmark.title}</h3>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
                       {new Date(bookmark.created_at).toLocaleDateString()}
                     </span>
                     <a
@@ -92,15 +92,15 @@ export default function BookmarksPage() {
               <button
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="px-4 py-2 border rounded-lg disabled:opacity-50"
+                className="px-4 py-2 border dark:border-gray-700 rounded-lg disabled:opacity-50 dark:text-white dark:hover:bg-gray-800"
               >
                 Previous
               </button>
-              <span className="px-4 py-2">Page {page}</span>
+              <span className="px-4 py-2 dark:text-white">Page {page}</span>
               <button
                 onClick={() => setPage(p => p + 1)}
                 disabled={bookmarks.length < 20}
-                className="px-4 py-2 border rounded-lg disabled:opacity-50"
+                className="px-4 py-2 border dark:border-gray-700 rounded-lg disabled:opacity-50 dark:text-white dark:hover:bg-gray-800"
               >
                 Next
               </button>

@@ -26,7 +26,7 @@ export default function ArticleCard({ article, onBookmark, onRead, onPreview, is
   };
 
   return (
-    <div className={`border rounded-lg p-4 hover:shadow-lg transition-shadow ${isRead ? 'opacity-60' : ''}`}>
+    <div className={`border dark:border-gray-700 rounded-lg p-4 hover:shadow-lg transition-shadow bg-white dark:bg-gray-800 ${isRead ? 'opacity-60' : ''}`}>
       <div onClick={onPreview} className="cursor-pointer">
       <div className="flex items-center gap-2 mb-2">
         {article.categories && article.categories.length > 0 && (
@@ -34,22 +34,22 @@ export default function ArticleCard({ article, onBookmark, onRead, onPreview, is
             {article.categories[0]}
           </span>
         )}
-        <span className="text-xs text-gray-500">{article.source}</span>
+        <span className="text-xs text-gray-500 dark:text-gray-400">{article.source}</span>
       </div>
-      <h3 className="font-semibold text-lg mb-2 line-clamp-2">{article.title}</h3>
+      <h3 className="font-semibold text-lg mb-2 line-clamp-2 dark:text-white">{article.title}</h3>
       {article.summary && (
-        <p className="text-gray-600 text-sm mb-4 line-clamp-3">{article.summary}</p>
+        <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-3">{article.summary}</p>
       )}
       </div>
       <div className="flex items-center justify-between">
-        <span className="text-xs text-gray-500">
+        <span className="text-xs text-gray-500 dark:text-gray-400">
           {article.published && new Date(article.published).toLocaleDateString()}
         </span>
         <div className="flex gap-2">
           {onBookmark && (
             <button
               onClick={() => onBookmark(article.link, article.title, article.source)}
-              className={`p-2 rounded hover:bg-gray-100 ${isBookmarked ? 'text-yellow-500' : 'text-gray-400'}`}
+              className={`p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${isBookmarked ? 'text-yellow-500' : 'text-gray-400 dark:text-gray-500'}`}
               title={isBookmarked ? 'Remove bookmark' : 'Bookmark'}
             >
               {isBookmarked ? '★' : '☆'}
@@ -58,7 +58,7 @@ export default function ArticleCard({ article, onBookmark, onRead, onPreview, is
           {onRead && (
             <button
               onClick={() => onRead(article.link)}
-              className="text-sm text-blue-500 hover:underline"
+              className="text-sm text-blue-500 dark:text-blue-400 hover:underline"
             >
               Read
             </button>
