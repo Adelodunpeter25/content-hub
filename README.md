@@ -1,14 +1,14 @@
-# Content Hub API
+# Content Hub
 
-A personal feed aggregator that collects content from RSS feeds, web scraping, and social media with intelligent recommendations and user personalization.
+A full-stack personal feed aggregator that collects content from RSS feeds, web scraping, and social media with intelligent recommendations and user personalization.
 
 ## Features
 
 ### 🔐 Authentication
 - Email/password signup and login
-- JWT access tokens (60 min) + refresh tokens (30 days)
+- JWT access tokens
 - Google OAuth integration
-- Password reset via email (Resend)
+- Password reset via email
 
 ### 📰 Content Aggregation
 - **RSS Feeds**: TechCrunch, The Verge, Ars Technica
@@ -16,7 +16,7 @@ A personal feed aggregator that collects content from RSS feeds, web scraping, a
 - **Social Media**: Reddit (r/technology, r/programming) and YouTube
 - **Auto-categorization**: AI, Security, Cloud, Mobile, Web, Hardware, Gaming, Startup, Programming
 - **Background Jobs**: Automatic feed refresh every 15 minutes
-- **Redis Caching**: 100x faster response times (~50ms vs 5000ms)
+- **Redis Caching**
 
 ### 🎯 Personalization
 - User feed preferences (sources and types)
@@ -37,6 +37,7 @@ A personal feed aggregator that collects content from RSS feeds, web scraping, a
 
 ## Tech Stack
 
+### Backend
 - **Framework**: Flask 3.1
 - **Database**: PostgreSQL (Supabase)
 - **Cache**: Redis/Valkey
@@ -45,18 +46,26 @@ A personal feed aggregator that collects content from RSS feeds, web scraping, a
 - **Validation**: Pydantic
 - **Scheduler**: APScheduler
 
+### Frontend
+- **Framework**: React 19 + TypeScript
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS
+- **Routing**: React Router
+- **State Management**: Context API
+
 ## Quick Start
 
 ### Prerequisites
 - Python 3.9+
+- Node.js 18+
 - PostgreSQL (Supabase account)
 - Redis/Valkey instance
 - Resend API key (for emails)
 - Google OAuth credentials (optional)
 
-### Installation
+### Backend Setup
 
-1. **Clone the repository**
+1. **Navigate to backend**
 ```bash
 cd content-hub/backend
 ```
@@ -78,64 +87,70 @@ cp .env.example .env
 uv run python -m app.scripts.init_db
 ```
 
-5. **Run the application**
+5. **Run the backend**
 ```bash
 uv run python run.py
 ```
 
 API will be available at `http://localhost:5000`
 
-## Configuration
+### Frontend Setup
 
-### Environment Variables
-
+1. **Navigate to frontend**
 ```bash
-# Database
-DATABASE_URL=postgresql://user:pass@host:5432/db
-
-# Redis Cache
-REDIS_URL=redis://localhost:6379
-CACHE_TTL=900  # 15 minutes
-
-# JWT
-JWT_SECRET_KEY=your-secret-key
-JWT_ACCESS_TOKEN_MINUTES=60
-JWT_REFRESH_TOKEN_DAYS=30
-
-# Email (Resend)
-RESEND_API_KEY=re_your_api_key
-RESEND_FROM_EMAIL=noreply@yourdomain.com
-FRONTEND_URL=http://localhost:3000
-
-# Google OAuth (optional)
-GOOGLE_CLIENT_ID=your-client-id
-GOOGLE_CLIENT_SECRET=your-client-secret
-GOOGLE_REDIRECT_URI=http://localhost:5000/api/auth/google/callback
-
-# Content Sources
-RSS_FEEDS=https://techcrunch.com/feed/,https://www.theverge.com/rss/index.xml
-SCRAPE_URLS=https://www.techmeme.com
-REDDIT_SUBREDDITS=technology,programming,python
-YOUTUBE_CHANNELS=channel_id_1,channel_id_2
+cd content-hub/frontend
 ```
+
+2. **Install dependencies**
+```bash
+npm install
+```
+
+3. **Configure environment**
+```bash
+cp .env.example .env
+# Edit VITE_API_URL if needed (default: http://localhost:5000/api)
+```
+
+4. **Run the frontend**
+```bash
+npm run dev
+```
+
+App will be available at `http://localhost:5173`
+
 ## Architecture
 
 ```
-content-hub/backend/
-├── app/
-│   ├── core/           # Config, auth, cache, scheduler
-│   ├── models/         # SQLAlchemy models
-│   ├── routes/         # API endpoints
-│   ├── schemas/        # Pydantic schemas
-│   ├── services/       # Business logic
-│   ├── utils/          # Helpers (RSS, scraping, etc.)
-│   ├── scripts/        # DB scripts
-│   ├── tests/          # Unit tests
-│   ├── main.py         # Flask app
-│   └── swagger.json    # API docs
-├── logs/               # Application logs
-├── .env                # Environment config
-└── run.py              # Entry point
+content-hub/
+├── backend/
+│   ├── app/
+│   │   ├── core/           # Config, auth, cache, scheduler
+│   │   ├── models/         # SQLAlchemy models
+│   │   ├── routes/         # API endpoints
+│   │   ├── schemas/        # Pydantic schemas
+│   │   ├── services/       # Business logic
+│   │   ├── utils/          # Helpers (RSS, scraping, etc.)
+│   │   ├── scripts/        # DB scripts
+│   │   ├── tests/          # Unit tests
+│   │   ├── main.py         # Flask app
+│   │   └── swagger.json    # API docs
+│   ├── logs/               # Application logs
+│   ├── .env                # Environment config
+│   └── run.py              # Entry point
+│
+└── frontend/
+    ├── src/
+    │   ├── components/     # Reusable components
+    │   ├── context/        # Global state handlers
+    │   ├── hooks/          # Custom hooks (API calls)
+    │   ├── pages/          # Page components
+    │   ├── services/       # API service
+    │   ├── types/          # TypeScript types
+    │   ├── App.tsx         # Main app
+    │   └── main.tsx        # Entry point
+    ├── .env                # Environment config
+    └── package.json        # Dependencies
 ```
 
 ## Database Management
