@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import { useFeeds } from '../hooks/useFeeds';
 import { Link } from 'react-router-dom'
 
 export default function FeedsPage() {
@@ -10,24 +9,29 @@ export default function FeedsPage() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [previewArticle, setPreviewArticle] = useState<any>(null);
   
-  const { getPersonalizedFeed } = useFeeds();
-
   useEffect(() => {
     loadFeeds();
   }, [selectedCategory, page]);
 
   const loadFeeds = async () => {
     setLoading(true);
-    const result = await getPersonalizedFeed({ 
-      category: selectedCategory, 
-      page, 
-      limit: 20 
-    });
-    if (result) {
-      setData(result);
-      setError(null);
-    } else {
+    try {
+      const query = new URLSearchParams();
+      if (selectedCategory) query.append('category', selectedCategory);
+      query.append('page', page.toString());
+      query.append('per_page', '20');
+      
+      const response = await fetch(`http://localhost:5000/api/feeds?${query}`);
+      const result = await response.json();
+      if (response.ok) {
+        setData(result);
+        setError(null);
+      } else {
+        setError('Failed to load feeds');
+      }
+    } catch (err) {
       setError('Failed to load feeds');
     }
     setLoading(false);
@@ -92,7 +96,11 @@ export default function FeedsPage() {
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
                 {data.articles.map((article: any, index: number) => (
-                  <div key={index} className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-cyan-400 hover:shadow-lg transition-all">
+                  <div 
+                    key={index} 
+                    className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-cyan-400 hover:shadow-lg transition-all cursor-pointer"
+                    onClick={() => setPreviewArticle(article)}
+                  >
                     <div className="flex items-start justify-between mb-3">
                       <span className="text-xs font-semibold text-cyan-600 bg-cyan-50 px-3 py-1 rounded-full">
                         {article.source}
@@ -106,20 +114,15 @@ export default function FeedsPage() {
                       <p className="text-sm text-gray-600 mb-4 line-clamp-3">{article.description}</p>
                     )}
                     <div className="flex items-center justify-between">
-                      <a 
-                        href={article.url} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-cyan-600 hover:text-cyan-700 font-medium text-sm inline-flex items-center gap-1 hover:gap-2 transition-all"
+                      <button
                         onClick={(e) => {
-                          if (!article.url) {
-                            e.preventDefault();
-                            alert('Article URL not available');
-                          }
+                          e.stopPropagation();
+                          setPreviewArticle(article);
                         }}
+                        className="text-cyan-600 hover:text-cyan-700 font-medium text-sm inline-flex items-center gap-1 hover:gap-2 transition-all"
                       >
-                        Read More <span>→</span>
-                      </a>
+                        View Details <span>→</span>
+                      </button>
                       {article.published_at && (
                         <span className="text-xs text-gray-400">
                           {new Date(article.published_at).toLocaleDateString()}
@@ -167,6 +170,59 @@ export default function FeedsPage() {
       </section>
       
       <Footer />
+
+      {/* Article Preview Modal */}
+      {previewArticle && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" onClick={() => setPreviewArticle(null)}>
+          <div className="bg-white rounded-lg w-full max-w-3xl max-h-[90vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
+            <div className="p-6 border-b flex items-start justify-between">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-2">
+                  {previewArticle.categories && previewArticle.categories.length > 0 && (
+                    <span className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700">
+                      {previewArticle.categories[0]}
+                    </span>
+                  )}
+                  <span className="text-xs text-gray-500">{previewArticle.source}</span>
+                </div>
+                <h2 className="text-2xl font-bold">{previewArticle.title}</h2>
+              </div>
+              <button onClick={() => setPreviewArticle(null)} className="text-gray-500 hover:text-gray-700 text-2xl ml-4">
+                ×
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-6">
+              {previewArticle.summary && (
+                <p className="text-gray-700 leading-relaxed mb-4">{previewArticle.summary}</p>
+              )}
+              {previewArticle.description && (
+                <p className="text-gray-700 leading-relaxed mb-4">{previewArticle.description}</p>
+              )}
+              <div className="text-sm text-gray-500">
+                Published: {previewArticle.published && new Date(previewArticle.published).toLocaleDateString()}
+              </div>
+            </div>
+
+            <div className="p-6 border-t flex items-center justify-between">
+              <Link
+                to="/signup"
+                className="text-blue-500 hover:underline text-sm"
+              >
+                Sign up to bookmark →
+              </Link>
+              <a
+                href={previewArticle.link || previewArticle.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
+              >
+                Read Full Article →
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
