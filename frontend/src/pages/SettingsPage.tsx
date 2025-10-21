@@ -5,17 +5,20 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import { useAuthContext } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { usePreferences } from '../hooks/usePreferences';
+import { useAccount } from '../hooks/useAccount';
 
 export default function SettingsPage() {
   const navigate = useNavigate();
   const { user, logout } = useAuthContext();
   const { showToast } = useToast();
   const { getPreferences, updatePreferences } = usePreferences();
+  const { deleteAccount } = useAccount();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [name, setName] = useState('');
   const [feedSources, setFeedSources] = useState<string[]>([]);
   const [feedTypes, setFeedTypes] = useState<string[]>([]);
+  const [deleting, setDeleting] = useState(false);
 
   const sources = ['TechCrunch', 'The Verge', 'Ars Technica', 'Techmeme', 'Reddit', 'YouTube'];
   const types = ['rss', 'scrape', 'social'];
@@ -145,12 +148,36 @@ export default function SettingsPage() {
 
             <div className="bg-white p-6 rounded-lg border">
               <h3 className="text-xl font-semibold mb-4 text-red-600">Danger Zone</h3>
-              <button
-                onClick={logout}
-                className="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600"
-              >
-                Logout
-              </button>
+              <div className="flex gap-3">
+                <button
+                  onClick={logout}
+                  className="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600"
+                >
+                  Logout
+                </button>
+                <button
+                  onClick={async () => {
+                    if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+                      setDeleting(true);
+                      const success = await deleteAccount();
+                      setDeleting(false);
+                      if (success) {
+                        showToast('Account deleted successfully', 'success');
+                        logout();
+                      } else {
+                        showToast('Failed to delete account', 'error');
+                      }
+                    }
+                  }}
+                  disabled={deleting}
+                  className="bg-red-700 text-white px-6 py-2 rounded-lg hover:bg-red-800 disabled:opacity-50 flex items-center gap-2"
+                >
+                  {deleting && (
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  )}
+                  {deleting ? 'Deleting...' : 'Delete Account'}
+                </button>
+              </div>
             </div>
           </div>
         )}
