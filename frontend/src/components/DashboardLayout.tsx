@@ -157,7 +157,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </main>
       </div>
 
-      {!location.pathname.includes('/bookmarks') && !location.pathname.includes('/stats') && !location.pathname.includes('/trending') && (
+      {!location.pathname.includes('/bookmarks') && !location.pathname.includes('/stats') && !location.pathname.includes('/trending') && !location.pathname.includes('/history') && (
         <footer className="bg-white dark:bg-gray-800 border-t dark:border-gray-700 py-4 text-center text-sm text-gray-600 dark:text-gray-400">
           Content Hub © 2025 | Built by Peter Adelodun
         </footer>
