@@ -1,40 +1,72 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '../context/ToastContext';
 import { useAuthContext } from '../context/AuthContext';
 import { useFeeds } from '../hooks/useFeeds';
 import { useBookmarks } from '../hooks/useBookmarks';
 import { useReadHistory } from '../hooks/useReadHistory';
 import ArticleCard from '../components/ArticleCard';
-import LoadingSpinner from '../components/LoadingSpinner';
+
 import EmptyState from '../components/EmptyState';
 import type { Article } from '../types/feed';
 
 import DashboardLayout from '../components/DashboardLayout';
+import ArticlePreviewModal from '../components/ArticlePreviewModal';
+import SkeletonCard from '../components/SkeletonCard';
 
 export default function FeedPage() {
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [category, setCategory] = useState('');
   const [source, setSource] = useState('');
   const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    setPage(1);
+    setArticles([]);
+  }, [category, source]);
   const [articles, setArticles] = useState<Article[]>([]);
   const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
   const [readIds, setReadIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
+  const [hasMore, setHasMore] = useState(true);
+  const [previewArticle, setPreviewArticle] = useState<Article | null>(null);
+  const observer = useRef<IntersectionObserver>();
+  const lastArticleRef = useCallback((node: HTMLDivElement) => {
+    if (loading) return;
+    if (observer.current) observer.current.disconnect();
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore) {
+        setPage(p => p + 1);
+      }
+    });
+    if (node) observer.current.observe(node);
+  }, [loading, hasMore]);
 
   const { getPersonalizedFeed } = useFeeds();
   const { addBookmark, removeBookmark, getBookmarks } = useBookmarks();
   const { markAsRead, getReadHistory } = useReadHistory();
 
   useEffect(() => {
-    loadFeed();
     loadBookmarks();
     loadReadHistory();
+  }, []);
+
+  useEffect(() => {
+    loadFeed();
   }, [category, source, page]);
 
   const loadFeed = async () => {
     setLoading(true);
     const data = await getPersonalizedFeed({ category, source, page, limit: 20 });
-    if (data) setArticles(data.articles);
+    if (data) {
+      if (page === 1) {
+        setArticles(data.articles);
+      } else {
+        setArticles(prev => [...prev, ...data.articles]);
+      }
+      setHasMore(data.articles.length === 20);
+    }
     setLoading(false);
   };
 
@@ -56,9 +88,11 @@ export default function FeedPage() {
         next.delete(url);
         return next;
       });
+      showToast('Bookmark removed', 'success');
     } else {
       await addBookmark(url, title, source);
       setBookmarkedIds(prev => new Set(prev).add(url));
+      showToast('Article bookmarked', 'success');
     }
   };
 
@@ -66,6 +100,7 @@ export default function FeedPage() {
     await markAsRead(url);
     setReadIds(prev => new Set(prev).add(url));
     window.open(url, '_blank');
+    showToast('Marked as read', 'info');
   };
 
   const categories = ['AI', 'Security', 'Cloud', 'Mobile', 'Web', 'Hardware', 'Gaming', 'Startup', 'Programming'];
@@ -77,7 +112,7 @@ export default function FeedPage() {
         <div className="mb-6 flex gap-4">
           <select
             value={category}
-            onChange={(e) => { setCategory(e.target.value); setPage(1); }}
+            onChange={(e) => setCategory(e.target.value)}
             className="border rounded-lg px-4 py-2"
           >
             <option value="">All Categories</option>
@@ -85,7 +120,7 @@ export default function FeedPage() {
           </select>
           <select
             value={source}
-            onChange={(e) => { setSource(e.target.value); setPage(1); }}
+            onChange={(e) => setSource(e.target.value)}
             className="border rounded-lg px-4 py-2"
           >
             <option value="">All Sources</option>
@@ -93,8 +128,10 @@ export default function FeedPage() {
           </select>
         </div>
 
-        {loading ? (
-          <LoadingSpinner />
+        {loading && page === 1 ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => <SkeletonCard key={i} />)}
+          </div>
         ) : articles.length === 0 ? (
           <EmptyState
             title="No articles found"
@@ -103,36 +140,43 @@ export default function FeedPage() {
         ) : (
           <>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {articles.map(article => (
-                <ArticleCard
-                  key={article.link}
-                  article={article}
-                  onBookmark={handleBookmark}
-                  onRead={handleRead}
-                  isBookmarked={bookmarkedIds.has(article.link)}
-                  isRead={readIds.has(article.link)}
-                />
+              {articles.map((article, index) => (
+                <div key={article.link} ref={index === articles.length - 1 ? lastArticleRef : null}>
+                  <ArticleCard
+                    article={article}
+                    onBookmark={handleBookmark}
+                    onRead={handleRead}
+                    onPreview={() => setPreviewArticle(article)}
+                    isBookmarked={bookmarkedIds.has(article.link)}
+                    isRead={readIds.has(article.link)}
+                  />
+                </div>
               ))}
             </div>
-            <div className="flex justify-center gap-4 mt-8">
-              <button
-                onClick={() => setPage(p => Math.max(1, p - 1))}
-                disabled={page === 1}
-                className="px-4 py-2 border rounded-lg disabled:opacity-50"
-              >
-                Previous
-              </button>
-              <span className="px-4 py-2">Page {page}</span>
-              <button
-                onClick={() => setPage(p => p + 1)}
-                disabled={articles.length < 20}
-                className="px-4 py-2 border rounded-lg disabled:opacity-50"
-              >
-                Next
-              </button>
-            </div>
+            {loading && (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+                {[...Array(3)].map((_, i) => <SkeletonCard key={i} />)}
+              </div>
+            )}
           </>
         )}
+
+        <ArticlePreviewModal
+          article={previewArticle}
+          isOpen={!!previewArticle}
+          onClose={() => setPreviewArticle(null)}
+          onBookmark={() => {
+            if (previewArticle) {
+              handleBookmark(previewArticle.link, previewArticle.title, previewArticle.source);
+            }
+          }}
+          onRead={() => {
+            if (previewArticle) {
+              handleRead(previewArticle.link);
+            }
+          }}
+          isBookmarked={previewArticle ? bookmarkedIds.has(previewArticle.link) : false}
+        />
       </div>
     </DashboardLayout>
   );

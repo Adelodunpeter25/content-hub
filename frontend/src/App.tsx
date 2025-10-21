@@ -10,6 +10,7 @@ function ScrollToTop() {
   return null;
 }
 import { AuthProvider } from './context/AuthContext';
+import { ToastProvider } from './context/ToastContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import LandingPage from './pages/LandingPage';
 import ContactPage from './pages/ContactPage';
@@ -28,12 +29,16 @@ import FeedPage from './pages/FeedPage';
 import BookmarksPage from './pages/BookmarksPage';
 import SettingsPage from './pages/SettingsPage';
 import StatsPage from './pages/StatsPage';
+import SearchPage from './pages/SearchPage';
+import TrendingPage from './pages/TrendingPage';
+import ReadHistoryPage from './pages/ReadHistoryPage';
 
 function App() {
   return (
     <BrowserRouter>
       <ScrollToTop />
-      <AuthProvider>
+      <ToastProvider>
+        <AuthProvider>
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/feeds" element={<FeedsPage />} />
@@ -71,9 +76,25 @@ function App() {
               <StatsPage />
             </ProtectedRoute>
           } />
+          <Route path="/search" element={
+            <ProtectedRoute>
+              <SearchPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/trending" element={
+            <ProtectedRoute>
+              <TrendingPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/history" element={
+            <ProtectedRoute>
+              <ReadHistoryPage />
+            </ProtectedRoute>
+          } />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
-      </AuthProvider>
+        </AuthProvider>
+      </ToastProvider>
     </BrowserRouter>
   );
 }

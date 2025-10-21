@@ -25,6 +25,18 @@ export default function StatsPage() {
 
         {loading ? (
           <LoadingSpinner />
+        ) : !stats || stats.total_reads === 0 ? (
+          <div className="bg-white p-12 rounded-lg border text-center">
+            <div className="text-6xl mb-4">📊</div>
+            <h3 className="text-xl font-semibold mb-2">No Reading Stats Yet</h3>
+            <p className="text-gray-600 mb-6">Start reading articles to see your statistics here.</p>
+            <button
+              onClick={() => window.location.href = '/feed'}
+              className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
+            >
+              Browse Feed
+            </button>
+          </div>
         ) : (
           <div className="space-y-6">
             <div className="grid md:grid-cols-3 gap-6">

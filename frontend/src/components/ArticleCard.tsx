@@ -4,11 +4,12 @@ interface ArticleCardProps {
   article: Article;
   onBookmark?: (url: string, title: string, source: string) => void;
   onRead?: (url: string) => void;
+  onPreview?: () => void;
   isBookmarked?: boolean;
   isRead?: boolean;
 }
 
-export default function ArticleCard({ article, onBookmark, onRead, isBookmarked, isRead }: ArticleCardProps) {
+export default function ArticleCard({ article, onBookmark, onRead, onPreview, isBookmarked, isRead }: ArticleCardProps) {
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
       AI: 'bg-purple-100 text-purple-700',
@@ -26,6 +27,7 @@ export default function ArticleCard({ article, onBookmark, onRead, isBookmarked,
 
   return (
     <div className={`border rounded-lg p-4 hover:shadow-lg transition-shadow ${isRead ? 'opacity-60' : ''}`}>
+      <div onClick={onPreview} className="cursor-pointer">
       <div className="flex items-center gap-2 mb-2">
         {article.categories && article.categories.length > 0 && (
           <span className={`text-xs px-2 py-1 rounded-full ${getCategoryColor(article.categories[0])}`}>
@@ -38,6 +40,7 @@ export default function ArticleCard({ article, onBookmark, onRead, isBookmarked,
       {article.summary && (
         <p className="text-gray-600 text-sm mb-4 line-clamp-3">{article.summary}</p>
       )}
+      </div>
       <div className="flex items-center justify-between">
         <span className="text-xs text-gray-500">
           {new Date(article.published).toLocaleDateString()}

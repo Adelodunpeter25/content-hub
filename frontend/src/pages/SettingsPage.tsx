@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { useAuthContext } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { usePreferences } from '../hooks/usePreferences';
 
 export default function SettingsPage() {
   const navigate = useNavigate();
   const { user, logout } = useAuthContext();
+  const { showToast } = useToast();
   const { getPreferences, updatePreferences } = usePreferences();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -34,8 +36,13 @@ export default function SettingsPage() {
 
   const handleSave = async () => {
     setSaving(true);
-    await updatePreferences({ feed_sources: feedSources, feed_types: feedTypes });
+    const result = await updatePreferences({ feed_sources: feedSources, feed_types: feedTypes });
     setSaving(false);
+    if (result) {
+      showToast('Preferences saved successfully', 'success');
+    } else {
+      showToast('Failed to save preferences', 'error');
+    }
   };
 
   const toggleSource = (source: string) => {
