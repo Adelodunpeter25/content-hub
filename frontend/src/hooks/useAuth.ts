@@ -62,5 +62,11 @@ export const useAuth = () => {
     return response;
   };
 
-  return { signup, login, logout, refreshToken, loading, error };
+  const loginWithGoogle = () => {
+    // Google OAuth requires full page redirect, not API call
+    const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+    window.location.href = `${baseUrl}/auth/google`;
+  };
+
+  return { signup, login, logout, refreshToken, loginWithGoogle, loading, error };
 };

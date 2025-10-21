@@ -8,8 +8,13 @@ export default function Navbar() {
     <>
       <nav className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-gray-200 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <Link to="/" className="text-2xl font-bold bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent">
-            Content Hub
+          <Link to="/" className="flex items-center gap-2">
+            <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg">
+              <span className="text-lg font-bold text-white">CH</span>
+            </div>
+            <span className="text-2xl font-bold bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent">
+              Content Hub
+            </span>
           </Link>
           
           {/* Desktop Menu - Centered */}
@@ -20,12 +25,12 @@ export default function Navbar() {
           </div>
           
           <div className="hidden md:flex gap-4">
-            <button className="px-6 py-2 text-gray-700 hover:text-gray-900">
+            <Link to="/login" className="px-6 py-2 text-gray-700 hover:text-gray-900">
               Login
-            </button>
-            <button className="px-6 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg hover:shadow-lg transition-all">
+            </Link>
+            <Link to="/signup" className="px-6 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg hover:shadow-lg transition-all">
               Sign Up
-            </button>
+            </Link>
           </div>
 
           {/* Mobile Hamburger */}
@@ -67,12 +72,12 @@ export default function Navbar() {
                 <Link to="/contact" className="px-6 py-3 text-gray-700 hover:bg-gray-100 rounded-lg text-center font-medium">
                   Contact
                 </Link>
-                <button className="px-6 py-3 bg-white border-2 border-gray-300 text-gray-700 rounded-lg hover:border-gray-400 transition-all">
+                <Link to="/login" className="px-6 py-3 bg-white border-2 border-gray-300 text-gray-700 rounded-lg hover:border-gray-400 transition-all text-center">
                   Login
-                </button>
-                <button className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg">
+                </Link>
+                <Link to="/signup" className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg text-center">
                   Sign Up
-                </button>
+                </Link>
               </div>
             </div>
           </div>

@@ -2,6 +2,7 @@ import { useState} from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useFeeds } from '../hooks/useFeeds';
+import { Link } from 'react-router-dom'
 
 export default function FeedsPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('');
@@ -137,9 +138,9 @@ export default function FeedsPage() {
               <div className="mt-16 p-8 bg-gradient-to-r from-cyan-50 to-blue-50 rounded-2xl text-center border-2 border-cyan-200">
                 <h3 className="text-2xl font-bold mb-3 text-gray-900">Want personalized recommendations?</h3>
                 <p className="text-gray-600 mb-6">Sign up to bookmark articles, track your reading, and get AI-powered suggestions</p>
-                <button className="px-8 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold rounded-lg hover:shadow-xl hover:scale-105 transition-all">
+                <Link to="/signup" className="px-8 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold rounded-lg hover:shadow-xl hover:scale-105 transition-all inline-block">
                   Sign Up Free →
-                </button>
+                </Link>
               </div>
             </>
           )}

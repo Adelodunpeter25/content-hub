@@ -55,9 +55,9 @@ export default function LandingPage() {
             Get AI-powered recommendations tailored just for you.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="px-10 py-5 bg-gradient-to-r from-cyan-500 to-blue-500 text-white text-xl font-bold rounded-xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all">
+            <Link to="/signup" className="px-10 py-5 bg-gradient-to-r from-cyan-500 to-blue-500 text-white text-xl font-bold rounded-xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all text-center">
               Get Started Free →
-            </button>
+            </Link>
             <Link to="/feeds" className="px-10 py-5 bg-white border-2 border-gray-300 text-gray-700 text-xl font-bold rounded-xl hover:border-gray-400 hover:shadow-lg transition-all text-center">
               Explore Feeds
             </Link>
@@ -149,9 +149,9 @@ export default function LandingPage() {
             <br />
             <span className="bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent">Content Experience?</span>
           </h2>
-          <button className="px-10 py-5 bg-gradient-to-r from-cyan-500 to-blue-500 text-white text-xl font-bold rounded-xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all mt-2">
+          <Link to="/signup" className="px-10 py-5 bg-gradient-to-r from-cyan-500 to-blue-500 text-white text-xl font-bold rounded-xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all mt-2 inline-block">
             Start Free Today →
-          </button>
+          </Link>
           <p className="text-gray-500 text-sm mt-6">No credit card required • Free forever</p>
         </div>
       </section>
