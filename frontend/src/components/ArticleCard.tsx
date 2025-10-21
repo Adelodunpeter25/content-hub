@@ -43,7 +43,7 @@ export default function ArticleCard({ article, onBookmark, onRead, onPreview, is
       </div>
       <div className="flex items-center justify-between">
         <span className="text-xs text-gray-500">
-          {new Date(article.published).toLocaleDateString()}
+          {article.published && new Date(article.published).toLocaleDateString()}
         </span>
         <div className="flex gap-2">
           {onBookmark && (

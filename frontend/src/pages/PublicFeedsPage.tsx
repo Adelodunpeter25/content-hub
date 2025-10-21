@@ -1,4 +1,4 @@
-import { useState} from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useFeeds } from '../hooks/useFeeds';
@@ -7,12 +7,31 @@ import { Link } from 'react-router-dom'
 export default function FeedsPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [page, setPage] = useState(1);
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   
-  const { data, loading, error } = useFeeds({ 
-    category: selectedCategory, 
-    page, 
-    per_page: 20 
-  });
+  const { getPersonalizedFeed } = useFeeds();
+
+  useEffect(() => {
+    loadFeeds();
+  }, [selectedCategory, page]);
+
+  const loadFeeds = async () => {
+    setLoading(true);
+    const result = await getPersonalizedFeed({ 
+      category: selectedCategory, 
+      page, 
+      limit: 20 
+    });
+    if (result) {
+      setData(result);
+      setError(null);
+    } else {
+      setError('Failed to load feeds');
+    }
+    setLoading(false);
+  };
 
   const categories = ['AI', 'Security', 'Cloud', 'Mobile', 'Web', 'Hardware', 'Gaming', 'Startup', 'Programming'];
 
@@ -72,7 +91,7 @@ export default function FeedsPage() {
           {data && data.articles && (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-                {data.articles.map((article, index) => (
+                {data.articles.map((article: any, index: number) => (
                   <div key={index} className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-cyan-400 hover:shadow-lg transition-all">
                     <div className="flex items-start justify-between mb-3">
                       <span className="text-xs font-semibold text-cyan-600 bg-cyan-50 px-3 py-1 rounded-full">

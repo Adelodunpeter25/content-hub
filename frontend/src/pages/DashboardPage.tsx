@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuthContext } from '../context/AuthContext';
 import { useFeeds } from '../hooks/useFeeds';
 import DashboardLayout from '../components/DashboardLayout';
-import ArticleCard from '../components/ArticleCard';
+
 import LoadingSpinner from '../components/LoadingSpinner';
 import type { Article } from '../types/feed';
 
@@ -45,9 +45,9 @@ export default function DashboardPage() {
               <LoadingSpinner />
             ) : (
               <div className="space-y-4">
-                {articles.slice(0, 3).map(article => (
-                  <div key={article.id} className="bg-white p-4 rounded-lg border">
-                    <span className="text-xs text-gray-500">{article.category} • {article.source}</span>
+                {articles.slice(0, 3).map((article, idx) => (
+                  <div key={idx} className="bg-white p-4 rounded-lg border">
+                    <span className="text-xs text-gray-500">{article.categories?.[0] || 'General'} • {article.source}</span>
                     <h3 className="font-semibold mt-1">{article.title}</h3>
                     <p className="text-sm text-gray-600 mt-2 line-clamp-2">{article.description}</p>
                   </div>

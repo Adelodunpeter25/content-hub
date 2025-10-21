@@ -44,7 +44,7 @@ export default function ArticlePreviewModal({
             <p className="text-gray-700 leading-relaxed mb-4">{article.summary}</p>
           )}
           <div className="text-sm text-gray-500">
-            Published: {new Date(article.published).toLocaleDateString()}
+            Published: {article.published && new Date(article.published).toLocaleDateString()}
           </div>
         </div>
 

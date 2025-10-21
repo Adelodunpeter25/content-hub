@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+
 import DashboardLayout from '../components/DashboardLayout';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { useAuthContext } from '../context/AuthContext';
@@ -9,7 +9,7 @@ import { useAccount } from '../hooks/useAccount';
 import ConfirmDialog from '../components/ConfirmDialog';
 
 export default function SettingsPage() {
-  const navigate = useNavigate();
+
   const { user, logout } = useAuthContext();
   const { showToast } = useToast();
   const { getPreferences, updatePreferences } = usePreferences();

@@ -1,5 +1,5 @@
 import { request } from '../services/api';
-import type { BookmarkCreate } from '../types';
+
 
 export const useBookmarks = () => {
   const getBookmarks = async (params: { page?: number; limit?: number } = {}) => {

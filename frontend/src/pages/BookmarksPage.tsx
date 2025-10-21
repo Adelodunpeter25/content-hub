@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuthContext } from '../context/AuthContext';
+
 import { useBookmarks } from '../hooks/useBookmarks';
 import { useReadHistory } from '../hooks/useReadHistory';
 
@@ -14,14 +14,14 @@ import DashboardLayout from '../components/DashboardLayout';
 export default function BookmarksPage() {
   const navigate = useNavigate();
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
-  const [readIds, setReadIds] = useState<Set<string>>(new Set());
+
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [removingId, setRemovingId] = useState<number | null>(null);
   const [bookmarkToRemove, setBookmarkToRemove] = useState<number | null>(null);
 
   const { getBookmarks, removeBookmark } = useBookmarks();
-  const { markAsRead, getReadHistory } = useReadHistory();
+  const { getReadHistory } = useReadHistory();
 
   useEffect(() => {
     loadBookmarks();
@@ -36,8 +36,7 @@ export default function BookmarksPage() {
   };
 
   const loadReadHistory = async () => {
-    const data = await getReadHistory({ page: 1, limit: 100 });
-    if (data) setReadIds(new Set(data.history.map(h => h.article_url)));
+    await getReadHistory({ page: 1, limit: 100 });
   };
 
   return (

@@ -1,10 +1,13 @@
 export interface Article {
   title: string;
-  url: string;
+  link: string;
+  url?: string;
   source: string;
   type: string;
   categories?: string[];
   published?: string;
+  published_at?: string;
+  summary?: string;
   description?: string;
   image_url?: string;
 }

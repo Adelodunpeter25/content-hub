@@ -58,7 +58,7 @@ export default function TrendingPage() {
                   <p className="text-gray-600 text-sm mb-3 line-clamp-3">{article.summary}</p>
                 )}
                 <div className="flex items-center justify-between text-xs text-gray-500">
-                  <span>{new Date(article.published).toLocaleDateString()}</span>
+                  <span>{article.published && new Date(article.published).toLocaleDateString()}</span>
                   <span className="text-blue-500">Read →</span>
                 </div>
               </a>
