@@ -23,7 +23,8 @@ export default function FeedsPage() {
       query.append('page', page.toString());
       query.append('per_page', '20');
       
-      const response = await fetch(`http://localhost:5000/api/feeds?${query}`);
+      const API_URL = import.meta.env.VITE_API_URL;
+      const response = await fetch(`${API_URL}/feeds?${query}`);
       const result = await response.json();
       if (response.ok) {
         setData(result);

@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 interface ConfirmDialogProps {
   isOpen: boolean;
   title: string;
@@ -19,6 +21,16 @@ export default function ConfirmDialog({
   onCancel,
   danger = false,
 }: ConfirmDialogProps) {
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onCancel();
+    };
+    if (isOpen) {
+      window.addEventListener('keydown', handleEsc);
+      return () => window.removeEventListener('keydown', handleEsc);
+    }
+  }, [isOpen, onCancel]);
+
   if (!isOpen) return null;
 
   return (

@@ -21,11 +21,25 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   }, [isOpen]);
 
   useEffect(() => {
-    if (query.length > 2) {
-      searchArticles();
-    } else {
-      setResults([]);
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    if (isOpen) {
+      window.addEventListener('keydown', handleEsc);
+      return () => window.removeEventListener('keydown', handleEsc);
     }
+  }, [isOpen, onClose]);
+
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      if (query.length > 2) {
+        searchArticles();
+      } else {
+        setResults([]);
+      }
+    }, 300);
+
+    return () => clearTimeout(debounceTimer);
   }, [query]);
 
   const searchArticles = async () => {

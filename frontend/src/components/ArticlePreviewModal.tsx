@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import type { Article } from '../types/feed';
 
 interface ArticlePreviewModalProps {
@@ -17,6 +18,16 @@ export default function ArticlePreviewModal({
   onRead,
   isBookmarked,
 }: ArticlePreviewModalProps) {
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    if (isOpen) {
+      window.addEventListener('keydown', handleEsc);
+      return () => window.removeEventListener('keydown', handleEsc);
+    }
+  }, [isOpen, onClose]);
+
   if (!isOpen || !article) return null;
 
   return (
