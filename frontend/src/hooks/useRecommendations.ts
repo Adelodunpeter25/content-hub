@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { request } from '../services/api';
-import { FeedsResponse } from '../types';
+import type { FeedsResponse } from '../types';
 
 export const useRecommendations = (page = 1, per_page = 20) => {
   const [data, setData] = useState<FeedsResponse | null>(null);

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { request } from '../services/api';
-import { UserPreferences, PreferencesUpdate } from '../types';
+import type { UserPreferences, PreferencesUpdate } from '../types';
 
 export const usePreferences = () => {
   const [data, setData] = useState<UserPreferences | null>(null);

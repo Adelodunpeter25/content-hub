@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { request } from '../services/api';
-import { AuthResponse, LoginRequest, SignupRequest } from '../types';
+import type { AuthResponse, LoginRequest, SignupRequest } from '../types';
 
 export const useAuth = () => {
   const [loading, setLoading] = useState(false);

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { request } from '../services/api';
-import { ReadingStats } from '../types';
+import type { ReadingStats } from '../types';
 
 export const useStats = () => {
   const [data, setData] = useState<ReadingStats | null>(null);

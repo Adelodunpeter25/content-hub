@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { request } from '../services/api';
-import { FeedsResponse } from '../types';
+import type { FeedsResponse } from '../types';
 
 export const useFeeds = (params?: { category?: string; source?: string; source_name?: string; page?: number; per_page?: number }) => {
   const [data, setData] = useState<FeedsResponse | null>(null);

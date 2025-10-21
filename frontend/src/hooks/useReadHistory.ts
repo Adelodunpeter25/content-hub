@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { request } from '../services/api';
-import { ReadHistory, ReadHistoryCreate } from '../types';
+import type { ReadHistory, ReadHistoryCreate } from '../types';
 
 export const useReadHistory = (page = 1, per_page = 20) => {
   const [data, setData] = useState<{ history: ReadHistory[]; pagination: any } | null>(null);

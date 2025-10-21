@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { request } from '../services/api';
-import { Bookmark, BookmarkCreate } from '../types';
+import type { Bookmark, BookmarkCreate } from '../types';
 
 export const useBookmarks = (page = 1, per_page = 20) => {
   const [data, setData] = useState<{ bookmarks: Bookmark[]; pagination: any } | null>(null);
