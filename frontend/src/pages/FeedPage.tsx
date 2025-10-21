@@ -139,8 +139,8 @@ export default function FeedPage() {
     await markAsRead(url);
   };
 
-  const categories = ['AI', 'Security', 'Cloud', 'Mobile', 'Web', 'Hardware', 'Gaming', 'Startup', 'Programming'];
-  const sources = ['TechCrunch', 'The Verge', 'Ars Technica', 'Techmeme', 'Reddit', 'YouTube'];
+  const categories = ['AI', 'Security', 'Cloud', 'Mobile', 'Web', 'Hardware', 'Gaming', 'Startup', 'Programming', 'Data Science', 'DevOps', 'Cybersecurity'];
+  const sources = ['TechCrunch', 'The Verge', 'Ars Technica', 'Hacker News', 'MIT Technology Review', 'WIRED', 'Engadget', 'VentureBeat', 'ZDNet', 'TNW', 'Mashable', 'DEV Community', 'Stack Overflow Blog', 'Medium', 'Techmeme', 'reddit', 'YouTube'];
 
   return (
     <DashboardLayout>

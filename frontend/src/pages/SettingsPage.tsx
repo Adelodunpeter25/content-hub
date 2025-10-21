@@ -22,7 +22,7 @@ export default function SettingsPage() {
   const [deleting, setDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  const sources = ['TechCrunch', 'The Verge', 'Ars Technica', 'Techmeme', 'Reddit', 'YouTube'];
+  const sources = ['TechCrunch', 'The Verge', 'Ars Technica', 'Hacker News', 'MIT Technology Review', 'WIRED', 'Engadget', 'VentureBeat', 'ZDNet', 'TNW', 'Mashable', 'DEV Community', 'Stack Overflow Blog', 'Medium', 'Techmeme', 'reddit', 'YouTube'];
   const types = ['rss', 'scrape', 'social'];
 
   useEffect(() => {
