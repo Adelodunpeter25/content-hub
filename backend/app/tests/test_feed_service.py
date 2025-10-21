@@ -4,7 +4,7 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 from app.services.feed_service import get_all_feeds, get_personalized_feeds
-from app.core.cache import cache_get, cache_delete
+from app.core.cache import cache_delete
 
 class MockPreferences:
     def __init__(self, feed_sources, feed_types):

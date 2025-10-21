@@ -7,8 +7,6 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 from app.main import app
 from app.core.database import get_db
 from app.models.user import User
-from app.models.bookmark import Bookmark
-from app.models.read_history import ReadHistory
 from app.core.auth import generate_access_token
 
 class TestNewFeatures(unittest.TestCase):

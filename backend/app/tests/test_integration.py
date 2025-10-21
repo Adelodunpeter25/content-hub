@@ -5,7 +5,7 @@ import time
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 from app.main import app
-from app.core.cache import cache_get, cache_delete
+from app.core.cache import cache_delete
 from app.core.scheduler import init_scheduler, shutdown_scheduler
 
 class TestIntegration(unittest.TestCase):

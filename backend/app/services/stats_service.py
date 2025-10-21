@@ -3,7 +3,7 @@ from app.core.database import get_db
 from app.models.bookmark import Bookmark
 from app.models.read_history import ReadHistory
 from app.services.feed_service import get_all_feeds
-from sqlalchemy import func, extract
+from sqlalchemy import func
 from datetime import datetime, timedelta
 from collections import Counter
 
