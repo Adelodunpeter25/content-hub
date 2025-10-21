@@ -10,8 +10,15 @@ const getAuthHeaders = () => {
 
 const handleResponse = async (response: Response) => {
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ message: 'Request failed' }));
-    throw new Error(error.message || 'Request failed');
+    try {
+      const error = await response.json();
+      throw new Error(error.message || error.error || `Error: ${response.status}`);
+    } catch (e) {
+      if (e instanceof Error && e.message !== 'Unexpected end of JSON input') {
+        throw e;
+      }
+      throw new Error(`Request failed with status ${response.status}`);
+    }
   }
   return response.json();
 };

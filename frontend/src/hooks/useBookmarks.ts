@@ -8,9 +8,9 @@ export const useBookmarks = () => {
       if (params.page) query.append('page', params.page.toString());
       if (params.limit) query.append('per_page', params.limit.toString());
       return await request(`/bookmarks?${query}`);
-    } catch (err) {
-      console.error(err);
-      return null;
+    } catch (err: any) {
+      console.error('Failed to fetch bookmarks:', err.message);
+      throw err;
     }
   };
 
@@ -20,16 +20,18 @@ export const useBookmarks = () => {
         method: 'POST',
         body: JSON.stringify({ article_url: url, title, source }),
       });
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      console.error('Failed to add bookmark:', err.message);
+      throw err;
     }
   };
 
   const removeBookmark = async (bookmarkId: number) => {
     try {
       await request(`/bookmarks/${bookmarkId}`, { method: 'DELETE' });
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      console.error('Failed to remove bookmark:', err.message);
+      throw err;
     }
   };
 

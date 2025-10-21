@@ -11,7 +11,7 @@ class APIError(Exception):
             self.status_code = status_code
     
     def to_dict(self):
-        return {'error': self.message}
+        return {'error': self.message, 'message': self.message}
 
 class NotFoundError(APIError):
     """404 Not Found error"""

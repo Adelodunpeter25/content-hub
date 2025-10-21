@@ -26,8 +26,8 @@ export default function ArticleCard({ article, onBookmark, onRead, onPreview, is
   };
 
   return (
-    <div className={`border dark:border-gray-700 rounded-lg p-4 hover:shadow-lg transition-shadow bg-white dark:bg-gray-800 ${isRead ? 'opacity-60' : ''}`}>
-      <div onClick={onPreview} className="cursor-pointer">
+    <div className={`border dark:border-gray-700 rounded-lg p-4 hover:shadow-lg transition-shadow bg-white dark:bg-gray-800 h-full flex flex-col ${isRead ? 'opacity-60' : ''}`}>
+      <div onClick={onPreview} className="cursor-pointer flex-1 flex flex-col">
       <div className="flex items-center gap-2 mb-2">
         {article.categories && article.categories.length > 0 && (
           <span className={`text-xs px-2 py-1 rounded-full ${getCategoryColor(article.categories[0])}`}>
@@ -40,8 +40,9 @@ export default function ArticleCard({ article, onBookmark, onRead, onPreview, is
       {article.summary && (
         <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-3">{article.summary}</p>
       )}
+      <div className="mt-auto"></div>
       </div>
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mt-auto">
         <span className="text-xs text-gray-500 dark:text-gray-400">
           {article.published && new Date(article.published).toLocaleDateString()}
         </span>

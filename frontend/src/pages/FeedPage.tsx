@@ -91,26 +91,39 @@ export default function FeedPage() {
 
   const loadFeed = async () => {
     setLoading(true);
-    const data = await getPersonalizedFeed({ category, source, page, limit: 20 });
-    if (data) {
-      if (page === 1) {
-        setArticles(data.articles);
-      } else {
-        setArticles(prev => [...prev, ...data.articles]);
+    try {
+      const data = await getPersonalizedFeed({ category, source_name: source, page, limit: 20 });
+      if (data) {
+        if (page === 1) {
+          setArticles(data.articles);
+        } else {
+          setArticles(prev => [...prev, ...data.articles]);
+        }
+        setHasMore(data.articles.length === 20);
       }
-      setHasMore(data.articles.length === 20);
+    } catch (err: any) {
+      showToast(err.message || 'Failed to load feed', 'error');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const loadBookmarks = async () => {
-    const data = await getBookmarks({ page: 1, limit: 100 });
-    if (data) setBookmarkedIds(new Set(data.bookmarks.map((b: any) => b.article_url)));
+    try {
+      const data = await getBookmarks({ page: 1, limit: 100 });
+      if (data) setBookmarkedIds(new Set(data.bookmarks.map((b: any) => b.article_url)));
+    } catch (err) {
+      // Silent fail for bookmarks
+    }
   };
 
   const loadReadHistory = async () => {
-    const data = await getReadHistory({ page: 1, limit: 100 });
-    if (data) setReadIds(new Set(data.history.map((h: any) => h.article_url)));
+    try {
+      const data = await getReadHistory({ page: 1, limit: 100 });
+      if (data) setReadIds(new Set(data.history.map((h: any) => h.article_url)));
+    } catch (err) {
+      // Silent fail for history
+    }
   };
 
   const handleBookmark = async (url: string, title: string, source: string) => {
@@ -126,17 +139,28 @@ export default function FeedPage() {
     } else {
       // Optimistic update
       setBookmarkedIds(prev => new Set(prev).add(url));
-      showToast('Article bookmarked', 'success');
-      await addBookmark(url, title, source);
+      try {
+        await addBookmark(url, title, source);
+        showToast('Article bookmarked', 'success');
+      } catch (err: any) {
+        setBookmarkedIds(prev => {
+          const next = new Set(prev);
+          next.delete(url);
+          return next;
+        });
+        showToast(err.message || 'Failed to bookmark', 'error');
+      }
     }
   };
 
   const handleRead = async (url: string) => {
     // Optimistic update
     setReadIds(prev => new Set(prev).add(url));
-    window.open(url, '_blank');
-    showToast('Marked as read', 'info');
-    await markAsRead(url);
+    try {
+      await markAsRead(url);
+    } catch (err) {
+      // Silent fail for read tracking
+    }
   };
 
   const categories = ['AI', 'Security', 'Cloud', 'Mobile', 'Web', 'Hardware', 'Gaming', 'Startup', 'Programming', 'Data Science', 'DevOps', 'Cybersecurity'];

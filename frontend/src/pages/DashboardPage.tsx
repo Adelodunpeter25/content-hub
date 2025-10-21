@@ -18,9 +18,14 @@ export default function DashboardPage() {
   }, []);
 
   const loadFeed = async () => {
-    const data = await getPersonalizedFeed({ page: 1, limit: 5 });
-    if (data) setArticles(data.articles);
-    setLoading(false);
+    try {
+      const data = await getPersonalizedFeed({ page: 1, limit: 5 });
+      if (data) setArticles(data.articles);
+    } catch (err) {
+      console.error('Failed to load feed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const getGreeting = () => {

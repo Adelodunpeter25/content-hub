@@ -1,4 +1,16 @@
 import feedparser
+import html
+import re
+
+def strip_html_tags(text):
+    """Remove HTML tags and decode HTML entities"""
+    # Remove HTML tags
+    text = re.sub(r'<[^>]+>', '', text)
+    # Decode HTML entities
+    text = html.unescape(text)
+    # Clean up extra whitespace
+    text = ' '.join(text.split())
+    return text
 
 def fetch_rss_feeds(feed_urls):
     """
@@ -22,10 +34,13 @@ def fetch_rss_feeds(feed_urls):
             
             # Process each entry in the feed
             for entry in feed.entries:
+                raw_summary = entry.get('summary', entry.get('description', 'No summary available'))
+                clean_summary = strip_html_tags(raw_summary)
+                
                 article = {
                     'title': entry.get('title', 'No Title'),
                     'link': entry.get('link', ''),
-                    'summary': entry.get('summary', entry.get('description', 'No summary available')),
+                    'summary': clean_summary,
                     'source': source,
                     'published': entry.get('published', entry.get('updated', '')),
                     'type': 'rss'
