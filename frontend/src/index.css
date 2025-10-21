@@ -10,35 +10,34 @@
 
 body {
   font-family: system-ui, -apple-system, sans-serif;
-  background: #0a0a0a;
-  color: #ffffff;
+  background: #ffffff;
+  color: #111827;
   min-height: 100vh;
   overflow-x: hidden;
 }
 
-@keyframes gradient {
-  0%, 100% {
-    background-position: 0% 50%;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
   }
-  50% {
-    background-position: 100% 50%;
-  }
-}
-
-.animate-gradient {
-  background-size: 200% 200%;
-  animation: gradient 8s ease infinite;
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-20px);
+  to {
+    opacity: 1;
   }
 }
 
-.animate-float {
-  animation: float 6s ease-in-out infinite;
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slideInRight {
+  animation: slideInRight 0.3s ease-out;
 }
