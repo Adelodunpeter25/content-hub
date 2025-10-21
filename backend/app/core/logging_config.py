@@ -5,15 +5,22 @@ import os
 def setup_logging(app):
     """Configure logging for the application"""
     
-    # Create logs directory if it doesn't exist
-    if not os.path.exists('logs'):
-        os.mkdir('logs')
-    
     # Set logging level
     if app.config['DEBUG']:
         log_level = logging.DEBUG
     else:
         log_level = logging.INFO
+    
+    app.logger.setLevel(log_level)
+    
+    # Skip file logging in production (read-only filesystem)
+    if os.environ.get('FLASK_ENV') == 'production':
+        app.logger.info('Content Hub API started (production mode)')
+        return
+    
+    # Create logs directory if it doesn't exist
+    if not os.path.exists('logs'):
+        os.mkdir('logs')
     
     # File handler - rotating log files
     file_handler = RotatingFileHandler(
@@ -31,6 +38,5 @@ def setup_logging(app):
     
     # Add handler to app logger
     app.logger.addHandler(file_handler)
-    app.logger.setLevel(log_level)
     
     app.logger.info('Content Hub API started')
