@@ -62,7 +62,7 @@ export default function LandingPage() {
               Explore Feeds
             </Link>
           </div>
-          <div className="mt-32 grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
+          <div className="mt-32 hidden sm:grid grid-cols-3 gap-6 max-w-4xl mx-auto">
             <div className="p-8 bg-white/90 backdrop-blur-sm rounded-2xl border border-gray-200 shadow-lg hover:shadow-xl hover:scale-105 transition-all">
               <div className="text-5xl font-bold bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent mb-3">10+</div>
               <div className="text-gray-700 font-medium">Content Sources</div>
@@ -81,55 +81,59 @@ export default function LandingPage() {
 
       {/* Features */}
       <section className="py-24 px-6 bg-gradient-to-b from-gray-50 to-white">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">Everything You Need</h2>
-            <p className="text-lg text-gray-600">Powerful features to enhance your content experience</p>
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">Powerful Features Built for You</h2>
+            <p className="text-lg text-gray-600">Everything you need to stay informed and organized</p>
           </div>
-          <div className="relative">
-            <div className="flex justify-center gap-6 mb-8 overflow-hidden">
-              {getVisibleFeatures().map((f, i) => (
-                <div key={i} className="group relative w-72 sm:w-64 lg:w-80 h-96 lg:h-[28rem] perspective-1000">
-                  <div className="w-full h-full bg-white rounded-lg border-2 border-gray-200 shadow-lg hover:shadow-2xl hover:border-cyan-400 transition-all duration-300 hover:-translate-y-2 p-6 flex flex-col">
-                    <div className="text-4xl mb-6">{f.icon}</div>
-                    <h3 className="text-lg font-bold mb-4 text-gray-900">{f.title}</h3>
-                    <p className="text-base text-gray-600 leading-relaxed">{f.desc}</p>
-                  </div>
-                </div>
-              ))}
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Feature 1 */}
+            <div className="group bg-gradient-to-br from-purple-50 to-white p-8 rounded-2xl border-2 border-purple-100 hover:border-purple-300 hover:shadow-xl transition-all hover:-translate-y-1">
+              <div className="text-5xl mb-4">✨</div>
+              <h3 className="text-2xl font-bold mb-3 text-gray-900">Personalized Feed</h3>
+              <p className="text-gray-600 mb-4 leading-relaxed">Your feed adapts to your interests. Choose sources and topics, and we'll prioritize content that matters to you.</p>
+              <div className="text-sm text-purple-600 font-semibold">Save 2+ hours weekly</div>
             </div>
-            
-            {/* Navigation Controls */}
-            <div className="flex justify-center items-center gap-4">
-              <button
-                onClick={() => setCurrentIndex((prev) => (prev - 1 + features.length) % features.length)}
-                className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
-              
-              <div className="flex gap-2">
-                {features.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setCurrentIndex(i)}
-                    className={`w-2 h-2 rounded-full transition-all ${
-                      i === currentIndex ? 'bg-cyan-500 w-8' : 'bg-gray-300'
-                    }`}
-                  />
-                ))}
-              </div>
-              
-              <button
-                onClick={() => setCurrentIndex((prev) => (prev + 1) % features.length)}
-                className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
+
+            {/* Feature 2 */}
+            <div className="group bg-gradient-to-br from-blue-50 to-white p-8 rounded-2xl border-2 border-blue-100 hover:border-blue-300 hover:shadow-xl transition-all hover:-translate-y-1">
+              <div className="text-5xl mb-4">📰</div>
+              <h3 className="text-2xl font-bold mb-3 text-gray-900">17+ Content Sources</h3>
+              <p className="text-gray-600 mb-4 leading-relaxed">Aggregate from TechCrunch, Hacker News, Reddit, DEV, Medium, and more. All in one unified platform.</p>
+              <div className="text-sm text-blue-600 font-semibold">100+ articles daily</div>
+            </div>
+
+            {/* Feature 3 */}
+            <div className="group bg-gradient-to-br from-cyan-50 to-white p-8 rounded-2xl border-2 border-cyan-100 hover:border-cyan-300 hover:shadow-xl transition-all hover:-translate-y-1">
+              <div className="text-5xl mb-4">🎯</div>
+              <h3 className="text-2xl font-bold mb-3 text-gray-900">AI Categorization</h3>
+              <p className="text-gray-600 mb-4 leading-relaxed">Every article automatically sorted into 12+ topics: AI, Security, Cloud, Mobile, Web, and more.</p>
+              <div className="text-sm text-cyan-600 font-semibold">Smart & accurate</div>
+            </div>
+
+            {/* Feature 4 */}
+            <div className="group bg-gradient-to-br from-green-50 to-white p-8 rounded-2xl border-2 border-green-100 hover:border-green-300 hover:shadow-xl transition-all hover:-translate-y-1">
+              <div className="text-5xl mb-4">📚</div>
+              <h3 className="text-2xl font-bold mb-3 text-gray-900">Bookmarks & History</h3>
+              <p className="text-gray-600 mb-4 leading-relaxed">Save articles for later with one click. Automatic read tracking so you never lose your place.</p>
+              <div className="text-sm text-green-600 font-semibold">Never miss a thing</div>
+            </div>
+
+            {/* Feature 5 */}
+            <div className="group bg-gradient-to-br from-orange-50 to-white p-8 rounded-2xl border-2 border-orange-100 hover:border-orange-300 hover:shadow-xl transition-all hover:-translate-y-1">
+              <div className="text-5xl mb-4">📊</div>
+              <h3 className="text-2xl font-bold mb-3 text-gray-900">Reading Analytics</h3>
+              <p className="text-gray-600 mb-4 leading-relaxed">Track your reading streaks, favorite topics, and daily activity. Build better reading habits.</p>
+              <div className="text-sm text-orange-600 font-semibold">Insights & trends</div>
+            </div>
+
+            {/* Feature 6 */}
+            <div className="group bg-gradient-to-br from-pink-50 to-white p-8 rounded-2xl border-2 border-pink-100 hover:border-pink-300 hover:shadow-xl transition-all hover:-translate-y-1">
+              <div className="text-5xl mb-4">🔍</div>
+              <h3 className="text-2xl font-bold mb-3 text-gray-900">Advanced Search</h3>
+              <p className="text-gray-600 mb-4 leading-relaxed">Filter by source, category, date range, and keywords. Find exactly what you're looking for instantly.</p>
+              <div className="text-sm text-pink-600 font-semibold">Lightning fast</div>
             </div>
           </div>
         </div>
