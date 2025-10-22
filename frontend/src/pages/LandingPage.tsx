@@ -7,30 +7,12 @@ import FAQ from '../components/FAQ';
 export default function LandingPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   
-  const features = [
-    { icon: '✨', title: 'Personalized Feed', desc: 'Content filtered by your preferences and interests' },
-    { icon: '📰', title: 'Multi-Source Aggregation', desc: 'Collect from RSS feeds, Reddit, YouTube, and web scraping' },
-    { icon: '🎯', title: 'AI Recommendations', desc: 'Smart content suggestions based on your reading habits' },
-    { icon: '📚', title: 'Bookmarks & History', desc: 'Save your favorite articles and track everything you read' },
-    { icon: '📊', title: 'Reading Analytics', desc: 'Track your reading streaks, stats, and favorite categories' },
-  ];
-
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % features.length);
+      setCurrentIndex((prev) => (prev + 1) % 6);
     }, 4000);
     return () => clearInterval(interval);
-  }, [features.length]);
-
-  const getVisibleFeatures = () => {
-    const visible = [];
-    const width = window.innerWidth;
-    const count = width < 768 ? 1 : width < 1024 ? 2 : 3;
-    for (let i = 0; i < count; i++) {
-      visible.push(features[(currentIndex + i) % features.length]);
-    }
-    return visible;
-  };
+  }, []);
 
   return (
     <div className="min-h-screen bg-white">
