@@ -87,53 +87,137 @@ export default function LandingPage() {
             <p className="text-lg text-gray-600">Everything you need to stay informed and organized</p>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Feature 1 */}
-            <div className="group bg-gradient-to-br from-purple-50 to-white p-8 rounded-2xl border-2 border-purple-100 hover:border-purple-300 hover:shadow-xl transition-all hover:-translate-y-1">
+          {/* Desktop/Tablet Grid */}
+          <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-8 auto-rows-fr">
+            <div className="group bg-gradient-to-br from-purple-50 to-white p-8 rounded-2xl border-2 border-purple-100 hover:border-purple-300 hover:shadow-xl transition-all hover:-translate-y-1 flex flex-col h-full">
               <div className="text-5xl mb-4">✨</div>
               <h3 className="text-2xl font-bold mb-3 text-gray-900">Personalized Feed</h3>
-              <p className="text-gray-600 mb-4 leading-relaxed">Your feed adapts to your interests. Choose sources and topics, and we'll prioritize content that matters to you.</p>
-              <div className="text-sm text-purple-600 font-semibold">Save 2+ hours weekly</div>
+              <p className="text-gray-600 mb-4 leading-relaxed flex-1">Your feed adapts to your interests. Choose sources and topics, and we'll prioritize content that matters to you.</p>
+              <div className="text-sm text-purple-600 font-semibold mt-auto">Save 2+ hours weekly</div>
             </div>
 
-            {/* Feature 2 */}
-            <div className="group bg-gradient-to-br from-blue-50 to-white p-8 rounded-2xl border-2 border-blue-100 hover:border-blue-300 hover:shadow-xl transition-all hover:-translate-y-1">
+            <div className="group bg-gradient-to-br from-blue-50 to-white p-8 rounded-2xl border-2 border-blue-100 hover:border-blue-300 hover:shadow-xl transition-all hover:-translate-y-1 flex flex-col h-full">
               <div className="text-5xl mb-4">📰</div>
               <h3 className="text-2xl font-bold mb-3 text-gray-900">17+ Content Sources</h3>
-              <p className="text-gray-600 mb-4 leading-relaxed">Aggregate from TechCrunch, Hacker News, Reddit, DEV, Medium, and more. All in one unified platform.</p>
-              <div className="text-sm text-blue-600 font-semibold">100+ articles daily</div>
+              <p className="text-gray-600 mb-4 leading-relaxed flex-1">Aggregate from TechCrunch, Hacker News, Reddit, DEV, Medium, and more. All in one unified platform.</p>
+              <div className="text-sm text-blue-600 font-semibold mt-auto">100+ articles daily</div>
             </div>
 
-            {/* Feature 3 */}
-            <div className="group bg-gradient-to-br from-cyan-50 to-white p-8 rounded-2xl border-2 border-cyan-100 hover:border-cyan-300 hover:shadow-xl transition-all hover:-translate-y-1">
+            <div className="group bg-gradient-to-br from-cyan-50 to-white p-8 rounded-2xl border-2 border-cyan-100 hover:border-cyan-300 hover:shadow-xl transition-all hover:-translate-y-1 flex flex-col h-full">
               <div className="text-5xl mb-4">🎯</div>
               <h3 className="text-2xl font-bold mb-3 text-gray-900">AI Categorization</h3>
-              <p className="text-gray-600 mb-4 leading-relaxed">Every article automatically sorted into 12+ topics: AI, Security, Cloud, Mobile, Web, and more.</p>
-              <div className="text-sm text-cyan-600 font-semibold">Smart & accurate</div>
+              <p className="text-gray-600 mb-4 leading-relaxed flex-1">Every article automatically sorted into 12+ topics: AI, Security, Cloud, Mobile, Web, and more.</p>
+              <div className="text-sm text-cyan-600 font-semibold mt-auto">Smart & accurate</div>
             </div>
 
-            {/* Feature 4 */}
-            <div className="group bg-gradient-to-br from-green-50 to-white p-8 rounded-2xl border-2 border-green-100 hover:border-green-300 hover:shadow-xl transition-all hover:-translate-y-1">
+            <div className="group bg-gradient-to-br from-green-50 to-white p-8 rounded-2xl border-2 border-green-100 hover:border-green-300 hover:shadow-xl transition-all hover:-translate-y-1 flex flex-col h-full">
               <div className="text-5xl mb-4">📚</div>
               <h3 className="text-2xl font-bold mb-3 text-gray-900">Bookmarks & History</h3>
-              <p className="text-gray-600 mb-4 leading-relaxed">Save articles for later with one click. Automatic read tracking so you never lose your place.</p>
-              <div className="text-sm text-green-600 font-semibold">Never miss a thing</div>
+              <p className="text-gray-600 mb-4 leading-relaxed flex-1">Save articles for later with one click. Automatic read tracking so you never lose your place.</p>
+              <div className="text-sm text-green-600 font-semibold mt-auto">Never miss a thing</div>
             </div>
 
-            {/* Feature 5 */}
-            <div className="group bg-gradient-to-br from-orange-50 to-white p-8 rounded-2xl border-2 border-orange-100 hover:border-orange-300 hover:shadow-xl transition-all hover:-translate-y-1">
+            <div className="group bg-gradient-to-br from-orange-50 to-white p-8 rounded-2xl border-2 border-orange-100 hover:border-orange-300 hover:shadow-xl transition-all hover:-translate-y-1 flex flex-col h-full">
               <div className="text-5xl mb-4">📊</div>
               <h3 className="text-2xl font-bold mb-3 text-gray-900">Reading Analytics</h3>
-              <p className="text-gray-600 mb-4 leading-relaxed">Track your reading streaks, favorite topics, and daily activity. Build better reading habits.</p>
-              <div className="text-sm text-orange-600 font-semibold">Insights & trends</div>
+              <p className="text-gray-600 mb-4 leading-relaxed flex-1">Track your reading streaks, favorite topics, and daily activity. Build better reading habits.</p>
+              <div className="text-sm text-orange-600 font-semibold mt-auto">Insights & trends</div>
             </div>
 
-            {/* Feature 6 */}
-            <div className="group bg-gradient-to-br from-pink-50 to-white p-8 rounded-2xl border-2 border-pink-100 hover:border-pink-300 hover:shadow-xl transition-all hover:-translate-y-1">
+            <div className="group bg-gradient-to-br from-pink-50 to-white p-8 rounded-2xl border-2 border-pink-100 hover:border-pink-300 hover:shadow-xl transition-all hover:-translate-y-1 flex flex-col h-full">
               <div className="text-5xl mb-4">🔍</div>
               <h3 className="text-2xl font-bold mb-3 text-gray-900">Advanced Search</h3>
-              <p className="text-gray-600 mb-4 leading-relaxed">Filter by source, category, date range, and keywords. Find exactly what you're looking for instantly.</p>
-              <div className="text-sm text-pink-600 font-semibold">Lightning fast</div>
+              <p className="text-gray-600 mb-4 leading-relaxed flex-1">Filter by source, category, date range, and keywords. Find exactly what you're looking for instantly.</p>
+              <div className="text-sm text-pink-600 font-semibold mt-auto">Lightning fast</div>
+            </div>
+          </div>
+
+          {/* Mobile Carousel */}
+          <div className="md:hidden relative">
+            <div className="overflow-hidden">
+              <div className="flex transition-transform duration-500" style={{ transform: `translateX(-${currentIndex * 100}%)` }}>
+                <div className="min-w-full px-4">
+                  <div className="bg-gradient-to-br from-purple-50 to-white p-8 rounded-2xl border-2 border-purple-100 shadow-xl h-80 flex flex-col">
+                    <div className="text-5xl mb-4">✨</div>
+                    <h3 className="text-2xl font-bold mb-3 text-gray-900">Personalized Feed</h3>
+                    <p className="text-gray-600 mb-4 leading-relaxed flex-1">Your feed adapts to your interests. Choose sources and topics, and we'll prioritize content that matters to you.</p>
+                    <div className="text-sm text-purple-600 font-semibold mt-auto">Save 2+ hours weekly</div>
+                  </div>
+                </div>
+                <div className="min-w-full px-4">
+                  <div className="bg-gradient-to-br from-blue-50 to-white p-8 rounded-2xl border-2 border-blue-100 shadow-xl h-80 flex flex-col">
+                    <div className="text-5xl mb-4">📰</div>
+                    <h3 className="text-2xl font-bold mb-3 text-gray-900">17+ Content Sources</h3>
+                    <p className="text-gray-600 mb-4 leading-relaxed flex-1">Aggregate from TechCrunch, Hacker News, Reddit, DEV, Medium, and more. All in one unified platform.</p>
+                    <div className="text-sm text-blue-600 font-semibold mt-auto">100+ articles daily</div>
+                  </div>
+                </div>
+                <div className="min-w-full px-4">
+                  <div className="bg-gradient-to-br from-cyan-50 to-white p-8 rounded-2xl border-2 border-cyan-100 shadow-xl h-80 flex flex-col">
+                    <div className="text-5xl mb-4">🎯</div>
+                    <h3 className="text-2xl font-bold mb-3 text-gray-900">AI Categorization</h3>
+                    <p className="text-gray-600 mb-4 leading-relaxed flex-1">Every article automatically sorted into 12+ topics: AI, Security, Cloud, Mobile, Web, and more.</p>
+                    <div className="text-sm text-cyan-600 font-semibold mt-auto">Smart & accurate</div>
+                  </div>
+                </div>
+                <div className="min-w-full px-4">
+                  <div className="bg-gradient-to-br from-green-50 to-white p-8 rounded-2xl border-2 border-green-100 shadow-xl h-80 flex flex-col">
+                    <div className="text-5xl mb-4">📚</div>
+                    <h3 className="text-2xl font-bold mb-3 text-gray-900">Bookmarks & History</h3>
+                    <p className="text-gray-600 mb-4 leading-relaxed flex-1">Save articles for later with one click. Automatic read tracking so you never lose your place.</p>
+                    <div className="text-sm text-green-600 font-semibold mt-auto">Never miss a thing</div>
+                  </div>
+                </div>
+                <div className="min-w-full px-4">
+                  <div className="bg-gradient-to-br from-orange-50 to-white p-8 rounded-2xl border-2 border-orange-100 shadow-xl h-80 flex flex-col">
+                    <div className="text-5xl mb-4">📊</div>
+                    <h3 className="text-2xl font-bold mb-3 text-gray-900">Reading Analytics</h3>
+                    <p className="text-gray-600 mb-4 leading-relaxed flex-1">Track your reading streaks, favorite topics, and daily activity. Build better reading habits.</p>
+                    <div className="text-sm text-orange-600 font-semibold mt-auto">Insights & trends</div>
+                  </div>
+                </div>
+                <div className="min-w-full px-4">
+                  <div className="bg-gradient-to-br from-pink-50 to-white p-8 rounded-2xl border-2 border-pink-100 shadow-xl h-80 flex flex-col">
+                    <div className="text-5xl mb-4">🔍</div>
+                    <h3 className="text-2xl font-bold mb-3 text-gray-900">Advanced Search</h3>
+                    <p className="text-gray-600 mb-4 leading-relaxed flex-1">Filter by source, category, date range, and keywords. Find exactly what you're looking for instantly.</p>
+                    <div className="text-sm text-pink-600 font-semibold mt-auto">Lightning fast</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Navigation */}
+            <div className="flex justify-center items-center gap-4 mt-8">
+              <button
+                onClick={() => setCurrentIndex((prev) => (prev - 1 + 6) % 6)}
+                className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              
+              <div className="flex gap-2">
+                {[0, 1, 2, 3, 4, 5].map((i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCurrentIndex(i)}
+                    className={`w-2 h-2 rounded-full transition-all ${
+                      i === currentIndex ? 'bg-cyan-500 w-8' : 'bg-gray-300'
+                    }`}
+                  />
+                ))}
+              </div>
+              
+              <button
+                onClick={() => setCurrentIndex((prev) => (prev + 1) % 6)}
+                className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
             </div>
           </div>
         </div>
