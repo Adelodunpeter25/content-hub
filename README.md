@@ -290,20 +290,6 @@ This creates all tables:
 - `bookmarks`
 - `read_history`
 
-### Clean Database
-
-```bash
-uv run python -m app.scripts.clean_db
-```
-
-⚠️ **Warning**: This deletes all data!
-
-### Clear Cache
-
-```bash
-uv run python -c "from app.core.cache import cache_delete; cache_delete('feeds:all')"
-```
-
 ---
 
 ## Deployment
@@ -322,34 +308,11 @@ uv run python -c "from app.core.cache import cache_delete; cache_delete('feeds:a
 2. Set `VITE_API_URL` environment variable
 3. Deploy with automatic builds on push
 
-**Note**: Add `vercel.json` for client-side routing:
-
-```json
-{
-  "rewrites": [{ "source": "/(.*)", "destination": "/" }]
-}
-```
-
 ---
 
 ## License
 
 MIT License - see [LICENSE](LICENSE) file for details
-
----
-
-## Author
-
-**Adelodun Peter**
-- Email: adelodunpeter24@gmail.com
-- Phone: +234 703 920 1122
-
----
-
-## Acknowledgments
-
-- RSS feed providers
-- Community feedback and testing
 
 ---
 
