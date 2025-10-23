@@ -90,9 +90,9 @@ export default function DashboardPage() {
     }
   };
 
-  const handleRead = async (url: string) => {
+  const handleRead = async (url: string, title?: string, source?: string, category?: string) => {
     try {
-      await markAsRead(url);
+      await markAsRead(url, title, source, category);
     } catch (err) {
       // Silent fail
     }

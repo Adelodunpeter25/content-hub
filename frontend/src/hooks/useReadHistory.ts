@@ -13,11 +13,16 @@ export const useReadHistory = () => {
     }
   };
 
-  const markAsRead = async (url: string) => {
+  const markAsRead = async (url: string, title?: string, source?: string, category?: string) => {
     try {
       await request('/read-history', {
         method: 'POST',
-        body: JSON.stringify({ article_url: url }),
+        body: JSON.stringify({ 
+          article_url: url,
+          article_title: title,
+          article_source: source,
+          article_category: category
+        }),
       });
     } catch (err) {
       console.error(err);

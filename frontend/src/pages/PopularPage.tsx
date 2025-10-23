@@ -80,10 +80,10 @@ export default function PopularPage() {
     }
   };
 
-  const handleRead = async (url: string) => {
+  const handleRead = async (url: string, title?: string, source?: string, category?: string) => {
     setReadIds(prev => new Set(prev).add(url));
     try {
-      await markAsRead(url);
+      await markAsRead(url, title, source, category);
     } catch (err) {
       // Silent fail
     }

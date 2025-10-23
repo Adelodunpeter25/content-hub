@@ -31,7 +31,10 @@ def mark_as_read():
             
             history = ReadHistory(
                 user_id=g.user_id,
-                article_url=read_data.article_url
+                article_url=read_data.article_url,
+                article_title=read_data.article_title,
+                article_source=read_data.article_source,
+                article_category=read_data.article_category
             )
             db.add(history)
             db.flush()

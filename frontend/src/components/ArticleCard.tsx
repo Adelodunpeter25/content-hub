@@ -3,7 +3,7 @@ import type { Article } from '../types/feed';
 interface ArticleCardProps {
   article: Article;
   onBookmark?: (url: string, title: string, source: string) => void;
-  onRead?: (url: string) => void;
+  onRead?: (url: string, title?: string, source?: string, category?: string) => void;
   onPreview?: () => void;
   isBookmarked?: boolean;
   isRead?: boolean;
@@ -58,7 +58,7 @@ export default function ArticleCard({ article, onBookmark, onRead, onPreview, is
           )}
           {onRead && (
             <button
-              onClick={() => onRead(article.link)}
+              onClick={() => onRead(article.link, article.title, article.source, article.categories?.[0])}
               className="text-sm text-blue-500 dark:text-blue-400 hover:underline"
             >
               Read

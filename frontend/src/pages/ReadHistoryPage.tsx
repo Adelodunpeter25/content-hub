@@ -44,13 +44,23 @@ export default function ReadHistoryPage() {
                 <div key={item.id} className="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg p-4 hover:shadow-lg transition-shadow">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        {item.article_category && (
+                          <span className="text-xs px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300">
+                            {item.article_category}
+                          </span>
+                        )}
+                        {item.article_source && (
+                          <span className="text-xs text-gray-500 dark:text-gray-400">{item.article_source}</span>
+                        )}
+                      </div>
                       <a
                         href={item.article_url}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="font-semibold text-lg hover:text-blue-500 dark:text-white dark:hover:text-blue-400"
                       >
-                        {item.article_url}
+                        {item.article_title || item.article_url}
                       </a>
                       <div className="flex items-center gap-3 mt-2 text-sm text-gray-500 dark:text-gray-400">
                         <span>Read on {new Date(item.read_at).toLocaleDateString()}</span>
