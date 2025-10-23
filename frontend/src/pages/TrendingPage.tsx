@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import SkeletonCard from '../components/SkeletonCard';
 import EmptyState from '../components/EmptyState';
@@ -11,6 +12,7 @@ import { useToast } from '../context/ToastContext';
 import type { Article } from '../types/feed';
 
 export default function TrendingPage() {
+  const navigate = useNavigate();
   const { showToast } = useToast();
   const { getTrending } = useTrending();
   const { addBookmark, getBookmarks } = useBookmarks();
@@ -19,18 +21,49 @@ export default function TrendingPage() {
   const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
   const [readIds, setReadIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const [previewArticle, setPreviewArticle] = useState<Article | null>(null);
 
+  const observer = useRef<IntersectionObserver | null>(null);
+  const lastArticleRef = useCallback((node: HTMLDivElement) => {
+    if (loading || loadingMore) return;
+    if (observer.current) observer.current.disconnect();
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore) {
+        setPage(p => p + 1);
+      }
+    });
+    if (node) observer.current.observe(node);
+  }, [loading, loadingMore, hasMore]);
+
   useEffect(() => {
-    loadTrending();
     loadBookmarks();
     loadReadHistory();
   }, []);
 
+  useEffect(() => {
+    loadTrending();
+  }, [page]);
+
   const loadTrending = async () => {
-    const data = await getTrending({ limit: 100 });
-    if (data) setArticles(data.articles);
+    if (page === 1) {
+      setLoading(true);
+    } else {
+      setLoadingMore(true);
+    }
+    const data = await getTrending({ limit: 20, page });
+    if (data) {
+      if (page === 1) {
+        setArticles(data.articles);
+      } else {
+        setArticles(prev => [...prev, ...data.articles]);
+      }
+      setHasMore(data.articles.length === 20);
+    }
     setLoading(false);
+    setLoadingMore(false);
   };
 
   const loadBookmarks = async () => {
@@ -99,21 +132,28 @@ export default function TrendingPage() {
           <EmptyState
             title="No trending articles yet"
             description="Check back later to see what's popular."
+            action={{ label: 'Browse Feed', onClick: () => navigate('/feed') }}
           />
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {articles.map((article) => (
-              <ArticleCard
-                key={article.link}
-                article={article}
-                onBookmark={handleBookmark}
-                onRead={handleRead}
-                onPreview={() => setPreviewArticle(article)}
-                isBookmarked={bookmarkedIds.has(article.link)}
-                isRead={readIds.has(article.link)}
-              />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {articles.map((article, index) => (
+                <div key={article.link} ref={index === articles.length - 1 ? lastArticleRef : null}>
+                  <ArticleCard
+                    article={article}
+                    onBookmark={handleBookmark}
+                    onRead={handleRead}
+                    onPreview={() => setPreviewArticle(article)}
+                    isBookmarked={bookmarkedIds.has(article.link)}
+                    isRead={readIds.has(article.link)}
+                  />
+                </div>
+              ))}
+            </div>
+            {loadingMore && (
+              <div className="text-center py-8 text-gray-500 dark:text-gray-400">Loading more...</div>
+            )}
+          </>
         )}
 
         <ArticlePreviewModal

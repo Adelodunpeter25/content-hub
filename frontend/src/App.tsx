@@ -1,7 +1,14 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, lazy, Suspense } from 'react';
+import { AuthProvider } from './context/AuthContext';
+import { ToastProvider } from './context/ToastContext';
+import { ThemeProvider } from './context/ThemeContext';
+import { PreferencesProvider } from './context/PreferencesContext';
+import ErrorBoundary from './components/ErrorBoundary';
+import ProtectedRoute from './components/ProtectedRoute';
+import LoadingSpinner from './components/LoadingSpinner';
 
-{ /* Scroll to top on route change*/}
+// Scroll to top on route change
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => {
@@ -9,33 +16,29 @@ function ScrollToTop() {
   }, [pathname]);
   return null;
 }
-import { AuthProvider } from './context/AuthContext';
-import { ToastProvider } from './context/ToastContext';
-import { ThemeProvider } from './context/ThemeContext';
-import { PreferencesProvider } from './context/PreferencesContext';
-import ErrorBoundary from './components/ErrorBoundary';
-import ProtectedRoute from './components/ProtectedRoute';
-import LandingPage from './pages/LandingPage';
-import ContactPage from './pages/ContactPage';
-import FeedsPage from './pages/PublicFeedsPage';
-import LoginPage from './pages/LoginPage';
-import SignupPage from './pages/SignupPage';
-import ForgotPasswordPage from './pages/ForgotPasswordPage';
-import ResetPasswordPage from './pages/ResetPasswordPage';
-import GoogleCallbackPage from './pages/GoogleCallbackPage';
-import DashboardPage from './pages/DashboardPage';
-import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
-import TermsOfServicePage from './pages/TermsOfServicePage';
-import AboutPage from './pages/AboutPage';
-import NotFoundPage from './pages/NotFoundPage';
-import FeedPage from './pages/FeedPage';
-import BookmarksPage from './pages/BookmarksPage';
-import SettingsPage from './pages/SettingsPage';
-import StatsPage from './pages/StatsPage';
-import SearchPage from './pages/SearchPage';
-import TrendingPage from './pages/TrendingPage';
-import PopularPage from './pages/PopularPage';
-import ReadHistoryPage from './pages/ReadHistoryPage';
+
+// Lazy load pages
+const LandingPage = lazy(() => import('./pages/LandingPage'));
+const ContactPage = lazy(() => import('./pages/ContactPage'));
+const FeedsPage = lazy(() => import('./pages/PublicFeedsPage'));
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const SignupPage = lazy(() => import('./pages/SignupPage'));
+const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'));
+const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'));
+const GoogleCallbackPage = lazy(() => import('./pages/GoogleCallbackPage'));
+const DashboardPage = lazy(() => import('./pages/DashboardPage'));
+const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
+const TermsOfServicePage = lazy(() => import('./pages/TermsOfServicePage'));
+const AboutPage = lazy(() => import('./pages/AboutPage'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
+const FeedPage = lazy(() => import('./pages/FeedPage'));
+const BookmarksPage = lazy(() => import('./pages/BookmarksPage'));
+const SettingsPage = lazy(() => import('./pages/SettingsPage'));
+const StatsPage = lazy(() => import('./pages/StatsPage'));
+const SearchPage = lazy(() => import('./pages/SearchPage'));
+const TrendingPage = lazy(() => import('./pages/TrendingPage'));
+const PopularPage = lazy(() => import('./pages/PopularPage'));
+const ReadHistoryPage = lazy(() => import('./pages/ReadHistoryPage'));
 
 function App() {
   return (
@@ -46,7 +49,12 @@ function App() {
             <ScrollToTop />
             <ToastProvider>
               <AuthProvider>
-        <Routes>
+                <Suspense fallback={
+                  <div className="min-h-screen flex items-center justify-center">
+                    <LoadingSpinner />
+                  </div>
+                }>
+                  <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/feeds" element={<FeedsPage />} />
           <Route path="/contact" element={<ContactPage />} />
@@ -104,7 +112,8 @@ function App() {
             </ProtectedRoute>
           } />
           <Route path="*" element={<NotFoundPage />} />
-        </Routes>
+                  </Routes>
+                </Suspense>
               </AuthProvider>
             </ToastProvider>
           </BrowserRouter>

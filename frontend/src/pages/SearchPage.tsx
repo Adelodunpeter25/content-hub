@@ -85,9 +85,23 @@ export default function SearchPage() {
             ))}
           </div>
         ) : query.length > 2 ? (
-          <div className="text-center py-8 text-gray-500">No results found</div>
+          <div className="text-center py-12">
+            <div className="text-6xl mb-4">🔍</div>
+            <h3 className="text-xl font-semibold mb-2 dark:text-white">No results found</h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">Try different keywords or browse the feed.</p>
+            <button
+              onClick={() => navigate('/feed')}
+              className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-6 py-2 rounded-lg hover:opacity-90"
+            >
+              Browse Feed
+            </button>
+          </div>
         ) : (
-          <div className="text-center py-8 text-gray-500">Type to search articles...</div>
+          <div className="text-center py-12">
+            <div className="text-6xl mb-4">🔎</div>
+            <h3 className="text-xl font-semibold mb-2 dark:text-white">Search Articles</h3>
+            <p className="text-gray-600 dark:text-gray-400">Type at least 3 characters to start searching...</p>
+          </div>
         )}
       </div>
     </DashboardLayout>

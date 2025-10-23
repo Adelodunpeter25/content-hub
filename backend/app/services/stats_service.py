@@ -71,7 +71,7 @@ def get_reading_stats(user_id):
                     source_counts[source] += 1
         
         # Calculate reading streak
-        streak = calculate_reading_streak(read_history)
+        current_streak, longest_streak = calculate_reading_streak(read_history)
         
         return {
             'reads': {
@@ -85,32 +85,43 @@ def get_reading_stats(user_id):
             },
             'favorite_categories': dict(category_counts.most_common(5)),
             'favorite_sources': dict(source_counts.most_common(5)),
-            'reading_streak': streak
+            'reading_streak': current_streak,
+            'longest_streak': longest_streak
         }
 
 def calculate_reading_streak(read_history):
     """Calculate consecutive days with reading activity"""
     if not read_history:
-        return 0
+        return 0, 0
     
     # Get unique dates
     dates = sorted(set(h.read_at.date() for h in read_history), reverse=True)
     
     if not dates:
-        return 0
+        return 0, 0
     
     # Check if read today
     today = datetime.utcnow().date()
-    if dates[0] != today and dates[0] != today - timedelta(days=1):
-        return 0
+    current_streak = 0
+    if dates[0] == today or dates[0] == today - timedelta(days=1):
+        # Count current consecutive days
+        current_streak = 1
+        for i in range(len(dates) - 1):
+            diff = (dates[i] - dates[i + 1]).days
+            if diff == 1:
+                current_streak += 1
+            else:
+                break
     
-    # Count consecutive days
-    streak = 1
+    # Calculate longest streak
+    longest_streak = 1
+    temp_streak = 1
     for i in range(len(dates) - 1):
         diff = (dates[i] - dates[i + 1]).days
         if diff == 1:
-            streak += 1
+            temp_streak += 1
+            longest_streak = max(longest_streak, temp_streak)
         else:
-            break
+            temp_streak = 1
     
-    return streak
+    return current_streak, longest_streak

@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import SkeletonCard from '../components/SkeletonCard';
 import EmptyState from '../components/EmptyState';
@@ -11,6 +12,7 @@ import { useToast } from '../context/ToastContext';
 import type { Article } from '../types/feed';
 
 export default function PopularPage() {
+  const navigate = useNavigate();
   const { showToast } = useToast();
   const { getPopular } = usePopular();
   const { addBookmark, getBookmarks } = useBookmarks();
@@ -19,22 +21,53 @@ export default function PopularPage() {
   const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
   const [readIds, setReadIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const [previewArticle, setPreviewArticle] = useState<Article | null>(null);
 
+  const observer = useRef<IntersectionObserver | null>(null);
+  const lastArticleRef = useCallback((node: HTMLDivElement) => {
+    if (loading || loadingMore) return;
+    if (observer.current) observer.current.disconnect();
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore) {
+        setPage(p => p + 1);
+      }
+    });
+    if (node) observer.current.observe(node);
+  }, [loading, loadingMore, hasMore]);
+
   useEffect(() => {
-    loadPopular();
     loadBookmarks();
     loadReadHistory();
   }, []);
 
+  useEffect(() => {
+    loadPopular();
+  }, [page]);
+
   const loadPopular = async () => {
+    if (page === 1) {
+      setLoading(true);
+    } else {
+      setLoadingMore(true);
+    }
     try {
-      const data = await getPopular({ limit: 20 });
-      if (data) setArticles(data.articles);
+      const data = await getPopular({ limit: 20, page });
+      if (data) {
+        if (page === 1) {
+          setArticles(data.articles);
+        } else {
+          setArticles(prev => [...prev, ...data.articles]);
+        }
+        setHasMore(data.articles.length === 20);
+      }
     } catch (error) {
       console.error('Failed to load popular articles:', error);
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   };
 
@@ -104,21 +137,28 @@ export default function PopularPage() {
           <EmptyState
             title="No popular articles yet"
             description="Check back later to see what's popular."
+            action={{ label: 'Browse Feed', onClick: () => navigate('/feed') }}
           />
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {articles.map((article) => (
-              <ArticleCard
-                key={article.link}
-                article={article}
-                onBookmark={handleBookmark}
-                onRead={handleRead}
-                onPreview={() => setPreviewArticle(article)}
-                isBookmarked={bookmarkedIds.has(article.link)}
-                isRead={readIds.has(article.link)}
-              />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {articles.map((article, index) => (
+                <div key={article.link} ref={index === articles.length - 1 ? lastArticleRef : null}>
+                  <ArticleCard
+                    article={article}
+                    onBookmark={handleBookmark}
+                    onRead={handleRead}
+                    onPreview={() => setPreviewArticle(article)}
+                    isBookmarked={bookmarkedIds.has(article.link)}
+                    isRead={readIds.has(article.link)}
+                  />
+                </div>
+              ))}
+            </div>
+            {loadingMore && (
+              <div className="text-center py-8 text-gray-500 dark:text-gray-400">Loading more...</div>
+            )}
+          </>
         )}
 
         <ArticlePreviewModal

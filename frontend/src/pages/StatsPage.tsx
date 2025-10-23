@@ -39,7 +39,7 @@ export default function StatsPage() {
           </div>
         ) : (
           <div className="space-y-6">
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border dark:border-gray-700">
                 <h3 className="text-sm text-gray-600 dark:text-gray-400 mb-2">Total Articles Read</h3>
                 <p className="text-4xl font-bold text-blue-500">{stats?.reads?.total || 0}</p>
@@ -52,23 +52,31 @@ export default function StatsPage() {
                 <h3 className="text-sm text-gray-600 dark:text-gray-400 mb-2">Current Streak</h3>
                 <p className="text-4xl font-bold text-orange-500">{stats?.reading_streak || 0} days</p>
               </div>
+              <div className="bg-gradient-to-br from-yellow-400 to-orange-500 p-6 rounded-lg border border-yellow-300 relative overflow-hidden">
+                <div className="absolute top-2 right-2 text-4xl">🏆</div>
+                <h3 className="text-sm text-yellow-900 mb-2 font-medium">Longest Streak</h3>
+                <p className="text-4xl font-bold text-white">{stats?.longest_streak || stats?.reading_streak || 0}</p>
+                <p className="text-xs text-yellow-900 mt-1">days</p>
+              </div>
             </div>
+
+
 
             {stats?.favorite_categories && Object.keys(stats.favorite_categories).length > 0 && (
               <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border dark:border-gray-700">
                 <h3 className="text-xl font-semibold mb-4 dark:text-white">Favorite Categories</h3>
                 <div className="space-y-3">
                   {Object.entries(stats.favorite_categories).map(([category, count]: [string, any]) => (
-                    <div key={category} className="flex items-center justify-between">
+                    <div key={category} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                       <span className="font-medium dark:text-white">{category}</span>
                       <div className="flex items-center gap-3">
-                        <div className="w-48 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                        <div className="flex-1 sm:w-48 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                           <div
                             className="bg-blue-500 h-2 rounded-full"
                             style={{ width: `${(count / stats.reads.total) * 100}%` }}
                           />
                         </div>
-                        <span className="text-sm text-gray-600 dark:text-gray-400">{count}</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">{count}</span>
                       </div>
                     </div>
                   ))}
@@ -79,7 +87,7 @@ export default function StatsPage() {
             {stats?.reads && (
               <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border dark:border-gray-700">
                 <h3 className="text-xl font-semibold mb-4 dark:text-white">Reading Summary</h3>
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                     <div className="text-2xl font-bold text-blue-500">{stats.reads.today}</div>
                     <div className="text-sm text-gray-600 dark:text-gray-400">Today</div>

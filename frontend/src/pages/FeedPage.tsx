@@ -273,12 +273,13 @@ export default function FeedPage() {
           <EmptyState
             title="No articles found"
             description="Try adjusting your filters or check back later for new content."
+            action={{ label: 'Clear Filters', onClick: () => { setCategory(''); setSource(''); } }}
           />
         ) : (
           <>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {articles.map((article, index) => (
-                <div key={article.link} ref={index === articles.length - 1 ? lastArticleRef : null}>
+                <div key={`${article.link}-${index}`} ref={index === articles.length - 1 ? lastArticleRef : null}>
                   <ArticleCard
                     article={article}
                     onBookmark={handleBookmark}
@@ -290,10 +291,8 @@ export default function FeedPage() {
                 </div>
               ))}
             </div>
-            {loading && (
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-                {[...Array(3)].map((_, i) => <SkeletonCard key={i} />)}
-              </div>
+            {loading && page > 1 && (
+              <div className="text-center py-8 text-gray-500 dark:text-gray-400">Loading more...</div>
             )}
           </>
         )}
