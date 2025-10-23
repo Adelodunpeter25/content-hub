@@ -2,23 +2,33 @@ import { useState, useEffect } from 'react';
 import { useAuthContext } from '../context/AuthContext';
 import { useFeeds } from '../hooks/useFeeds';
 import { useStats } from '../hooks/useStats';
+import { useBookmarks } from '../hooks/useBookmarks';
+import { useReadHistory } from '../hooks/useReadHistory';
+import { useToast } from '../context/ToastContext';
 import DashboardLayout from '../components/DashboardLayout';
 import LoadingSpinner from '../components/LoadingSpinner';
+import ArticlePreviewModal from '../components/ArticlePreviewModal';
 import { Flame, BookOpen, TrendingUp } from 'lucide-react';
 import type { Article } from '../types/feed';
 
 export default function DashboardPage() {
   const { user } = useAuthContext();
+  const { showToast } = useToast();
   const { getPersonalizedFeed } = useFeeds();
   const { getReadingStats } = useStats();
+  const { addBookmark, getBookmarks } = useBookmarks();
+  const { markAsRead } = useReadHistory();
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ today: 0, streak: 0, total: 0 });
   const [weather] = useState({ temp: 28, location: 'Lagos, Nigeria', condition: 'Mostly sunny', feels: 31 });
+  const [previewArticle, setPreviewArticle] = useState<Article | null>(null);
+  const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     loadFeed();
     loadStats();
+    loadBookmarks();
   }, []);
 
   const loadFeed = async () => {
@@ -47,6 +57,47 @@ export default function DashboardPage() {
     }
   };
 
+  const loadBookmarks = async () => {
+    try {
+      const data = await getBookmarks({ page: 1, limit: 100 });
+      if (data) setBookmarkedIds(new Set(data.bookmarks.map((b: any) => b.article_url)));
+    } catch (err) {
+      // Silent fail
+    }
+  };
+
+  const handleBookmark = async (url: string, title: string, source: string) => {
+    if (bookmarkedIds.has(url)) {
+      setBookmarkedIds(prev => {
+        const next = new Set(prev);
+        next.delete(url);
+        return next;
+      });
+      showToast('Bookmark removed', 'success');
+    } else {
+      setBookmarkedIds(prev => new Set(prev).add(url));
+      try {
+        await addBookmark(url, title, source);
+        showToast('Article bookmarked', 'success');
+      } catch (err: any) {
+        setBookmarkedIds(prev => {
+          const next = new Set(prev);
+          next.delete(url);
+          return next;
+        });
+        showToast(err.message || 'Failed to bookmark', 'error');
+      }
+    }
+  };
+
+  const handleRead = async (url: string) => {
+    try {
+      await markAsRead(url);
+    } catch (err) {
+      // Silent fail
+    }
+  };
+
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return 'Good Morning';
@@ -70,10 +121,14 @@ export default function DashboardPage() {
             ) : (
               <div className="space-y-4">
                 {articles.slice(0, 3).map((article, idx) => (
-                  <div key={idx} className="bg-white dark:bg-gray-800 p-4 rounded-lg border dark:border-gray-700">
+                  <div 
+                    key={idx} 
+                    onClick={() => setPreviewArticle(article)}
+                    className="bg-white dark:bg-gray-800 p-4 rounded-lg border dark:border-gray-700 cursor-pointer hover:shadow-lg transition-shadow"
+                  >
                     <span className="text-xs text-gray-500 dark:text-gray-400">{article.categories?.[0] || 'General'} • {article.source}</span>
                     <h3 className="font-semibold mt-1 dark:text-white">{article.title}</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 line-clamp-2">{article.description}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 line-clamp-2">{article.summary}</p>
                   </div>
                 ))}
                 <a href="/feed" className="text-blue-500 hover:underline text-sm">View all articles →</a>
@@ -113,6 +168,23 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
+
+        <ArticlePreviewModal
+          article={previewArticle}
+          isOpen={!!previewArticle}
+          onClose={() => setPreviewArticle(null)}
+          onBookmark={() => {
+            if (previewArticle) {
+              handleBookmark(previewArticle.link, previewArticle.title, previewArticle.source);
+            }
+          }}
+          onRead={() => {
+            if (previewArticle) {
+              handleRead(previewArticle.link);
+            }
+          }}
+          isBookmarked={previewArticle ? bookmarkedIds.has(previewArticle.link) : false}
+        />
       </div>
     </DashboardLayout>
   );
