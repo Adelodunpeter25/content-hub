@@ -12,6 +12,14 @@ def strip_html_tags(text):
     text = ' '.join(text.split())
     return text
 
+def truncate_to_sentences(text, max_sentences=2):
+    """Truncate text to first N sentences"""
+    # Split by sentence endings
+    sentences = re.split(r'(?<=[.!?])\s+', text)
+    # Take first max_sentences
+    truncated = ' '.join(sentences[:max_sentences])
+    return truncated
+
 def fetch_rss_feeds(feed_urls):
     """
     Fetch and parse multiple RSS feeds
@@ -39,6 +47,9 @@ def fetch_rss_feeds(feed_urls):
                 
                 # Clean summary
                 clean_summary = strip_html_tags(raw_summary)
+                
+                # Truncate to 2 sentences for cleaner display
+                clean_summary = truncate_to_sentences(clean_summary, max_sentences=2)
                 
                 # Hacker News specific: extract only meaningful text before metadata
                 if 'hnrss.org' in url or 'Hacker News' in source:
