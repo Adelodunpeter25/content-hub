@@ -39,35 +39,34 @@ export default function ReadHistoryPage() {
           />
         ) : (
           <>
-            <div className="space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {history.map((item) => (
-                <div key={item.id} className="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg p-4 hover:shadow-lg transition-shadow">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        {item.article_category && (
-                          <span className="text-xs px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300">
-                            {item.article_category}
-                          </span>
-                        )}
-                        {item.article_source && (
-                          <span className="text-xs text-gray-500 dark:text-gray-400">{item.article_source}</span>
-                        )}
-                      </div>
-                      <a
-                        href={item.article_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="font-semibold text-lg hover:text-blue-500 dark:text-white dark:hover:text-blue-400"
-                      >
-                        {item.article_title || item.article_url}
-                      </a>
-                      <div className="flex items-center gap-3 mt-2 text-sm text-gray-500 dark:text-gray-400">
-                        <span>Read on {new Date(item.read_at).toLocaleDateString()}</span>
-                        <span>•</span>
-                        <span>{new Date(item.read_at).toLocaleTimeString()}</span>
-                      </div>
-                    </div>
+                <div key={item.id} className="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg p-5 hover:shadow-lg transition-shadow">
+                  <div className="flex items-center gap-2 mb-3">
+                    {item.article_category && (
+                      <span className="text-xs px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300">
+                        {item.article_category}
+                      </span>
+                    )}
+                    {item.article_source && (
+                      <span className="text-xs text-gray-500 dark:text-gray-400">{item.article_source}</span>
+                    )}
+                  </div>
+                  <h3 className="font-semibold text-lg mb-3 line-clamp-3 dark:text-white">
+                    {item.article_title || item.article_url}
+                  </h3>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      {new Date(item.read_at).toLocaleDateString()}
+                    </span>
+                    <a
+                      href={item.article_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-blue-500 hover:underline font-medium"
+                    >
+                      Read →
+                    </a>
                   </div>
                 </div>
               ))}
