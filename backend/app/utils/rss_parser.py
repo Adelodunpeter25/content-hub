@@ -35,12 +35,26 @@ def fetch_rss_feeds(feed_urls):
             # Process each entry in the feed
             for entry in feed.entries:
                 raw_title = entry.get('title', 'No Title')
-                raw_summary = entry.get('summary', entry.get('description', 'No summary available'))
+                raw_summary = entry.get('summary', entry.get('description', ''))
+                
+                # Clean summary
+                clean_summary = strip_html_tags(raw_summary)
+                
+                # Hacker News specific: extract only meaningful text before metadata
+                if 'hnrss.org' in url or 'Hacker News' in source:
+                    # Remove metadata lines (Article URL, Comments URL, Points, # Comments)
+                    lines = clean_summary.split('\n')
+                    meaningful_lines = []
+                    for line in lines:
+                        line = line.strip()
+                        if line and not any(x in line for x in ['Article URL:', 'Comments URL:', 'Points:', '# Comments:']):
+                            meaningful_lines.append(line)
+                    clean_summary = ' '.join(meaningful_lines) if meaningful_lines else 'Discussion on Hacker News'
                 
                 article = {
                     'title': strip_html_tags(raw_title),
                     'link': entry.get('link', ''),
-                    'summary': strip_html_tags(raw_summary),
+                    'summary': clean_summary,
                     'source': source,
                     'published': entry.get('published', entry.get('updated', '')),
                     'type': 'rss'

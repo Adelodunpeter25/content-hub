@@ -33,6 +33,7 @@ import SettingsPage from './pages/SettingsPage';
 import StatsPage from './pages/StatsPage';
 import SearchPage from './pages/SearchPage';
 import TrendingPage from './pages/TrendingPage';
+import PopularPage from './pages/PopularPage';
 import ReadHistoryPage from './pages/ReadHistoryPage';
 
 function App() {
@@ -88,6 +89,11 @@ function App() {
           <Route path="/trending" element={
             <ProtectedRoute>
               <TrendingPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/popular" element={
+            <ProtectedRoute>
+              <PopularPage />
             </ProtectedRoute>
           } />
           <Route path="/history" element={

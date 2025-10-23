@@ -82,7 +82,7 @@ export default function CommandPalette({ isOpen, onClose }: CommandPaletteProps)
         </div>
         <div className="max-h-96 overflow-y-auto">
           {filteredCommands.length === 0 ? (
-            <div className="p-8 text-center text-gray-500">No commands found</div>
+            <div className="p-8 text-center text-gray-500 dark:text-gray-400">No commands found</div>
           ) : (
             <div className="py-2">
               {filteredCommands.map((cmd, index) => (
@@ -92,21 +92,21 @@ export default function CommandPalette({ isOpen, onClose }: CommandPaletteProps)
                     cmd.action();
                     onClose();
                   }}
-                  className={`w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-100 transition-colors ${
-                    index === selectedIndex ? 'bg-blue-50 border-l-4 border-blue-500' : ''
+                  className={`w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
+                    index === selectedIndex ? 'bg-blue-50 dark:bg-blue-900 border-l-4 border-blue-500' : ''
                   }`}
                 >
                   <span className="text-2xl">{cmd.icon}</span>
                   <div className="flex-1 text-left">
-                    <div className="font-medium">{cmd.label}</div>
-                    <div className="text-xs text-gray-500">{cmd.category}</div>
+                    <div className="font-medium text-gray-900 dark:text-white">{cmd.label}</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">{cmd.category}</div>
                   </div>
                 </button>
               ))}
             </div>
           )}
         </div>
-        <div className="p-3 border-t bg-gray-50 text-xs text-gray-500 flex items-center justify-between">
+        <div className="p-3 border-t dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-xs text-gray-500 dark:text-gray-400 flex items-center justify-between">
           <div className="flex gap-4">
             <span>↑↓ Navigate</span>
             <span>↵ Select</span>

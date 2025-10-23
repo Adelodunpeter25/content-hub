@@ -2,29 +2,34 @@ import { useState, useEffect } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import SkeletonCard from '../components/SkeletonCard';
 import EmptyState from '../components/EmptyState';
-import { useTrending } from '../hooks/useTrending';
+import { usePopular } from '../hooks/usePopular';
 import type { Article } from '../types/feed';
 
-export default function TrendingPage() {
-  const { getTrending } = useTrending();
+export default function PopularPage() {
+  const { getPopular } = usePopular();
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadTrending();
+    loadPopular();
   }, []);
 
-  const loadTrending = async () => {
-    const data = await getTrending({ limit: 20 });
-    if (data) setArticles(data.articles);
-    setLoading(false);
+  const loadPopular = async () => {
+    try {
+      const data = await getPopular({ limit: 20 });
+      if (data) setArticles(data.articles);
+    } catch (error) {
+      console.error('Failed to load popular articles:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <DashboardLayout>
       <div>
-        <h2 className="text-3xl font-bold mb-6 dark:text-white">🔥 Trending Articles</h2>
-        <p className="text-gray-600 dark:text-gray-400 mb-6">Latest articles published in the last 24 hours</p>
+        <h2 className="text-3xl font-bold mb-6 dark:text-white">⭐ Most Read Articles</h2>
+        <p className="text-gray-600 dark:text-gray-400 mb-6">Most read articles across all users in the last 7 days</p>
 
         {loading ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -32,7 +37,7 @@ export default function TrendingPage() {
           </div>
         ) : articles.length === 0 ? (
           <EmptyState
-            title="No trending articles yet"
+            title="No popular articles yet"
             description="Check back later to see what's popular."
           />
         ) : (
@@ -47,7 +52,7 @@ export default function TrendingPage() {
               >
                 <div className="flex items-center gap-2 mb-3">
                   {article.categories && article.categories.length > 0 && (
-                    <span className="text-xs px-2 py-1 rounded-full bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300">
+                    <span className="text-xs px-2 py-1 rounded-full bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300">
                       {article.categories[0]}
                     </span>
                   )}

@@ -44,6 +44,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     { icon: '🏠', label: 'Dashboard', path: '/dashboard' },
     { icon: '📰', label: 'Feed', path: '/feed' },
     { icon: '🔥', label: 'Trending', path: '/trending' },
+    { icon: '⭐', label: 'Most Read', path: '/popular' },
     { icon: '📑', label: 'Bookmarks', path: '/bookmarks' },
     { icon: '📅', label: 'History', path: '/history' },
     { icon: '📊', label: 'Stats', path: '/stats' },
@@ -95,7 +96,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
       <div className="flex">
         {/* Desktop Sidebar */}
-        <aside className="hidden md:block w-64 bg-white dark:bg-gray-800 border-r dark:border-gray-700 min-h-screen sticky top-[73px]">
+        <aside className="hidden md:block w-64 bg-white dark:bg-gray-800 border-r dark:border-gray-700 h-[calc(100vh-73px)] sticky top-[73px] overflow-hidden">
           <div className="p-4 space-y-2">
             {menuItems.map(item => (
               <button
