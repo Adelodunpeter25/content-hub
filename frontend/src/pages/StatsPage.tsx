@@ -25,7 +25,7 @@ export default function StatsPage() {
 
         {loading ? (
           <LoadingSpinner />
-        ) : !stats || stats.total_reads === 0 ? (
+        ) : !stats || stats.reads?.total === 0 ? (
           <div className="bg-white dark:bg-gray-800 p-12 rounded-lg border dark:border-gray-700 text-center">
             <div className="text-6xl mb-4">📊</div>
             <h3 className="text-xl font-semibold mb-2 dark:text-white">No Reading Stats Yet</h3>
@@ -42,11 +42,11 @@ export default function StatsPage() {
             <div className="grid md:grid-cols-3 gap-6">
               <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border dark:border-gray-700">
                 <h3 className="text-sm text-gray-600 dark:text-gray-400 mb-2">Total Articles Read</h3>
-                <p className="text-4xl font-bold text-blue-500">{stats?.total_reads || 0}</p>
+                <p className="text-4xl font-bold text-blue-500">{stats?.reads?.total || 0}</p>
               </div>
               <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border dark:border-gray-700">
                 <h3 className="text-sm text-gray-600 dark:text-gray-400 mb-2">This Week</h3>
-                <p className="text-4xl font-bold text-green-500">{stats?.weekly_reads || 0}</p>
+                <p className="text-4xl font-bold text-green-500">{stats?.reads?.week || 0}</p>
               </div>
               <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border dark:border-gray-700">
                 <h3 className="text-sm text-gray-600 dark:text-gray-400 mb-2">Current Streak</h3>
@@ -54,21 +54,21 @@ export default function StatsPage() {
               </div>
             </div>
 
-            {stats?.favorite_categories && Array.isArray(stats.favorite_categories) && stats.favorite_categories.length > 0 && (
+            {stats?.favorite_categories && Object.keys(stats.favorite_categories).length > 0 && (
               <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border dark:border-gray-700">
                 <h3 className="text-xl font-semibold mb-4 dark:text-white">Favorite Categories</h3>
                 <div className="space-y-3">
-                  {stats.favorite_categories.map((cat: any) => (
-                    <div key={cat.category} className="flex items-center justify-between">
-                      <span className="font-medium dark:text-white">{cat.category}</span>
+                  {Object.entries(stats.favorite_categories).map(([category, count]: [string, any]) => (
+                    <div key={category} className="flex items-center justify-between">
+                      <span className="font-medium dark:text-white">{category}</span>
                       <div className="flex items-center gap-3">
                         <div className="w-48 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                           <div
                             className="bg-blue-500 h-2 rounded-full"
-                            style={{ width: `${(cat.count / stats.total_reads) * 100}%` }}
+                            style={{ width: `${(count / stats.reads.total) * 100}%` }}
                           />
                         </div>
-                        <span className="text-sm text-gray-600 dark:text-gray-400">{cat.count}</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">{count}</span>
                       </div>
                     </div>
                   ))}
@@ -76,18 +76,22 @@ export default function StatsPage() {
               </div>
             )}
 
-            {stats?.daily_reads && Array.isArray(stats.daily_reads) && stats.daily_reads.length > 0 && (
+            {stats?.reads && (
               <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border dark:border-gray-700">
-                <h3 className="text-xl font-semibold mb-4 dark:text-white">Reading Activity</h3>
-                <div className="grid grid-cols-7 gap-2">
-                  {stats.daily_reads.map((day: any, idx: number) => (
-                    <div key={idx} className="text-center">
-                      <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">{day.day}</div>
-                      <div className="bg-blue-100 dark:bg-blue-900 rounded p-2">
-                        <span className="text-sm font-semibold dark:text-white">{day.count}</span>
-                      </div>
-                    </div>
-                  ))}
+                <h3 className="text-xl font-semibold mb-4 dark:text-white">Reading Summary</h3>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                    <div className="text-2xl font-bold text-blue-500">{stats.reads.today}</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">Today</div>
+                  </div>
+                  <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                    <div className="text-2xl font-bold text-green-500">{stats.reads.month}</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">This Month</div>
+                  </div>
+                  <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                    <div className="text-2xl font-bold text-purple-500">{stats.bookmarks.total}</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">Bookmarks</div>
+                  </div>
                 </div>
               </div>
             )}

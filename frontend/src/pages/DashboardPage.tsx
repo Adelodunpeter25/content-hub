@@ -1,20 +1,24 @@
 import { useState, useEffect } from 'react';
 import { useAuthContext } from '../context/AuthContext';
 import { useFeeds } from '../hooks/useFeeds';
+import { useStats } from '../hooks/useStats';
 import DashboardLayout from '../components/DashboardLayout';
-
 import LoadingSpinner from '../components/LoadingSpinner';
+import { Flame, BookOpen, TrendingUp } from 'lucide-react';
 import type { Article } from '../types/feed';
 
 export default function DashboardPage() {
   const { user } = useAuthContext();
   const { getPersonalizedFeed } = useFeeds();
+  const { getReadingStats } = useStats();
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({ today: 0, streak: 0, total: 0 });
   const [weather] = useState({ temp: 28, location: 'Lagos, Nigeria', condition: 'Mostly sunny', feels: 31 });
 
   useEffect(() => {
     loadFeed();
+    loadStats();
   }, []);
 
   const loadFeed = async () => {
@@ -25,6 +29,21 @@ export default function DashboardPage() {
       console.error('Failed to load feed');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadStats = async () => {
+    try {
+      const data = await getReadingStats();
+      if (data) {
+        setStats({
+          today: data.reads?.today || 0,
+          streak: data.reading_streak || 0,
+          total: data.reads?.total || 0
+        });
+      }
+    } catch (err) {
+      console.error('Failed to load stats');
     }
   };
 
@@ -75,15 +94,23 @@ export default function DashboardPage() {
         </div>
 
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border dark:border-gray-700">
-          <h3 className="font-semibold mb-4 dark:text-white">Quick Notes</h3>
-          <textarea
-            placeholder="Draft new idea..."
-            className="w-full border dark:border-gray-700 rounded-lg p-3 mb-3 dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"
-            rows={3}
-          />
-          <div className="flex gap-2">
-            <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">Save</button>
-            <button className="px-4 py-2 border dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-white">Discard</button>
+          <h3 className="font-semibold mb-4 dark:text-white">Reading Stats</h3>
+          <div className="grid grid-cols-3 gap-4">
+            <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+              <BookOpen className="mx-auto mb-2 text-blue-500" size={32} />
+              <div className="text-2xl font-bold dark:text-white">{stats.today}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Read Today</div>
+            </div>
+            <div className="text-center p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+              <Flame className="mx-auto mb-2 text-orange-500" size={32} />
+              <div className="text-2xl font-bold dark:text-white">{stats.streak}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Day Streak</div>
+            </div>
+            <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+              <TrendingUp className="mx-auto mb-2 text-green-500" size={32} />
+              <div className="text-2xl font-bold dark:text-white">{stats.total}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Total Reads</div>
+            </div>
           </div>
         </div>
       </div>
