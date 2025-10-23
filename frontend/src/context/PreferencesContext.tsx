@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
+import type { ReactNode } from 'react';
 
 interface PreferencesContextType {
   fontSize: 'small' | 'medium' | 'large';
@@ -14,9 +15,13 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const prefs = localStorage.getItem('userPreferences');
     if (prefs) {
-      const parsed = JSON.parse(prefs);
-      setFontSize(parsed.font_size || 'medium');
-      setViewMode(parsed.view_mode || 'comfortable');
+      try {
+        const parsed = JSON.parse(prefs);
+        setFontSize(parsed.font_size || 'medium');
+        setViewMode(parsed.view_mode || 'comfortable');
+      } catch {
+        // Ignore parse errors
+      }
     }
   }, []);
 

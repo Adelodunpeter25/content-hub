@@ -3,6 +3,8 @@ export interface User {
   email: string;
   name?: string;
   created_at?: string;
+  last_login_at?: string;
+  last_login_ip?: string;
 }
 
 export interface UserPreferences {
@@ -18,4 +20,6 @@ export interface PreferencesUpdate {
   feed_sources?: string[];
   feed_types?: string[];
   show_read_articles?: boolean;
+  font_size?: string;
+  view_mode?: string;
 }
