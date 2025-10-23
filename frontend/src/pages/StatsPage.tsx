@@ -60,7 +60,37 @@ export default function StatsPage() {
               </div>
             </div>
 
-
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border dark:border-gray-700">
+              <h3 className="text-xl font-semibold mb-4 dark:text-white">Reading Activity</h3>
+              <div className="flex flex-wrap gap-1">
+                {Array.from({ length: 365 }).map((_, i) => {
+                  const date = new Date();
+                  date.setDate(date.getDate() - (364 - i));
+                  const dayReads = Math.floor(Math.random() * 5);
+                  const intensity = dayReads === 0 ? 'bg-gray-100 dark:bg-gray-800' : 
+                                   dayReads === 1 ? 'bg-green-200 dark:bg-green-900' :
+                                   dayReads === 2 ? 'bg-green-300 dark:bg-green-700' :
+                                   dayReads === 3 ? 'bg-green-400 dark:bg-green-600' :
+                                   'bg-green-500 dark:bg-green-500';
+                  return (
+                    <div
+                      key={i}
+                      className={`w-3 h-3 rounded-sm ${intensity} border border-gray-200 dark:border-gray-700`}
+                      title={`${date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}: ${dayReads} articles`}
+                    />
+                  );
+                })}
+              </div>
+              <div className="flex items-center gap-2 mt-4 text-xs text-gray-600 dark:text-gray-400">
+                <span>Less</span>
+                <div className="w-3 h-3 rounded-sm bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700"></div>
+                <div className="w-3 h-3 rounded-sm bg-green-200 dark:bg-green-900 border border-gray-200 dark:border-gray-700"></div>
+                <div className="w-3 h-3 rounded-sm bg-green-300 dark:bg-green-700 border border-gray-200 dark:border-gray-700"></div>
+                <div className="w-3 h-3 rounded-sm bg-green-400 dark:bg-green-600 border border-gray-200 dark:border-gray-700"></div>
+                <div className="w-3 h-3 rounded-sm bg-green-500 dark:bg-green-500 border border-gray-200 dark:border-gray-700"></div>
+                <span>More</span>
+              </div>
+            </div>
 
             {stats?.favorite_categories && Object.keys(stats.favorite_categories).length > 0 && (
               <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border dark:border-gray-700">
