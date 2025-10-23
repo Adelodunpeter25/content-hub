@@ -5,6 +5,7 @@ import { useTheme } from '../context/ThemeContext';
 import SearchModal from './SearchModal';
 import ScrollToTopButton from './ScrollToTop';
 import CommandPalette from './CommandPalette';
+import { Home, Newspaper, TrendingUp, Star, Bookmark, History, BarChart3, Settings, LogOut, Menu, Search, Moon, Sun } from 'lucide-react';
 import type { ReactNode } from 'react';
 
 interface DashboardLayoutProps {
@@ -41,14 +42,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   };
 
   const menuItems = [
-    { icon: '🏠', label: 'Dashboard', path: '/dashboard' },
-    { icon: '📰', label: 'Feed', path: '/feed' },
-    { icon: '🔥', label: 'Trending', path: '/trending' },
-    { icon: '⭐', label: 'Most Read', path: '/popular' },
-    { icon: '📑', label: 'Bookmarks', path: '/bookmarks' },
-    { icon: '📅', label: 'History', path: '/history' },
-    { icon: '📊', label: 'Stats', path: '/stats' },
-    { icon: '⚙️', label: 'Settings', path: '/settings' },
+    { icon: Home, label: 'Dashboard', path: '/dashboard' },
+    { icon: Newspaper, label: 'Feed', path: '/feed' },
+    { icon: TrendingUp, label: 'Trending', path: '/trending' },
+    { icon: Star, label: 'Most Read', path: '/popular' },
+    { icon: Bookmark, label: 'Bookmarks', path: '/bookmarks' },
+    { icon: History, label: 'History', path: '/history' },
+    { icon: BarChart3, label: 'Stats', path: '/stats' },
+    { icon: Settings, label: 'Settings', path: '/settings' },
   ];
 
   return (
@@ -58,9 +59,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setIsSidebarOpen(true)}
-              className="md:hidden text-2xl text-gray-700 dark:text-gray-300 mr-2"
+              className="md:hidden text-gray-700 dark:text-gray-300 mr-2"
             >
-              ☰
+              <Menu size={24} />
             </button>
             <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg">
               <span className="text-lg font-bold text-white">CH</span>
@@ -74,15 +75,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               onClick={handleSearch}
               className="border rounded-lg px-4 py-2 text-gray-500 hover:bg-gray-50 md:w-64 md:text-left dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800"
             >
-              <span className="md:hidden text-xl">🔍</span>
+              <span className="md:hidden"><Search size={20} /></span>
               <span className="hidden md:inline">Search articles...</span>
             </button>
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-700 dark:text-gray-300"
               title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
             >
-              {theme === 'light' ? '🌙' : '☀️'}
+              {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
             </button>
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-600 dark:text-gray-300 hidden md:block">{user?.name}</span>
@@ -108,15 +109,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                     : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                 }`}
               >
-                <span className="text-xl">{item.icon}</span>
+                <item.icon size={20} />
                 <span className="font-medium">{item.label}</span>
               </button>
             ))}
             <button
               onClick={logout}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 transition-colors"
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 dark:hover:bg-red-950 transition-colors"
             >
-              <span className="text-xl">↩️</span>
+              <LogOut size={20} />
               <span className="font-medium">Logout</span>
             </button>
           </div>
@@ -145,15 +146,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                         : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                     }`}
                   >
-                    <span className="text-xl">{item.icon}</span>
+                    <item.icon size={20} />
                     <span className="font-medium">{item.label}</span>
                   </button>
                 ))}
                 <button
                   onClick={logout}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 transition-colors"
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 dark:hover:bg-red-950 transition-colors"
                 >
-                  <span className="text-xl">↩️</span>
+                  <LogOut size={20} />
                   <span className="font-medium">Logout</span>
                 </button>
               </div>
@@ -183,7 +184,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 location.pathname === item.path ? 'text-blue-500' : 'text-gray-600 dark:text-gray-400'
               }`}
             >
-              <span className="text-2xl">{item.icon}</span>
+              <item.icon size={24} />
               <span className="text-xs">{item.label}</span>
             </button>
           ))}
