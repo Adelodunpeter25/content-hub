@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import { useFeeds } from '../hooks/useFeeds';
+import { useToast } from '../context/ToastContext';
 import type { Article } from '../types/feed';
 
 export default function SearchPage() {
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Article[]>([]);
   const [loading, setLoading] = useState(false);
@@ -25,15 +27,20 @@ export default function SearchPage() {
 
   const searchArticles = async () => {
     setLoading(true);
-    const data = await getPersonalizedFeed({ page: 1, limit: 50 });
-    if (data) {
-      const filtered = data.articles.filter((article: Article) =>
-        article.title.toLowerCase().includes(query.toLowerCase()) ||
-        article.summary?.toLowerCase().includes(query.toLowerCase())
-      );
-      setResults(filtered);
+    try {
+      const data = await getPersonalizedFeed({ page: 1, limit: 50 });
+      if (data) {
+        const filtered = data.articles.filter((article: Article) =>
+          article.title.toLowerCase().includes(query.toLowerCase()) ||
+          article.summary?.toLowerCase().includes(query.toLowerCase())
+        );
+        setResults(filtered);
+      }
+    } catch (err: any) {
+      showToast(err.message || 'Search failed', 'error');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (

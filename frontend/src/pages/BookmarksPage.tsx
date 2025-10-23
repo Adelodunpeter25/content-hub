@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import { useToast } from '../context/ToastContext';
 import { useBookmarks } from '../hooks/useBookmarks';
 import { useReadHistory } from '../hooks/useReadHistory';
 
@@ -13,6 +13,7 @@ import DashboardLayout from '../components/DashboardLayout';
 
 export default function BookmarksPage() {
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
 
   const [loading, setLoading] = useState(true);
@@ -118,10 +119,16 @@ export default function BookmarksPage() {
           onConfirm={async () => {
             if (bookmarkToRemove) {
               setRemovingId(bookmarkToRemove);
-              await removeBookmark(bookmarkToRemove);
-              setBookmarks(prev => prev.filter(b => b.id !== bookmarkToRemove));
-              setRemovingId(null);
-              setBookmarkToRemove(null);
+              try {
+                await removeBookmark(bookmarkToRemove);
+                setBookmarks(prev => prev.filter(b => b.id !== bookmarkToRemove));
+                showToast('Bookmark removed', 'success');
+              } catch (err: any) {
+                showToast(err.message || 'Failed to remove bookmark', 'error');
+              } finally {
+                setRemovingId(null);
+                setBookmarkToRemove(null);
+              }
             }
           }}
           onCancel={() => setBookmarkToRemove(null)}

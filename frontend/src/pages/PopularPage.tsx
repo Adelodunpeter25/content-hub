@@ -84,8 +84,9 @@ export default function PopularPage() {
     setReadIds(prev => new Set(prev).add(url));
     try {
       await markAsRead(url, title, source, category);
-    } catch (err) {
-      // Silent fail
+      showToast('Marked as read', 'success');
+    } catch (err: any) {
+      showToast(err.message || 'Failed to mark as read', 'error');
     }
   };
 

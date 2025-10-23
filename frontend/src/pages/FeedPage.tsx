@@ -128,16 +128,13 @@ export default function FeedPage() {
 
   const handleBookmark = async (url: string, title: string, source: string) => {
     if (bookmarkedIds.has(url)) {
-      // Optimistic update
       setBookmarkedIds(prev => {
         const next = new Set(prev);
         next.delete(url);
         return next;
       });
       showToast('Bookmark removed', 'success');
-      // Note: removeBookmark by URL not implemented, just update UI
     } else {
-      // Optimistic update
       setBookmarkedIds(prev => new Set(prev).add(url));
       try {
         await addBookmark(url, title, source);
@@ -154,12 +151,12 @@ export default function FeedPage() {
   };
 
   const handleRead = async (url: string, title?: string, source?: string, category?: string) => {
-    // Optimistic update
     setReadIds(prev => new Set(prev).add(url));
     try {
       await markAsRead(url, title, source, category);
-    } catch (err) {
-      // Silent fail for read tracking
+      showToast('Marked as read', 'success');
+    } catch (err: any) {
+      showToast(err.message || 'Failed to mark as read', 'error');
     }
   };
 
