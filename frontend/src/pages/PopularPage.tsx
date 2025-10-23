@@ -96,7 +96,7 @@ export default function PopularPage() {
         <p className="text-gray-600 dark:text-gray-400 mb-6">Most read articles across all users in the last 7 days</p>
 
         {loading ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => <SkeletonCard key={i} />)}
           </div>
         ) : articles.length === 0 ? (
@@ -105,7 +105,7 @@ export default function PopularPage() {
             description="Check back later to see what's popular."
           />
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {articles.map((article) => (
               <ArticleCard
                 key={article.link}

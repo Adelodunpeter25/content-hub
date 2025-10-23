@@ -28,7 +28,7 @@ export default function TrendingPage() {
   }, []);
 
   const loadTrending = async () => {
-    const data = await getTrending({ days: 2, limit: 100 });
+    const data = await getTrending({ limit: 100 });
     if (data) setArticles(data.articles);
     setLoading(false);
   };
@@ -88,10 +88,10 @@ export default function TrendingPage() {
     <DashboardLayout>
       <div>
         <h2 className="text-3xl font-bold mb-6 dark:text-white">🔥 Trending Articles</h2>
-        <p className="text-gray-600 dark:text-gray-400 mb-6">Latest articles published in the last 2 days</p>
+        <p className="text-gray-600 dark:text-gray-400 mb-6">Latest articles published in the last 24 hours</p>
 
         {loading ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => <SkeletonCard key={i} />)}
           </div>
         ) : articles.length === 0 ? (
@@ -100,7 +100,7 @@ export default function TrendingPage() {
             description="Check back later to see what's popular."
           />
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {articles.map((article) => (
               <ArticleCard
                 key={article.link}
