@@ -19,7 +19,7 @@ def get_trending_articles(days=1, limit=20):
                 pub_date = parser.parse(published)
                 if pub_date.replace(tzinfo=None) >= cutoff_date:
                     recent_articles.append(article)
-            except:
+            except Exception:
                 # If date parsing fails, include the article
                 recent_articles.append(article)
         else:

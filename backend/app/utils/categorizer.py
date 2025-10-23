@@ -28,7 +28,6 @@ def categorize_article(title, summary=''):
     """
     title_lower = title.lower()
     summary_lower = summary.lower()
-    text = f"{title_lower} {summary_lower}"
     
     category_scores = {}
     
