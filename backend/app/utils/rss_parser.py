@@ -38,7 +38,16 @@ def fetch_rss_feeds(feed_urls):
             feed = feedparser.parse(url)
             
             # Extract source name from feed title or URL
-            source = feed.feed.get('title', url.split('/')[2])
+            source_title = feed.feed.get('title', url.split('/')[2])
+            # Clean up source name (remove descriptions)
+            if ':' in source_title:
+                source = source_title.split(':')[0].strip()
+            elif ' - ' in source_title:
+                source = source_title.split(' - ')[0].strip()
+            elif ' is ' in source_title.lower():
+                source = source_title.split(' is ')[0].strip()
+            else:
+                source = source_title
             
             # Process each entry in the feed
             for entry in feed.entries:

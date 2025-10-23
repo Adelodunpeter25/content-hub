@@ -60,27 +60,51 @@ export default function StatsPage() {
               </div>
             </div>
 
-            {stats?.favorite_categories && Object.keys(stats.favorite_categories).length > 0 && (
-              <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border dark:border-gray-700">
-                <h3 className="text-xl font-semibold mb-4 dark:text-white">Favorite Categories</h3>
-                <div className="space-y-3">
-                  {Object.entries(stats.favorite_categories).map(([category, count]: [string, any]) => (
-                    <div key={category} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                      <span className="font-medium dark:text-white">{category}</span>
-                      <div className="flex items-center gap-3">
-                        <div className="flex-1 sm:w-48 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                          <div
-                            className="bg-blue-500 h-2 rounded-full"
-                            style={{ width: `${(count / stats.reads.total) * 100}%` }}
-                          />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {stats?.favorite_categories && Object.keys(stats.favorite_categories).length > 0 && (
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border dark:border-gray-700">
+                  <h3 className="text-xl font-semibold mb-4 dark:text-white">Favorite Categories</h3>
+                  <div className="space-y-3">
+                    {Object.entries(stats.favorite_categories).map(([category, count]: [string, any]) => (
+                      <div key={category} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                        <span className="font-medium dark:text-white">{category}</span>
+                        <div className="flex items-center gap-3">
+                          <div className="flex-1 sm:w-48 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div
+                              className="bg-blue-500 h-2 rounded-full"
+                              style={{ width: `${(count / stats.reads.total) * 100}%` }}
+                            />
+                          </div>
+                          <span className="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">{count}</span>
                         </div>
-                        <span className="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">{count}</span>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+
+              {stats?.favorite_sources && Object.keys(stats.favorite_sources).length > 0 && (
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border dark:border-gray-700">
+                  <h3 className="text-xl font-semibold mb-4 dark:text-white">Top Sources</h3>
+                  <div className="space-y-3">
+                    {Object.entries(stats.favorite_sources).map(([source, count]: [string, any]) => (
+                      <div key={source} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                        <span className="font-medium dark:text-white">{source}</span>
+                        <div className="flex items-center gap-3">
+                          <div className="flex-1 sm:w-48 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div
+                              className="bg-purple-500 h-2 rounded-full"
+                              style={{ width: `${(count / stats.reads.total) * 100}%` }}
+                            />
+                          </div>
+                          <span className="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">{count}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
 
             {stats?.reads && (
               <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border dark:border-gray-700">
