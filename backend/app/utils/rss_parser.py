@@ -34,13 +34,13 @@ def fetch_rss_feeds(feed_urls):
             
             # Process each entry in the feed
             for entry in feed.entries:
+                raw_title = entry.get('title', 'No Title')
                 raw_summary = entry.get('summary', entry.get('description', 'No summary available'))
-                clean_summary = strip_html_tags(raw_summary)
                 
                 article = {
-                    'title': entry.get('title', 'No Title'),
+                    'title': strip_html_tags(raw_title),
                     'link': entry.get('link', ''),
-                    'summary': clean_summary,
+                    'summary': strip_html_tags(raw_summary),
                     'source': source,
                     'published': entry.get('published', entry.get('updated', '')),
                     'type': 'rss'

@@ -24,4 +24,5 @@ dependencies = [
     "ruff>=0.14.1",
     "sqlalchemy>=2.0.44",
     "tool>=0.8.0",
+    "google-generativeai>=0.8.3",
 ]
