@@ -71,3 +71,33 @@ body {
 .page-transition {
   animation: fade-in-up 0.3s ease-out;
 }
+
+/* Font size preferences */
+:root[data-font-size="small"] {
+  font-size: 14px;
+}
+
+:root[data-font-size="medium"] {
+  font-size: 16px;
+}
+
+:root[data-font-size="large"] {
+  font-size: 18px;
+}
+
+/* View mode preferences */
+:root[data-view-mode="compact"] .article-card {
+  padding: 0.75rem;
+}
+
+:root[data-view-mode="comfortable"] .article-card {
+  padding: 1rem;
+}
+
+:root[data-view-mode="compact"] .article-spacing {
+  gap: 0.75rem;
+}
+
+:root[data-view-mode="comfortable"] .article-spacing {
+  gap: 1rem;
+}

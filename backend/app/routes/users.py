@@ -79,6 +79,10 @@ def update_user_preferences():
                     preferences.feed_types = feed_types
                 if pref_data.show_read_articles is not None:
                     preferences.show_read_articles = pref_data.show_read_articles
+                if pref_data.font_size is not None:
+                    preferences.font_size = pref_data.font_size
+                if pref_data.view_mode is not None:
+                    preferences.view_mode = pref_data.view_mode
             
             db.flush()
             

@@ -96,6 +96,11 @@ def login():
             if not user.check_password(login_data.password):
                 raise BadRequestError('Invalid email or password')
             
+            # Update last login
+            user.last_login_at = datetime.utcnow()
+            user.last_login_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+            db.flush()
+            
             access_token = generate_access_token(user.id)
             refresh_token = create_refresh_token(user.id, db)
             needs_onboarding = check_needs_onboarding(user.id, db)
@@ -273,6 +278,11 @@ def google_callback():
                     preferences = UserFeedPreferences(user_id=user.id)
                     db.add(preferences)
                     db.flush()
+            
+            # Update last login
+            user.last_login_at = datetime.utcnow()
+            user.last_login_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+            db.flush()
             
             access_token = generate_access_token(user.id)
             refresh_token = create_refresh_token(user.id, db)

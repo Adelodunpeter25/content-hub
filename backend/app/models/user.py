@@ -13,6 +13,8 @@ class User(Base):
     password_hash = Column(String, nullable=True)  # Nullable for Google OAuth users
     google_id = Column(String, unique=True, nullable=True, index=True)  # Google user ID
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    last_login_at = Column(DateTime(timezone=True), nullable=True)
+    last_login_ip = Column(String(45), nullable=True)
     
     def set_password(self, password):
         """Hash and set password"""
@@ -28,5 +30,7 @@ class User(Base):
             'id': self.id,
             'email': self.email,
             'name': self.name,
-            'created_at': self.created_at.isoformat() if self.created_at else None
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'last_login_at': self.last_login_at.isoformat() if self.last_login_at else None,
+            'last_login_ip': self.last_login_ip
         }

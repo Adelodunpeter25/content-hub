@@ -25,6 +25,8 @@ class PreferencesUpdate(BaseModel):
     feed_sources: Optional[list[str]] = Field(None, description="List of source names like ['TechCrunch', 'The Verge']")
     feed_types: Optional[list[str]] = Field(None, description="List of feed types like ['rss', 'scrape']")
     show_read_articles: Optional[bool] = Field(None, description="Show read articles in feed")
+    font_size: Optional[str] = Field(None, description="Font size: small, medium, large")
+    view_mode: Optional[str] = Field(None, description="View mode: compact, comfortable")
 
 class PasswordChangeRequest(BaseModel):
     """Schema for password change request"""

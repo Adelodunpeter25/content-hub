@@ -31,6 +31,8 @@ export default function SettingsPage() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showReadArticles, setShowReadArticles] = useState(true);
+  const [fontSize, setFontSize] = useState<'small' | 'medium' | 'large'>('medium');
+  const [viewMode, setViewMode] = useState<'compact' | 'comfortable'>('comfortable');
   const [feedSources, setFeedSources] = useState<string[]>([]);
   const [feedTypes, setFeedTypes] = useState<string[]>([]);
   const [deleting, setDeleting] = useState(false);
@@ -50,6 +52,8 @@ export default function SettingsPage() {
       setFeedSources(prefs.feed_sources || []);
       setFeedTypes(prefs.feed_types || []);
       setShowReadArticles(prefs.show_read_articles !== false);
+      setFontSize(prefs.font_size || 'medium');
+      setViewMode(prefs.view_mode || 'comfortable');
     }
     setLoading(false);
   };
@@ -60,7 +64,9 @@ export default function SettingsPage() {
     const result = await updatePreferences({ 
       feed_sources: feedSources, 
       feed_types: feedTypes,
-      show_read_articles: showReadArticles
+      show_read_articles: showReadArticles,
+      font_size: fontSize,
+      view_mode: viewMode
     });
     setSaving(false);
     if (result) {
@@ -138,7 +144,9 @@ export default function SettingsPage() {
     const result = await updatePreferences({ 
       feed_sources: feedSources, 
       feed_types: feedTypes,
-      show_read_articles: showReadArticles
+      show_read_articles: showReadArticles,
+      font_size: fontSize,
+      view_mode: viewMode
     });
     setSaving(false);
     if (result) {
@@ -224,9 +232,18 @@ export default function SettingsPage() {
                     disabled
                   />
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                  <Calendar size={16} />
-                  <span>Member since {user?.created_at ? new Date(user.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'N/A'}</span>
+                <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                  <div className="flex items-center gap-2">
+                    <Calendar size={16} />
+                    <span>Member since {user?.created_at ? new Date(user.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'N/A'}</span>
+                  </div>
+                  {user?.last_login_at && (
+                    <div className="flex items-center gap-2">
+                      <Lock size={16} />
+                      <span>Last login: {new Date(user.last_login_at).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                      {user?.last_login_ip && <span className="text-xs">({user.last_login_ip})</span>}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -364,6 +381,42 @@ export default function SettingsPage() {
                         }`}
                       >
                         {t}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2 dark:text-gray-300">Font Size</label>
+                  <div className="flex gap-2">
+                    {['small', 'medium', 'large'].map((size) => (
+                      <button
+                        key={size}
+                        onClick={() => setFontSize(size as 'small' | 'medium' | 'large')}
+                        className={`px-4 py-2 rounded-lg border transition-colors capitalize ${
+                          fontSize === size
+                            ? 'bg-blue-500 text-white border-blue-500'
+                            : 'bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-700'
+                        }`}
+                      >
+                        {size}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2 dark:text-gray-300">View Mode</label>
+                  <div className="flex gap-2">
+                    {['compact', 'comfortable'].map((mode) => (
+                      <button
+                        key={mode}
+                        onClick={() => setViewMode(mode as 'compact' | 'comfortable')}
+                        className={`px-4 py-2 rounded-lg border transition-colors capitalize ${
+                          viewMode === mode
+                            ? 'bg-blue-500 text-white border-blue-500'
+                            : 'bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-700'
+                        }`}
+                      >
+                        {mode}
                       </button>
                     ))}
                   </div>
