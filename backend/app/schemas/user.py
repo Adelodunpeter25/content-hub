@@ -24,6 +24,12 @@ class PreferencesUpdate(BaseModel):
     """Schema for updating user preferences"""
     feed_sources: Optional[list[str]] = Field(None, description="List of source names like ['TechCrunch', 'The Verge']")
     feed_types: Optional[list[str]] = Field(None, description="List of feed types like ['rss', 'scrape']")
+    show_read_articles: Optional[bool] = Field(None, description="Show read articles in feed")
+
+class PasswordChangeRequest(BaseModel):
+    """Schema for password change request"""
+    current_password: str = Field(..., min_length=1, description="Current password")
+    new_password: str = Field(..., min_length=8, description="New password (min 8 characters)")
 
 class PreferencesResponse(BaseModel):
     """Schema for preferences response"""

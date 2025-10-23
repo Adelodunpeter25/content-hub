@@ -17,4 +17,5 @@ export interface UserPreferences {
 export interface PreferencesUpdate {
   feed_sources?: string[];
   feed_types?: string[];
+  show_read_articles?: boolean;
 }

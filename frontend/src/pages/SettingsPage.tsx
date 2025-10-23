@@ -1,22 +1,36 @@
 import { useState, useEffect } from 'react';
-
 import DashboardLayout from '../components/DashboardLayout';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { useAuthContext } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { useTheme } from '../context/ThemeContext';
 import { usePreferences } from '../hooks/usePreferences';
 import { useAccount } from '../hooks/useAccount';
 import ConfirmDialog from '../components/ConfirmDialog';
+import { User, Lock, Calendar, Palette, Eye, EyeOff, Check, AlertTriangle, X } from 'lucide-react';
 
 export default function SettingsPage() {
 
   const { user, logout } = useAuthContext();
   const { showToast } = useToast();
+  const { theme, setTheme } = useTheme();
   const { getPreferences, updatePreferences } = usePreferences();
-  const { deleteAccount } = useAccount();
+  const { updateProfile, changePassword, deleteAccount } = useAccount();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
   const [name, setName] = useState('');
+  const [nameEditing, setNameEditing] = useState(false);
+  const [nameSaving, setNameSaving] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordSaving, setPasswordSaving] = useState(false);
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showReadArticles, setShowReadArticles] = useState(true);
   const [feedSources, setFeedSources] = useState<string[]>([]);
   const [feedTypes, setFeedTypes] = useState<string[]>([]);
   const [deleting, setDeleting] = useState(false);
@@ -35,18 +49,74 @@ export default function SettingsPage() {
     if (prefs) {
       setFeedSources(prefs.feed_sources || []);
       setFeedTypes(prefs.feed_types || []);
+      setShowReadArticles(prefs.show_read_articles !== false);
     }
     setLoading(false);
   };
 
   const handleSave = async () => {
     setSaving(true);
-    const result = await updatePreferences({ feed_sources: feedSources, feed_types: feedTypes });
+    setSaved(false);
+    const result = await updatePreferences({ 
+      feed_sources: feedSources, 
+      feed_types: feedTypes,
+      show_read_articles: showReadArticles
+    });
     setSaving(false);
     if (result) {
+      setSaved(true);
       showToast('Preferences saved successfully', 'success');
+      setTimeout(() => setSaved(false), 3000);
+      // Reload page to refresh feed with new preference
+      setTimeout(() => window.location.reload(), 1000);
     } else {
       showToast('Failed to save preferences', 'error');
+    }
+  };
+
+  const handleNameSave = async () => {
+    if (!name.trim()) {
+      showToast('Name cannot be empty', 'error');
+      return;
+    }
+    setNameSaving(true);
+    try {
+      await updateProfile(name);
+      setNameEditing(false);
+      showToast('Name updated successfully', 'success');
+    } catch (err: any) {
+      showToast(err.message || 'Failed to update name', 'error');
+      setName(user?.name || '');
+    } finally {
+      setNameSaving(false);
+    }
+  };
+
+  const handlePasswordChange = async () => {
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      showToast('All password fields are required', 'error');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      showToast('New passwords do not match', 'error');
+      return;
+    }
+    if (newPassword.length < 8) {
+      showToast('Password must be at least 8 characters', 'error');
+      return;
+    }
+    setPasswordSaving(true);
+    try {
+      await changePassword(currentPassword, newPassword);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      setShowPasswordForm(false);
+      showToast('Password changed successfully', 'success');
+    } catch (err: any) {
+      showToast(err.message || 'Failed to change password', 'error');
+    } finally {
+      setPasswordSaving(false);
     }
   };
 
@@ -62,27 +132,88 @@ export default function SettingsPage() {
     );
   };
 
+  const handleSaveAll = async () => {
+    setSaving(true);
+    setSaved(false);
+    const result = await updatePreferences({ 
+      feed_sources: feedSources, 
+      feed_types: feedTypes,
+      show_read_articles: showReadArticles
+    });
+    setSaving(false);
+    if (result) {
+      setSaved(true);
+      showToast('All settings saved successfully', 'success');
+      setTimeout(() => setSaved(false), 3000);
+      setTimeout(() => window.location.reload(), 1000);
+    } else {
+      showToast('Failed to save settings', 'error');
+    }
+  };
+
   return (
     <DashboardLayout>
       <div>
-        <h2 className="text-3xl font-bold mb-6 dark:text-white">Settings</h2>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-3xl font-bold dark:text-white">Settings</h2>
+          <button
+            onClick={handleSaveAll}
+            disabled={saving}
+            className="md:hidden bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 disabled:opacity-50 flex items-center gap-2"
+          >
+            {saving && (
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            )}
+            {saved && <Check size={16} />}
+            {saving ? 'Saving...' : saved ? 'Saved!' : 'Save All'}
+          </button>
+        </div>
 
         {loading ? (
           <LoadingSpinner />
         ) : (
           <div className="space-y-6">
             <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border dark:border-gray-700">
-              <h3 className="text-xl font-semibold mb-4 dark:text-white">Profile</h3>
+              <div className="flex items-center gap-2 mb-4">
+                <User size={20} className="text-blue-500" />
+                <h3 className="text-xl font-semibold dark:text-white">Profile</h3>
+              </div>
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium mb-2 dark:text-gray-300">Name</label>
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="w-full border dark:border-gray-700 rounded-lg px-4 py-2 dark:bg-gray-900 dark:text-white"
-                    disabled
-                  />
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <input
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="flex-1 border dark:border-gray-700 rounded-lg px-4 py-2 dark:bg-gray-900 dark:text-white"
+                      disabled={!nameEditing}
+                    />
+                    {!nameEditing ? (
+                      <button
+                        onClick={() => setNameEditing(true)}
+                        className="px-4 py-2 border dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-white"
+                      >
+                        Edit
+                      </button>
+                    ) : (
+                      <div className="flex gap-2">
+                        <button
+                          onClick={handleNameSave}
+                          disabled={nameSaving}
+                          className="flex-1 sm:flex-none px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50"
+                        >
+                          {nameSaving ? 'Saving...' : 'Save'}
+                        </button>
+                        <button
+                          onClick={() => { setNameEditing(false); setName(user?.name || ''); }}
+                          className="flex-1 sm:flex-none px-4 py-2 border dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-white"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2 dark:text-gray-300">Email</label>
@@ -93,11 +224,177 @@ export default function SettingsPage() {
                     disabled
                   />
                 </div>
+                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                  <Calendar size={16} />
+                  <span>Member since {user?.created_at ? new Date(user.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'N/A'}</span>
+                </div>
               </div>
             </div>
 
             <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border dark:border-gray-700">
-              <h3 className="text-xl font-semibold mb-4 dark:text-white">Feed Preferences</h3>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Lock size={20} className="text-blue-500" />
+                  <h3 className="text-xl font-semibold dark:text-white">Change Password</h3>
+                </div>
+                {showPasswordForm && (
+                  <button
+                    onClick={() => {
+                      setShowPasswordForm(false);
+                      setCurrentPassword('');
+                      setNewPassword('');
+                      setConfirmPassword('');
+                    }}
+                    className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                  >
+                    <X size={20} />
+                  </button>
+                )}
+              </div>
+              {!showPasswordForm ? (
+                <button
+                  onClick={() => setShowPasswordForm(true)}
+                  className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
+                >
+                  Change Password
+                </button>
+              ) : (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2 dark:text-gray-300">Current Password</label>
+                    <div className="relative">
+                      <input
+                        type={showCurrentPassword ? "text" : "password"}
+                        value={currentPassword}
+                        onChange={(e) => setCurrentPassword(e.target.value)}
+                        className="w-full border dark:border-gray-700 rounded-lg px-4 py-2 pr-10 dark:bg-gray-900 dark:text-white"
+                        placeholder="Enter current password"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                      >
+                        {showCurrentPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2 dark:text-gray-300">New Password</label>
+                    <div className="relative">
+                      <input
+                        type={showNewPassword ? "text" : "password"}
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        className="w-full border dark:border-gray-700 rounded-lg px-4 py-2 pr-10 dark:bg-gray-900 dark:text-white"
+                        placeholder="Enter new password (min 8 characters)"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowNewPassword(!showNewPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                      >
+                        {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2 dark:text-gray-300">Confirm New Password</label>
+                    <div className="relative">
+                      <input
+                        type={showConfirmPassword ? "text" : "password"}
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        className="w-full border dark:border-gray-700 rounded-lg px-4 py-2 pr-10 dark:bg-gray-900 dark:text-white"
+                        placeholder="Confirm new password"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                      >
+                        {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handlePasswordChange}
+                      disabled={passwordSaving}
+                      className="flex-1 bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 disabled:opacity-50 flex items-center justify-center gap-2"
+                    >
+                      {passwordSaving && (
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      )}
+                      {passwordSaving ? 'Changing...' : 'Save Password'}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowPasswordForm(false);
+                        setCurrentPassword('');
+                        setNewPassword('');
+                        setConfirmPassword('');
+                      }}
+                      className="px-6 py-2 border dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-white"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border dark:border-gray-700">
+              <div className="flex items-center gap-2 mb-4">
+                <Palette size={20} className="text-blue-500" />
+                <h3 className="text-xl font-semibold dark:text-white">Display Preferences</h3>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2 dark:text-gray-300">Theme</label>
+                  <div className="flex gap-2">
+                    {['light', 'dark', 'system'].map((t) => (
+                      <button
+                        key={t}
+                        onClick={() => setTheme(t as 'light' | 'dark' | 'system')}
+                        className={`px-4 py-2 rounded-lg border transition-colors capitalize ${
+                          theme === t
+                            ? 'bg-blue-500 text-white border-blue-500'
+                            : 'bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-700'
+                        }`}
+                      >
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    {showReadArticles ? <Eye size={20} className="text-gray-500" /> : <EyeOff size={20} className="text-gray-500" />}
+                    <div>
+                      <label className="text-sm font-medium dark:text-white">Show Read Articles</label>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Display articles you've already read in your feed</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setShowReadArticles(!showReadArticles)}
+                    className={`relative w-12 h-6 rounded-full transition-colors ${
+                      showReadArticles ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'
+                    }`}
+                  >
+                    <div className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${
+                      showReadArticles ? 'transform translate-x-6' : ''
+                    }`} />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border dark:border-gray-700">
+              <div className="flex items-center gap-2 mb-4">
+                <User size={20} className="text-blue-500" />
+                <h3 className="text-xl font-semibold dark:text-white">Feed Preferences</h3>
+              </div>
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium mb-2 dark:text-gray-300">Sources</label>
@@ -143,13 +440,17 @@ export default function SettingsPage() {
                   {saving && (
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                   )}
-                  {saving ? 'Saving...' : 'Save Preferences'}
+                  {saved && <Check size={16} />}
+                  {saving ? 'Saving...' : saved ? 'Saved!' : 'Save Preferences'}
                 </button>
               </div>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border dark:border-gray-700">
-              <h3 className="text-xl font-semibold mb-4 text-red-600 dark:text-red-400">Danger Zone</h3>
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border dark:border-gray-700 border-red-200 dark:border-red-900">
+              <div className="flex items-center gap-2 mb-4">
+                <AlertTriangle size={20} className="text-red-600 dark:text-red-400" />
+                <h3 className="text-xl font-semibold text-red-600 dark:text-red-400">Danger Zone</h3>
+              </div>
               <div className="flex gap-3">
                 <button
                   onClick={logout}
@@ -169,6 +470,18 @@ export default function SettingsPage() {
                 </button>
               </div>
             </div>
+
+            <button
+              onClick={handleSaveAll}
+              disabled={saving}
+              className="hidden md:flex w-full bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 disabled:opacity-50 items-center justify-center gap-2 mt-6"
+            >
+              {saving && (
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              )}
+              {saved && <Check size={16} />}
+              {saving ? 'Saving All Settings...' : saved ? 'All Settings Saved!' : 'Save All Settings'}
+            </button>
           </div>
         )}
 

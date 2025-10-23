@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request, current_app, g
 from app.core.database import get_db
 from app.models.user import User
 from app.models.preferences import UserFeedPreferences
-from app.schemas.user import PreferencesUpdate, UserProfileUpdate, DeleteAccountRequest
+from app.schemas.user import PreferencesUpdate, UserProfileUpdate, DeleteAccountRequest, PasswordChangeRequest
 from app.core.auth import require_auth
 from app.core.errors import BadRequestError, NotFoundError, InternalServerError
 from app.services.feed_service import get_personalized_feeds
@@ -77,6 +77,8 @@ def update_user_preferences():
                     preferences.feed_sources = feed_sources
                 if feed_types is not None:
                     preferences.feed_types = feed_types
+                if pref_data.show_read_articles is not None:
+                    preferences.show_read_articles = pref_data.show_read_articles
             
             db.flush()
             
@@ -211,6 +213,50 @@ def update_profile():
     except Exception as e:
         current_app.logger.error(f'Error updating profile: {str(e)}')
         raise InternalServerError('Failed to update profile')
+
+@bp.route('/password', methods=['PUT'])
+@require_auth
+def change_password():
+    """
+    Change current user's password
+    
+    Body:
+        current_password: Current password
+        new_password: New password (min 8 characters)
+    """
+    try:
+        user_id = g.user_id
+        data = request.get_json()
+        
+        try:
+            password_data = PasswordChangeRequest(**data)
+        except ValidationError as e:
+            raise BadRequestError(str(e))
+        
+        with get_db() as db:
+            user = db.query(User).filter(User.id == user_id).first()
+            
+            if not user:
+                raise NotFoundError('User not found')
+            
+            if not user.password_hash:
+                raise BadRequestError('Cannot change password for Google OAuth users')
+            
+            if not user.check_password(password_data.current_password):
+                raise BadRequestError('Current password is incorrect')
+            
+            user.set_password(password_data.new_password)
+            db.flush()
+            
+            current_app.logger.info(f'Password changed for user: {user_id}')
+            
+            return jsonify({'message': 'Password changed successfully'})
+    
+    except (BadRequestError, NotFoundError):
+        raise
+    except Exception as e:
+        current_app.logger.error(f'Error changing password: {str(e)}')
+        raise InternalServerError('Failed to change password')
 
 @bp.route('/account', methods=['DELETE'])
 @require_auth

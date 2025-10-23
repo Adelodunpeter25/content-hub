@@ -7,6 +7,8 @@ from app.utils.gemini_categorizer import batch_categorize
 from app.utils.personalization import filter_by_user_preferences
 from app.core.cache import cache_get, cache_set
 from app.core.config import Config
+from app.core.database import get_db
+from app.models.read_history import ReadHistory
 import os
 
 def get_all_feeds(source_filter=None, limit=None):
@@ -49,8 +51,19 @@ def get_personalized_feeds(user_preferences):
         List of filtered articles
     """
     articles = get_all_feeds()
-    return filter_by_user_preferences(
+    articles = filter_by_user_preferences(
         articles,
         user_preferences.feed_sources,
         user_preferences.feed_types
     )
+    
+    # Filter out read articles if preference is disabled
+    if not user_preferences.show_read_articles:
+        with get_db() as db:
+            read_urls = db.query(ReadHistory.article_url).filter(
+                ReadHistory.user_id == user_preferences.user_id
+            ).all()
+            read_url_set = {url[0] for url in read_urls}
+            articles = [a for a in articles if a.get('link') not in read_url_set]
+    
+    return articles
