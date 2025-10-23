@@ -126,6 +126,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         {isSidebarOpen && (
           <div className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-40" onClick={() => setIsSidebarOpen(false)}>
             <aside className="w-64 bg-white dark:bg-gray-800 h-full" onClick={(e) => e.stopPropagation()}>
+              <div className="p-4 border-b dark:border-gray-700 mb-2 flex items-center gap-2">
+                <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg">
+                  <span className="text-lg font-bold text-white">CH</span>
+                </div>
+                <span className="text-xl font-bold bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent">
+                  Content Hub
+                </span>
+              </div>
               <div className="p-4 space-y-2">
                 {menuItems.map(item => (
                   <button
