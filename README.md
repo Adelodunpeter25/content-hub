@@ -75,16 +75,6 @@ Content Hub is a personal feed aggregator that brings together the best tech con
   - Favorite categories with visual charts
   - Daily reading activity
 
-### User Features
-
-- **Bookmarks**: Save articles for later with one-click bookmarking
-- **Read History**: Automatic tracking of read articles
-- **Advanced Search**: Keyword search in titles and summaries
-- **Infinite Scroll**: Seamless pagination with lazy loading
-- **Pull-to-Refresh**: Mobile gesture support
-- **Article Preview**: Modal preview before opening full article
-- **Command Palette**: Keyboard shortcuts (Ctrl/Cmd+K)
-
 ---
 
 ## Tech Stack
@@ -225,71 +215,6 @@ content-hub/
     ├── .env                # Environment config
     └── package.json        # Dependencies
 ```
-
----
-
-## Configuration
-
-### Backend Environment Variables
-
-```bash
-# Flask
-FLASK_ENV=development
-FLASK_DEBUG=True
-
-# Database
-DATABASE_URL=postgresql://user:password@host:port/database
-
-# Cache
-REDIS_URL=redis://localhost:6379
-CACHE_TTL=900
-
-# Authentication
-JWT_SECRET_KEY=your-secret-key
-JWT_ACCESS_TOKEN_MINUTES=60
-JWT_REFRESH_TOKEN_DAYS=30
-
-# Email
-RESEND_API_KEY=re_your_api_key
-RESEND_FROM_EMAIL=noreply@yourdomain.com
-
-# Google OAuth
-GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=your-client-secret
-GOOGLE_REDIRECT_URI=http://localhost:5000/api/auth/google/callback
-
-# Content Sources
-RSS_FEEDS=https://techcrunch.com/feed/,https://hnrss.org/frontpage,...
-SCRAPE_URLS=https://www.techmeme.com
-REDDIT_SUBREDDITS=technology,programming,python,...
-YOUTUBE_CHANNELS=channel_id_1,channel_id_2
-```
-
-### Frontend Environment Variables
-
-```bash
-VITE_API_URL=http://localhost:5000/api
-```
-
----
-
-
-## Database Management
-
-### Initialize Database
-
-```bash
-cd backend
-uv run python -m app.scripts.init_db
-```
-
-This creates all tables:
-- `users`
-- `user_feed_preferences`
-- `refresh_tokens`
-- `bookmarks`
-- `read_history`
-
 ---
 
 ## Deployment
@@ -299,7 +224,6 @@ This creates all tables:
 1. Set `FLASK_ENV=production` in environment variables
 2. Use a production WSGI server (Gunicorn recommended)
 3. Configure PostgreSQL and Redis instances
-4. Set up SSL certificates
 5. Enable CORS for your frontend domain
 
 ### Frontend (Vercel)
