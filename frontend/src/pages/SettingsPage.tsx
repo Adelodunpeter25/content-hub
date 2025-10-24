@@ -545,6 +545,7 @@ export default function SettingsPage() {
           confirmText="Delete Account"
           cancelText="Cancel"
           danger
+          loading={deleting}
           onConfirm={async () => {
             setShowDeleteConfirm(false);
             setDeleting(true);

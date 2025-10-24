@@ -273,7 +273,7 @@ def delete_account():
     """
     try:
         user_id = g.user_id
-        data = request.get_json()
+        data = request.get_json() or {}
         
         with get_db() as db:
             user = db.query(User).filter(User.id == user_id).first()
@@ -283,6 +283,9 @@ def delete_account():
             
             # Verify password if user has one (not Google OAuth)
             if user.password_hash:
+                if not data.get('password'):
+                    raise BadRequestError('Password required for account deletion')
+                
                 try:
                     delete_data = DeleteAccountRequest(**data)
                 except ValidationError as e:

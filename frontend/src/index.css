@@ -72,32 +72,32 @@ body {
   animation: fade-in-up 0.3s ease-out;
 }
 
-/* Font size preferences */
-:root[data-font-size="small"] {
+/* Font size preferences - only apply to main content */
+:root[data-font-size="small"] main {
   font-size: 14px;
 }
 
-:root[data-font-size="medium"] {
+:root[data-font-size="medium"] main {
   font-size: 16px;
 }
 
-:root[data-font-size="large"] {
+:root[data-font-size="large"] main {
   font-size: 18px;
 }
 
-/* View mode preferences */
-:root[data-view-mode="compact"] .article-card {
+/* View mode preferences - only apply to main content */
+:root[data-view-mode="compact"] main .article-card {
   padding: 0.75rem;
 }
 
-:root[data-view-mode="comfortable"] .article-card {
+:root[data-view-mode="comfortable"] main .article-card {
   padding: 1rem;
 }
 
-:root[data-view-mode="compact"] .article-spacing {
+:root[data-view-mode="compact"] main .article-spacing {
   gap: 0.75rem;
 }
 
-:root[data-view-mode="comfortable"] .article-spacing {
+:root[data-view-mode="comfortable"] main .article-spacing {
   gap: 1rem;
 }

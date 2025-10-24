@@ -32,7 +32,10 @@ export const useAccount = () => {
 
   const deleteAccount = async () => {
     try {
-      await request('/users/account', { method: 'DELETE' });
+      await request('/users/account', { 
+        method: 'DELETE',
+        body: JSON.stringify({})
+      });
       return true;
     } catch (err) {
       console.error(err);
