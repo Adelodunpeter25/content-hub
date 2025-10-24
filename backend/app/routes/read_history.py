@@ -63,7 +63,7 @@ def get_read_history():
             history = query.offset((page - 1) * per_page).limit(per_page).all()
             
             return jsonify({
-                'history': [h.to_dict() for h in history],
+                'items': [h.to_dict() for h in history],
                 'pagination': {
                     'page': page,
                     'per_page': per_page,

@@ -19,8 +19,8 @@ export default function ReadHistoryPage() {
 
   const loadHistory = async () => {
     setLoading(true);
-    const data = await getReadHistory({ page, limit: 20 });
-    if (data) setHistory(data.history);
+    const data = await getReadHistory(page, 20);
+    if (data?.items) setHistory(data.items);
     setLoading(false);
   };
 

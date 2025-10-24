@@ -1,11 +1,11 @@
 import { request } from '../services/api';
 
 export const useReadHistory = () => {
-  const getReadHistory = async (params: { page?: number; limit?: number } = {}) => {
+  const getReadHistory = async (page: number = 1, limit: number = 20) => {
     try {
       const query = new URLSearchParams();
-      if (params.page) query.append('page', params.page.toString());
-      if (params.limit) query.append('per_page', params.limit.toString());
+      query.append('page', page.toString());
+      query.append('per_page', limit.toString());
       return await request(`/read-history?${query}`);
     } catch (err) {
       console.error(err);

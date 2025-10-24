@@ -119,8 +119,8 @@ export default function FeedPage() {
 
   const loadReadHistory = async () => {
     try {
-      const data = await getReadHistory({ page: 1, limit: 100 });
-      if (data) setReadIds(new Set(data.history.map((h: any) => h.article_url)));
+      const data = await getReadHistory(1, 100);
+      if (data?.items) setReadIds(new Set(data.items.map((h: any) => h.article_url)));
     } catch (err) {
       // Silent fail for history
     }
@@ -152,6 +152,7 @@ export default function FeedPage() {
 
   const handleRead = async (url: string, title?: string, source?: string, category?: string) => {
     setReadIds(prev => new Set(prev).add(url));
+    window.open(url, '_blank');
     try {
       await markAsRead(url, title, source, category);
       showToast('Marked as read', 'success');

@@ -1,13 +1,18 @@
-from flask import Blueprint, jsonify, request, current_app
+from flask import Blueprint, jsonify, request, current_app, g
 from app.services.feed_service import get_all_feeds
 from app.utils.pagination import paginate
 from app.utils.search_filter import search_articles, filter_by_source, filter_by_date_range
 from app.core.errors import InternalServerError
+from app.core.auth import require_auth
+from app.core.database import get_db
+from app.models.preferences import UserFeedPreferences
+from app.models.read_history import ReadHistory
 
 # Create blueprint for unified feeds
 bp = Blueprint('feeds', __name__, url_prefix='/api')
 
 @bp.route('/feeds', methods=['GET'])
+@require_auth
 def get_unified_feeds():
     """
     Endpoint to get unified feed from all sources
@@ -59,6 +64,19 @@ def get_unified_feeds():
         # Apply category filter
         if category:
             articles = [a for a in articles if category in a.get('categories', [])]
+        
+        # Filter read articles based on user preference
+        user_id = g.user_id
+        with get_db() as db:
+            preferences = db.query(UserFeedPreferences).filter(
+                UserFeedPreferences.user_id == user_id
+            ).first()
+            
+            if preferences and not preferences.show_read_articles:
+                read_urls = {h.article_url for h in db.query(ReadHistory).filter(
+                    ReadHistory.user_id == user_id
+                ).all()}
+                articles = [a for a in articles if a.get('link') not in read_urls]
         
         # Apply pagination
         paginated_data = paginate(articles, page, per_page)
