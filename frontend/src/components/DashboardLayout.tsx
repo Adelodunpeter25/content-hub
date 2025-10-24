@@ -21,6 +21,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [isMobile] = useState(window.innerWidth < 768);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+  const [navigating, setNavigating] = useState(false);
+
+  useEffect(() => {
+    setNavigating(false);
+  }, [location.pathname]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -102,8 +107,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             {menuItems.map(item => (
               <button
                 key={item.path}
-                onClick={() => navigate(item.path)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                onClick={() => { setNavigating(true); navigate(item.path); }}
+                disabled={navigating}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors disabled:opacity-50 ${
                   location.pathname === item.path
                     ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white'
                     : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -139,8 +145,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 {menuItems.map(item => (
                   <button
                     key={item.path}
-                    onClick={() => { navigate(item.path); setIsSidebarOpen(false); }}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                    onClick={() => { setNavigating(true); navigate(item.path); setIsSidebarOpen(false); }}
+                    disabled={navigating}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors disabled:opacity-50 ${
                       location.pathname === item.path
                         ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white'
                         : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -179,8 +186,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           {menuItems.slice(0, 4).map(item => (
             <button
               key={item.path}
-              onClick={() => navigate(item.path)}
-              className={`flex flex-col items-center gap-1 px-4 py-2 ${
+              onClick={() => { setNavigating(true); navigate(item.path); }}
+              disabled={navigating}
+              className={`flex flex-col items-center gap-1 px-4 py-2 disabled:opacity-50 ${
                 location.pathname === item.path ? 'text-blue-500' : 'text-gray-600 dark:text-gray-400'
               }`}
             >
