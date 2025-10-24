@@ -1,6 +1,4 @@
 import type { Article } from '../types/feed';
-import { calculateReadingTime } from '../utils/readingTime';
-import { Clock } from 'lucide-react';
 
 interface ArticleCardProps {
   article: Article;
@@ -12,8 +10,6 @@ interface ArticleCardProps {
 }
 
 export default function ArticleCard({ article, onBookmark, onRead, onPreview, isBookmarked, isRead }: ArticleCardProps) {
-  const readingTime = calculateReadingTime(`${article.title} ${article.summary || ''}`);
-  
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
       AI: 'bg-purple-100 text-purple-700',
@@ -49,10 +45,6 @@ export default function ArticleCard({ article, onBookmark, onRead, onPreview, is
       <div className="flex items-center justify-between mt-auto">
         <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
           {article.published && <span>{new Date(article.published).toLocaleDateString()}</span>}
-          <span className="flex items-center gap-1">
-            <Clock size={12} />
-            {readingTime} min
-          </span>
         </div>
         <div className="flex gap-2">
           {onBookmark && (
