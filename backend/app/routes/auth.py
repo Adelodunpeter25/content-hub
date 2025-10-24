@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request, current_app, g, url_for
+from flask import Blueprint, jsonify, request, current_app, g, url_for, redirect
 from datetime import datetime, timedelta
 from app.core.database import get_db
 from app.models.user import User
@@ -290,12 +290,10 @@ def google_callback():
             
             current_app.logger.info(f'User logged in via Google: {email}')
             
-            return jsonify({
-                'access_token': access_token,
-                'refresh_token': refresh_token,
-                'user': user.to_dict(),
-                'needs_onboarding': needs_onboarding
-            })
+            # Redirect to frontend with tokens
+            frontend_url = Config.FRONTEND_URL
+            redirect_url = f"{frontend_url}/auth/google/callback?access_token={access_token}&refresh_token={refresh_token}"
+            return redirect(redirect_url)
     
     except BadRequestError:
         raise

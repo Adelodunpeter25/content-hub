@@ -10,6 +10,7 @@ class Config:
     # Flask settings
     FLASK_ENV = os.getenv('FLASK_ENV', 'development')
     DEBUG = os.getenv('FLASK_DEBUG', 'False') == 'True'
+    SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'dev-secret-key')
     
     # RSS feed URLs as a list
     RSS_FEEDS = [
@@ -45,7 +46,7 @@ class Config:
         if channel.strip()
     ]
     
-    # Authentication settings
+    # Authentication settings (JWT uses same secret as Flask sessions)
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'dev-secret-key')
     JWT_ACCESS_TOKEN_MINUTES = int(os.getenv('JWT_ACCESS_TOKEN_MINUTES', '60'))
     JWT_REFRESH_TOKEN_DAYS = int(os.getenv('JWT_REFRESH_TOKEN_DAYS', '30'))
