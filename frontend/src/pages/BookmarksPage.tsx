@@ -37,7 +37,7 @@ export default function BookmarksPage() {
   };
 
   const loadReadHistory = async () => {
-    await getReadHistory({ page: 1, limit: 100 });
+    await getReadHistory(1, 100);
   };
 
   return (

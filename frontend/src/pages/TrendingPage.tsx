@@ -77,8 +77,8 @@ export default function TrendingPage() {
 
   const loadReadHistory = async () => {
     try {
-      const data = await getReadHistory({ page: 1, limit: 100 });
-      if (data) setReadIds(new Set(data.history.map((h: any) => h.article_url)));
+      const data = await getReadHistory(1, 100);
+      if (data?.items) setReadIds(new Set(data.items.map((h: any) => h.article_url)));
     } catch (err) {
       // Silent fail
     }
