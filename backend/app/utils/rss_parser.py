@@ -20,6 +20,18 @@ def truncate_to_sentences(text, max_sentences=2):
     truncated = ' '.join(sentences[:max_sentences])
     return truncated
 
+def is_spam_content(title, summary):
+    """Detect spam or low-quality content"""
+    spam_patterns = [
+        r'\d{10,}',  # Long phone numbers
+        r'شماره',  # Non-English spam keywords
+        r'خاله',
+        r'تهران',
+        r'اصفهان',
+    ]
+    text = f"{title} {summary}".lower()
+    return any(re.search(pattern, text) for pattern in spam_patterns)
+
 def fetch_rss_feeds(feed_urls):
     """
     Fetch and parse multiple RSS feeds
@@ -54,6 +66,10 @@ def fetch_rss_feeds(feed_urls):
                 raw_title = entry.get('title', 'No Title')
                 raw_summary = entry.get('summary', entry.get('description', ''))
                 
+                # Skip spam content
+                if is_spam_content(raw_title, raw_summary):
+                    continue
+                
                 # Clean summary
                 clean_summary = strip_html_tags(raw_summary)
                 
@@ -71,12 +87,18 @@ def fetch_rss_feeds(feed_urls):
                             meaningful_lines.append(line)
                     clean_summary = ' '.join(meaningful_lines) if meaningful_lines else 'Discussion on Hacker News'
                 
+                # Get published date with fallback
+                published = entry.get('published', entry.get('updated', entry.get('pubDate', '')))
+                if not published:
+                    from datetime import datetime
+                    published = datetime.utcnow().isoformat()
+                
                 article = {
                     'title': strip_html_tags(raw_title),
                     'link': entry.get('link', ''),
                     'summary': clean_summary,
                     'source': source,
-                    'published': entry.get('published', entry.get('updated', '')),
+                    'published': published,
                     'type': 'rss'
                 }
                 articles.append(article)

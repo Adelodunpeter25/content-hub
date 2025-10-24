@@ -75,7 +75,7 @@ export default function BookmarksPage() {
                   <h3 className="font-semibold text-lg mb-3 line-clamp-3 dark:text-white">{bookmark.title}</h3>
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-gray-500 dark:text-gray-400">
-                      {new Date(bookmark.created_at).toLocaleDateString()}
+                      {bookmark.saved_at ? new Date(bookmark.saved_at).toLocaleDateString() : 'Recently saved'}
                     </span>
                     <a
                       href={bookmark.article_url}
@@ -116,6 +116,7 @@ export default function BookmarksPage() {
           confirmText="Remove"
           cancelText="Cancel"
           danger
+          loading={removingId !== null}
           onConfirm={async () => {
             if (bookmarkToRemove) {
               setRemovingId(bookmarkToRemove);

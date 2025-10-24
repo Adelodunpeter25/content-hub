@@ -9,6 +9,7 @@ interface ConfirmDialogProps {
   onConfirm: () => void;
   onCancel: () => void;
   danger?: boolean;
+  loading?: boolean;
 }
 
 export default function ConfirmDialog({
@@ -20,6 +21,7 @@ export default function ConfirmDialog({
   onConfirm,
   onCancel,
   danger = false,
+  loading = false,
 }: ConfirmDialogProps) {
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
@@ -41,16 +43,19 @@ export default function ConfirmDialog({
         <div className="flex gap-3 justify-end">
           <button
             onClick={onCancel}
-            className="px-4 py-2 border dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-white"
+            disabled={loading}
+            className="px-4 py-2 border dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-white disabled:opacity-50"
           >
             {cancelText}
           </button>
           <button
             onClick={onConfirm}
-            className={`px-4 py-2 rounded-lg text-white ${
+            disabled={loading}
+            className={`px-4 py-2 rounded-lg text-white flex items-center gap-2 disabled:opacity-50 ${
               danger ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-500 hover:bg-blue-600'
             }`}
           >
+            {loading && <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>}
             {confirmText}
           </button>
         </div>
