@@ -26,7 +26,7 @@ Content Hub is a personal feed aggregator that brings together the best tech con
 - **Dark Mode**: Full dark mode support with system preference detection
 - **Mobile Responsive**: Optimized mobile experience with bottom navigation
 - **Real-time Updates**: Background jobs refresh feeds every 15 minutes
-- **Advanced Search**: Filter by source, category, date range, and keywords
+- **Advanced Search**: Filter by source and categories
 - **Reading Analytics**: Track reading habits, streaks, and favorite topics
 
 ---
