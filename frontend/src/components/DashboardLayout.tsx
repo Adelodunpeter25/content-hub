@@ -59,7 +59,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <nav className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 sticky top-0 z-10">
+      <nav className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-md border-b dark:border-gray-700 sticky top-0 z-20 shadow-sm">
         <div className="px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <button
