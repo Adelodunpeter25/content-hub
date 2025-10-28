@@ -7,27 +7,32 @@ from app.utils.categorizer import add_categories_to_articles
 from app.utils.gemini_categorizer import batch_categorize
 from app.utils.personalization import filter_by_user_preferences
 from app.utils.content_filter import filter_articles
+from app.utils.tag_matcher import add_tags_to_articles
+from app.utils.quality_scorer import filter_by_quality
 from app.core.cache import cache_get, cache_set
 from app.core.config import Config
 from app.core.database import get_db
 from app.models.read_history import ReadHistory
 import os
 
-def get_all_feeds(source_filter=None, limit=None):
+def get_all_feeds(source_filter=None, limit=None, apply_quality_filter=True, min_quality_score=0.4):
     """
-    Get all feeds from cache or fetch from sources
+    Get all feeds from cache or fetch from sources with quality scoring
     
     Args:
         source_filter: Filter by 'rss' or 'scrape'
         limit: Maximum number of articles
+        apply_quality_filter: Whether to apply quality filtering
+        min_quality_score: Minimum quality score threshold (0.0-1.0)
         
     Returns:
-        List of articles with categories
+        List of articles with categories, tags, and quality scores
     """
-    cache_key = 'feeds:all'
+    cache_key = f'feeds:all:{source_filter}:{apply_quality_filter}'
     articles = cache_get(cache_key)
     
     if articles is None:
+        # Fetch from all sources (Reddit now includes quality filtering)
         rss_articles = fetch_rss_feeds(Config.RSS_FEEDS) if Config.RSS_FEEDS else []
         scraped_articles = scrape_websites(Config.SCRAPE_URLS) if Config.SCRAPE_URLS else []
         social_articles = scrape_social_media(Config.REDDIT_SUBREDDITS, Config.YOUTUBE_CHANNELS) if (Config.REDDIT_SUBREDDITS or Config.YOUTUBE_CHANNELS) else []
@@ -39,40 +44,102 @@ def get_all_feeds(source_filter=None, limit=None):
         # Filter out explicit and non-English content
         articles = filter_articles(articles)
         
-        # Use Gemini if API key exists, fallback to keyword categorization
+        # Add categories (use Gemini if available, fallback to keyword)
         if os.getenv('GEMINI_API_KEY'):
             articles = batch_categorize(articles)
         else:
             articles = add_categories_to_articles(articles)
         
+        # Add tags to articles
+        with get_db() as db:
+            articles = add_tags_to_articles(articles, db)
+        
+        # Apply quality scoring and filtering
+        if apply_quality_filter:
+            with get_db() as db:
+                articles = filter_by_quality(
+                    articles,
+                    min_score=min_quality_score,
+                    source_tier='standard',
+                    user_tag_ids=None,
+                    db=db
+                )
+        
         cache_set(cache_key, articles)
     
     return articles
 
-def get_personalized_feeds(user_preferences):
+def get_personalized_feeds(user_preferences, user_id=None):
     """
-    Get personalized feeds based on user preferences
+    Get personalized feeds based on user preferences with tag-based filtering
     
     Args:
         user_preferences: UserFeedPreferences object
+        user_id: User ID for engagement scoring
         
     Returns:
-        List of filtered articles
+        List of filtered and scored articles
     """
-    articles = get_all_feeds()
+    # Get all feeds with quality filtering
+    articles = get_all_feeds(apply_quality_filter=True, min_quality_score=0.4)
+    
+    # Apply traditional preference filtering (sources and types)
     articles = filter_by_user_preferences(
         articles,
         user_preferences.feed_sources,
         user_preferences.feed_types
     )
     
+    # Apply tag-based filtering and relevance scoring
+    if user_preferences.selected_tags:
+        articles = filter_by_tags(articles, user_preferences.selected_tags)
+        
+        # Re-score with user tag relevance
+        with get_db() as db:
+            articles = filter_by_quality(
+                articles,
+                min_score=0.3,  # Lower threshold for personalized feeds
+                source_tier='standard',
+                user_tag_ids=user_preferences.selected_tags,
+                db=db
+            )
+    
     # Filter out read articles if preference is disabled
-    if not user_preferences.show_read_articles:
+    if not user_preferences.show_read_articles and user_id:
         with get_db() as db:
             read_urls = db.query(ReadHistory.article_url).filter(
-                ReadHistory.user_id == user_preferences.user_id
+                ReadHistory.user_id == user_id
             ).all()
             read_url_set = {url[0] for url in read_urls}
             articles = [a for a in articles if a.get('link') not in read_url_set]
     
     return articles
+
+def filter_by_tags(articles, user_tag_ids):
+    """
+    Filter articles by user's selected tags
+    
+    Args:
+        articles: List of articles with tags
+        user_tag_ids: List of user's selected tag IDs
+        
+    Returns:
+        Filtered articles that match user's tags
+    """
+    if not user_tag_ids:
+        return articles
+    
+    user_tag_set = set(user_tag_ids)
+    filtered = []
+    
+    for article in articles:
+        article_tags = article.get('tags', [])
+        if not article_tags:
+            continue
+        
+        # Check if any article tag matches user tags
+        article_tag_ids = {tag['id'] for tag in article_tags}
+        if article_tag_ids.intersection(user_tag_set):
+            filtered.append(article)
+    
+    return filtered

@@ -1,16 +1,17 @@
 import requests
 import feedparser
 from datetime import datetime
+from app.utils.reddit_filter import should_filter_reddit_post, enhance_reddit_metadata, calculate_reddit_quality_score
 
 def scrape_reddit(subreddits):
     """
-    Scrape posts from Reddit subreddits
+    Scrape posts from Reddit subreddits with quality filtering
     
     Args:
         subreddits: List of subreddit names
         
     Returns:
-        List of normalized articles
+        List of normalized high-quality articles
     """
     articles = []
     
@@ -28,9 +29,15 @@ def scrape_reddit(subreddits):
             for post in posts:
                 post_data = post.get('data', {})
                 
-                # Skip stickied posts
-                if post_data.get('stickied'):
+                # Apply quality filter
+                if should_filter_reddit_post(post_data, subreddit):
                     continue
+                
+                # Enhance metadata
+                metadata = enhance_reddit_metadata(post_data)
+                
+                # Calculate quality score
+                quality_score = calculate_reddit_quality_score(metadata)
                 
                 article = {
                     'title': post_data.get('title', 'No Title'),
@@ -39,10 +46,12 @@ def scrape_reddit(subreddits):
                     'source': f"r/{subreddit}",
                     'published': datetime.fromtimestamp(post_data.get('created_utc', 0)).isoformat(),
                     'type': 'reddit',
-                    'metadata': {
-                        'score': post_data.get('score', 0),
-                        'subreddit': subreddit,
-                        'author': post_data.get('author', 'unknown')
+                    'metadata': metadata,
+                    'reddit_quality_score': quality_score,
+                    'engagement': {
+                        'score': metadata.get('score', 0),
+                        'comments': metadata.get('num_comments', 0),
+                        'awards': metadata.get('total_awards_received', 0)
                     }
                 }
                 articles.append(article)
@@ -106,7 +115,7 @@ def scrape_social_media(reddit_subs=None, youtube_channels=None):
     """
     all_articles = []
     
-    # Scrape Reddit
+    # Scrape Reddit with quality filtering
     if reddit_subs:
         reddit_articles = scrape_reddit(reddit_subs)
         all_articles.extend(reddit_articles)

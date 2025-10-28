@@ -46,8 +46,8 @@ def get_unified_feeds():
         
         current_app.logger.info(f'Fetching unified feeds (source={source_filter}, search={search_keyword}, page={page})')
         
-        # Get feeds from service layer
-        articles = get_all_feeds(source_filter, limit)
+        # Get feeds from service layer with quality scoring
+        articles = get_all_feeds(source_filter, limit, apply_quality_filter=True, min_quality_score=0.4)
         
         # Apply search
         if search_keyword:

@@ -133,8 +133,8 @@ def get_user_personalized_feeds():
             
             current_app.logger.info(f'Fetching personalized feeds for user: {user_id}')
             
-            # Get personalized feeds from service layer
-            articles = get_personalized_feeds(preferences)
+            # Get personalized feeds from service layer with tag-based filtering
+            articles = get_personalized_feeds(preferences, user_id=user_id)
             
             # Apply search
             if search_keyword:
