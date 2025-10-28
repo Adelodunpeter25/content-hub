@@ -6,11 +6,11 @@ export default function FAQ() {
   const faqs = [
     {
       question: 'What is Content Hub?',
-      answer: 'Content Hub is a personal feed aggregator that collects content from RSS feeds, Reddit, YouTube, and web scraping. It uses AI to provide personalized recommendations based on your reading habits.',
+      answer: 'Content Hub is a personal feed aggregator that collects content from RSS feeds, Reddit, YouTube, and web scraping. It uses AI to automatically categorize articles into topics like AI, Security, Cloud, and more.',
     },
     {
-      question: 'How does the AI recommendation work?',
-      answer: 'Our AI analyzes your reading history, bookmarks, and preferences to suggest relevant articles. The more you use Content Hub, the better the recommendations become.',
+      question: 'How does the AI categorization work?',
+      answer: 'Our AI analyzes article titles and content to automatically assign relevant categories. This helps you quickly find articles on topics you care about and filter your feed by category.',
     },
     {
       question: 'What content sources are supported?',
@@ -18,7 +18,7 @@ export default function FAQ() {
     },
     {
       question: 'Is Content Hub free to use?',
-      answer: 'Yes! Content Hub is completely free with no credit card required. All features including AI recommendations, bookmarks, and reading analytics are available at no cost.',
+      answer: 'Yes! Content Hub is completely free with no credit card required. All features including AI categorization, bookmarks, and reading analytics are available at no cost.',
     },
     {
       question: 'How do I customize my feed?',

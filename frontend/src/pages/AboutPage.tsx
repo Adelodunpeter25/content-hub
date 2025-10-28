@@ -11,7 +11,7 @@ export default function AboutPage() {
             <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent">About Content Hub</h1>
             <p className="text-xl text-gray-600">Your personal gateway to the best tech content</p>
           </div>
-          
+
           <div className="space-y-8">
             <section className="bg-white p-8 rounded-xl shadow-lg border">
               <h2 className="text-2xl font-semibold mb-4">What is Content Hub?</h2>
@@ -38,7 +38,7 @@ export default function AboutPage() {
 
                 <div className="border-l-4 border-purple-500 pl-4">
                   <h3 className="text-xl font-medium mb-2">3. Personalization</h3>
-                  <p className="leading-relaxed text-gray-700">Your feed adapts to your preferences. Choose your favorite sources and content types, and we'll prioritize content that matches your interests. The more you use Content Hub, the better your recommendations become.</p>
+                  <p className="leading-relaxed text-gray-700">Your feed adapts to your preferences. Choose your favorite sources and content types, filter by categories, and hide read articles. Discover trending content and explore what the community is reading.</p>
                 </div>
 
                 <div className="border-l-4 border-green-500 pl-4">

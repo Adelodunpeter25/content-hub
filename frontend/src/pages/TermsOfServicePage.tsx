@@ -20,7 +20,7 @@ export default function TermsOfServicePage() {
 
             <section>
               <h2 className="text-2xl font-semibold mb-4">2. Description of Service</h2>
-              <p>Content Hub is a personal feed aggregator that collects content from RSS feeds, web scraping, and social media platforms. We provide intelligent recommendations and user personalization features to enhance your reading experience.</p>
+              <p>Content Hub is a personal feed aggregator that collects content from RSS feeds, web scraping, and social media platforms. We provide AI-powered categorization and user personalization features to enhance your reading experience.</p>
             </section>
 
             <section>

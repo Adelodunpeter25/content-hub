@@ -34,7 +34,7 @@ export default function LandingPage() {
           </h1>
           <p className="text-lg md:text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
             Aggregate content from RSS feeds, Reddit, YouTube, and web scraping.
-            Get AI-powered recommendations tailored just for you.
+            Get AI-powered categorization and personalized feeds.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/signup" className="px-10 py-5 bg-gradient-to-r from-cyan-500 to-blue-500 text-white text-xl font-bold rounded-xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all text-center">
@@ -55,7 +55,7 @@ export default function LandingPage() {
             </div>
             <div className="p-8 bg-white/90 backdrop-blur-sm rounded-2xl border border-gray-200 shadow-lg hover:shadow-xl hover:scale-105 transition-all">
               <div className="text-5xl font-bold bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent mb-3">AI</div>
-              <div className="text-gray-700 font-medium">Recommendations</div>
+              <div className="text-gray-700 font-medium">Categorization</div>
             </div>
           </div>
         </div>
