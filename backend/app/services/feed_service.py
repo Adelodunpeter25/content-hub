@@ -1,6 +1,7 @@
 """Feed service layer for centralized feed fetching logic"""
 from app.utils.rss_parser import fetch_rss_feeds
 from app.utils.scraper import scrape_websites
+from app.utils.social_scrapers import scrape_social_media
 from app.utils.feed_aggregator import aggregate_feeds
 from app.utils.categorizer import add_categories_to_articles
 from app.utils.gemini_categorizer import batch_categorize
@@ -29,7 +30,11 @@ def get_all_feeds(source_filter=None, limit=None):
     if articles is None:
         rss_articles = fetch_rss_feeds(Config.RSS_FEEDS) if Config.RSS_FEEDS else []
         scraped_articles = scrape_websites(Config.SCRAPE_URLS) if Config.SCRAPE_URLS else []
-        articles = aggregate_feeds(rss_articles, scraped_articles, source_filter, limit)
+        social_articles = scrape_social_media(Config.REDDIT_SUBREDDITS, Config.YOUTUBE_CHANNELS) if (Config.REDDIT_SUBREDDITS or Config.YOUTUBE_CHANNELS) else []
+        
+        # Combine all sources
+        all_articles = rss_articles + scraped_articles + social_articles
+        articles = aggregate_feeds(all_articles, [], source_filter, limit)
         
         # Filter out explicit and non-English content
         articles = filter_articles(articles)

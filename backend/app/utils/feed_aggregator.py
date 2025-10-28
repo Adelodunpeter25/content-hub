@@ -43,28 +43,22 @@ def sort_by_date(articles):
     
     return sorted(articles, key=get_date, reverse=True)
 
-def aggregate_feeds(rss_articles, scraped_articles, source_filter=None, limit=None):
+def aggregate_feeds(all_articles, unused_param=None, source_filter=None, limit=None):
     """
     Combine, deduplicate, and sort articles from multiple sources
     
     Args:
-        rss_articles: Articles from RSS feeds
-        scraped_articles: Articles from web scraping
-        source_filter: Filter by type ('rss' or 'scrape')
+        all_articles: Combined list of articles from all sources
+        unused_param: Deprecated parameter (kept for compatibility)
+        source_filter: Filter by type ('rss', 'scrape', 'reddit', 'youtube')
         limit: Maximum number of articles to return
         
     Returns:
         Aggregated and processed articles
     """
-    # Combine all articles
-    all_articles = []
-    
-    if source_filter == 'rss':
-        all_articles = rss_articles
-    elif source_filter == 'scrape':
-        all_articles = scraped_articles
-    else:
-        all_articles = rss_articles + scraped_articles
+    # Apply source filter if specified
+    if source_filter:
+        all_articles = [a for a in all_articles if a.get('type') == source_filter]
     
     # Deduplicate
     all_articles = deduplicate_articles(all_articles)
