@@ -32,7 +32,8 @@ def init_scheduler():
         'interval',
         seconds=interval_seconds,
         id='fetch_feeds',
-        replace_existing=True
+        replace_existing=True,
+        misfire_grace_time=300  # Allow 5 minutes tolerance for delayed starts
     )
     
     # Run immediately on startup
