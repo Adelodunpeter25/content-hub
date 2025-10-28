@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, DateTime, Integer
+from sqlalchemy import Column, String, DateTime, Integer, Boolean
 from sqlalchemy.sql import func
 from app.core.database import Base
 import bcrypt
@@ -12,6 +12,7 @@ class User(Base):
     name = Column(String, nullable=True)
     password_hash = Column(String, nullable=True)  # Nullable for Google OAuth users
     google_id = Column(String, unique=True, nullable=True, index=True)  # Google user ID
+    onboarding_completed = Column(Boolean, default=False, nullable=False)  # Onboarding status
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     last_login_at = Column(DateTime(timezone=True), nullable=True)
     last_login_ip = Column(String(45), nullable=True)
@@ -30,6 +31,7 @@ class User(Base):
             'id': self.id,
             'email': self.email,
             'name': self.name,
+            'onboarding_completed': self.onboarding_completed,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'last_login_at': self.last_login_at.isoformat() if self.last_login_at else None,
             'last_login_ip': self.last_login_ip

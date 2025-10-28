@@ -100,20 +100,15 @@ def check_needs_onboarding(user_id, db):
     Returns:
         Boolean indicating if user needs onboarding
     """
-    from app.models.preferences import UserFeedPreferences
+    from app.models.user import User
     
-    preferences = db.query(UserFeedPreferences).filter(
-        UserFeedPreferences.user_id == user_id
-    ).first()
+    user = db.query(User).filter(User.id == user_id).first()
     
-    if not preferences:
+    if not user:
         return True
     
-    # Check if preferences are empty
-    if not preferences.feed_sources and not preferences.feed_types:
-        return True
-    
-    return False
+    # Check onboarding_completed flag
+    return not user.onboarding_completed
 
 def require_auth(f):
     """

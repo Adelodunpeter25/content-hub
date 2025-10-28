@@ -11,6 +11,8 @@ class UserFeedPreferences(Base):
     user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), unique=True, nullable=False)
     feed_sources = Column(ARRAY(String), default=list)
     feed_types = Column(ARRAY(String), default=list)
+    selected_tags = Column(ARRAY(Integer), default=list)  # Tag IDs
+    feed_template = Column(String(20), default='custom')  # custom, frontend, backend, ai_ml, devops, mobile, fullstack
     show_read_articles = Column(Boolean, default=True)
     font_size = Column(String(10), default='medium')
     view_mode = Column(String(15), default='comfortable')
@@ -27,6 +29,8 @@ class UserFeedPreferences(Base):
             'user_id': self.user_id,
             'feed_sources': self.feed_sources or [],
             'feed_types': self.feed_types or [],
+            'selected_tags': self.selected_tags or [],
+            'feed_template': self.feed_template or 'custom',
             'show_read_articles': self.show_read_articles if self.show_read_articles is not None else True,
             'font_size': self.font_size or 'medium',
             'view_mode': self.view_mode or 'comfortable',
