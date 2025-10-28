@@ -50,25 +50,25 @@ def get_reading_stats(user_id):
             Bookmark.user_id == user_id
         ).all()
         
-        # Extract URLs
-        read_urls = {h.article_url for h in read_history}
-        bookmark_urls = {b.article_url for b in bookmarks}
-        
-        # Get all articles to match categories and sources
-        all_articles = get_all_feeds()
-        
-        # Count favorite categories and sources
+        # Count favorite categories and sources from read history
         category_counts = Counter()
         source_counts = Counter()
         
-        for article in all_articles:
-            url = article.get('link')
-            if url in read_urls or url in bookmark_urls:
-                for cat in article.get('categories', []):
-                    category_counts[cat] += 1
-                source = article.get('source')
-                if source:
-                    source_counts[source] += 1
+        # Count from read history (has category and source stored)
+        for history in read_history:
+            # Split categories if multiple are stored (comma-separated)
+            if history.article_category:
+                categories = [cat.strip() for cat in history.article_category.split(',')]
+                for cat in categories:
+                    if cat:
+                        category_counts[cat] += 1
+            if history.article_source:
+                source_counts[history.article_source] += 1
+        
+        # Count from bookmarks (has source stored)
+        for bookmark in bookmarks:
+            if bookmark.source:
+                source_counts[bookmark.source] += 1
         
         # Calculate reading streak
         current_streak, longest_streak = calculate_reading_streak(read_history)

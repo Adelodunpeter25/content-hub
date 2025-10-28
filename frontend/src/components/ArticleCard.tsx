@@ -58,7 +58,7 @@ export default function ArticleCard({ article, onBookmark, onRead, onPreview, is
           )}
           {onRead && (
             <button
-              onClick={() => onRead(article.link, article.title, article.source, article.categories?.[0])}
+              onClick={() => onRead(article.link, article.title, article.source, article.categories?.join(','))}
               className="text-sm text-blue-500 dark:text-blue-400 hover:underline"
             >
               Read
