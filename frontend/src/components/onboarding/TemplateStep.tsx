@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import type { FeedTemplate } from '../../types/onboarding';
 
 interface TemplateStepProps {
