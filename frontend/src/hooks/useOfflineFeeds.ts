@@ -29,7 +29,7 @@ export const useOfflineFeeds = (): UseOfflineFeedsResult => {
   const [isCached, setIsCached] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
 
-  const fetchFeeds = async (forceNetwork = false) => {
+  const fetchFeeds = async () => {
     try {
       setLoading(true);
       setError(null);
@@ -109,7 +109,7 @@ export const useOfflineFeeds = (): UseOfflineFeedsResult => {
     // Listen for online/offline events
     const handleOnline = () => {
       setIsOffline(false);
-      fetchFeeds(true); // Force network fetch when coming back online
+      fetchFeeds(); // Fetch when coming back online
     };
 
     const handleOffline = () => {
@@ -132,6 +132,6 @@ export const useOfflineFeeds = (): UseOfflineFeedsResult => {
     isOffline,
     isCached,
     lastUpdate,
-    refetch: () => fetchFeeds(true)
+    refetch: () => fetchFeeds()
   };
 };

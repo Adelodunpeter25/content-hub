@@ -33,7 +33,7 @@ export default function SyncIndicator() {
     checkPending();
 
     // Listen for sync completion
-    const handleSyncComplete = (event: any) => {
+    const handleSyncComplete = () => {
       setLastSync(new Date());
       checkPending();
     };
