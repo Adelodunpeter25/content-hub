@@ -32,13 +32,19 @@ export const useOfflineBookmarks = (): UseOfflineBookmarksResult => {
   }) => {
     setIsProcessing(true);
     try {
-      // Cache locally first
-      await cacheBookmark({
-        article_url: article.article_url,
-        title: article.title,
-        source: article.source,
-        saved_at: new Date().toISOString()
-      });
+      // Check if app is installed
+      const isInstalled = window.matchMedia('(display-mode: standalone)').matches ||
+                         (window.navigator as any).standalone === true;
+
+      // Only cache locally if app is installed
+      if (isInstalled) {
+        await cacheBookmark({
+          article_url: article.article_url,
+          title: article.title,
+          source: article.source,
+          saved_at: new Date().toISOString()
+        });
+      }
 
       // Try to sync immediately if online
       if (navigator.onLine) {
@@ -48,13 +54,25 @@ export const useOfflineBookmarks = (): UseOfflineBookmarksResult => {
             body: JSON.stringify(article)
           });
         } catch (error) {
-          // Failed to sync, add to pending actions
-          console.warn('Failed to sync bookmark, adding to queue:', error);
-          await addPendingAction('bookmark', article);
+          // Failed to sync
+          if (isInstalled) {
+            // Add to pending actions only if installed
+            console.warn('Failed to sync bookmark, adding to queue:', error);
+            await addPendingAction('bookmark', article);
+          } else {
+            // Not installed, throw error
+            throw error;
+          }
         }
       } else {
-        // Offline, add to pending actions
-        await addPendingAction('bookmark', article);
+        // Offline
+        if (isInstalled) {
+          // Add to pending actions if installed
+          await addPendingAction('bookmark', article);
+        } else {
+          // Not installed, require internet
+          throw new Error('Please connect to the internet to bookmark articles.');
+        }
       }
     } finally {
       setIsProcessing(false);
@@ -64,8 +82,14 @@ export const useOfflineBookmarks = (): UseOfflineBookmarksResult => {
   const removeBookmark = useCallback(async (articleUrl: string, bookmarkId?: number) => {
     setIsProcessing(true);
     try {
-      // Remove from local cache
-      await removeCachedBookmark(articleUrl);
+      // Check if app is installed
+      const isInstalled = window.matchMedia('(display-mode: standalone)').matches ||
+                         (window.navigator as any).standalone === true;
+
+      // Remove from local cache only if installed
+      if (isInstalled) {
+        await removeCachedBookmark(articleUrl);
+      }
 
       // Try to sync immediately if online
       if (navigator.onLine && bookmarkId) {
@@ -74,13 +98,24 @@ export const useOfflineBookmarks = (): UseOfflineBookmarksResult => {
             method: 'DELETE'
           });
         } catch (error) {
-          // Failed to sync, add to pending actions
-          console.warn('Failed to sync bookmark removal, adding to queue:', error);
-          await addPendingAction('unbookmark', { id: bookmarkId });
+          // Failed to sync
+          if (isInstalled) {
+            // Add to pending actions only if installed
+            console.warn('Failed to sync bookmark removal, adding to queue:', error);
+            await addPendingAction('unbookmark', { id: bookmarkId });
+          } else {
+            throw error;
+          }
         }
       } else if (bookmarkId) {
-        // Offline, add to pending actions
-        await addPendingAction('unbookmark', { id: bookmarkId });
+        // Offline
+        if (isInstalled) {
+          // Add to pending actions if installed
+          await addPendingAction('unbookmark', { id: bookmarkId });
+        } else {
+          // Not installed, require internet
+          throw new Error('Please connect to the internet to remove bookmarks.');
+        }
       }
     } finally {
       setIsProcessing(false);

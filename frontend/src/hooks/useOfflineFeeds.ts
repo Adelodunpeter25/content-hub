@@ -34,58 +34,66 @@ export const useOfflineFeeds = (): UseOfflineFeedsResult => {
       setLoading(true);
       setError(null);
 
-      // Try to load from cache first (offline-first approach)
-      if (!forceNetwork) {
-        const cachedData = await getCachedFeeds();
-        const lastUpdateTime = await getLastFeedUpdate();
-        
-        if (cachedData.length > 0) {
-          setFeeds(cachedData);
-          setIsCached(true);
-          setLastUpdate(lastUpdateTime ? new Date(lastUpdateTime) : null);
-          setLoading(false);
-        }
-      }
+      // Check if app is installed (PWA mode)
+      const isInstalled = window.matchMedia('(display-mode: standalone)').matches ||
+                         (window.navigator as any).standalone === true;
 
-      // Try to fetch fresh data if online
+      // If online, always fetch from network (even if installed)
       if (navigator.onLine) {
         try {
           const response = await request('/feeds');
           const freshFeeds = response.articles || [];
           
-          // Cache the fresh data
-          await cacheFeeds(freshFeeds);
+          // Cache the fresh data only if installed
+          if (isInstalled) {
+            await cacheFeeds(freshFeeds);
+          }
           
           setFeeds(freshFeeds);
           setIsCached(false);
           setIsOffline(false);
           setLastUpdate(new Date());
         } catch (networkError) {
-          // Network request failed, use cached data
-          console.warn('Network request failed, using cached data:', networkError);
+          // Network request failed
+          console.warn('Network request failed:', networkError);
           setIsOffline(true);
           
-          if (feeds.length === 0) {
-            // No cached data available
+          // Only fallback to cache if app is installed
+          if (isInstalled) {
+            // Try to load from cache
             const cachedData = await getCachedFeeds();
             if (cachedData.length > 0) {
               setFeeds(cachedData);
               setIsCached(true);
+              const lastUpdateTime = await getLastFeedUpdate();
+              setLastUpdate(lastUpdateTime ? new Date(lastUpdateTime) : null);
             } else {
               throw new Error('No cached data available');
             }
+          } else {
+            // Not installed, show error instead of using cache
+            throw networkError;
           }
         }
       } else {
-        // Offline, use cached data
+        // Offline
         setIsOffline(true);
-        const cachedData = await getCachedFeeds();
         
-        if (cachedData.length > 0) {
-          setFeeds(cachedData);
-          setIsCached(true);
+        // Only use cached data if app is installed
+        if (isInstalled) {
+          const cachedData = await getCachedFeeds();
+          const lastUpdateTime = await getLastFeedUpdate();
+          
+          if (cachedData.length > 0) {
+            setFeeds(cachedData);
+            setIsCached(true);
+            setLastUpdate(lastUpdateTime ? new Date(lastUpdateTime) : null);
+          } else {
+            setError('No cached data available. Please connect to the internet.');
+          }
         } else {
-          setError('No cached data available. Please connect to the internet.');
+          // Not installed, require internet connection
+          setError('Please connect to the internet to view feeds.');
         }
       }
     } catch (err) {

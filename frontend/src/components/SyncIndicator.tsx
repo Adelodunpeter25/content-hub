@@ -9,6 +9,14 @@ export default function SyncIndicator() {
   const [lastSync, setLastSync] = useState<Date | null>(null);
   const [showDetails, setShowDetails] = useState(false);
   const [cacheAge, setCacheAge] = useState<number | null>(null);
+  const [isInstalled, setIsInstalled] = useState(false);
+
+  useEffect(() => {
+    // Check if app is installed
+    const installed = window.matchMedia('(display-mode: standalone)').matches ||
+                     (window.navigator as any).standalone === true;
+    setIsInstalled(installed);
+  }, []);
 
   const checkPending = async () => {
     const hasPending = await hasPendingActions();
@@ -69,7 +77,8 @@ export default function SyncIndicator() {
     return `${days}d ago`;
   };
 
-  if (pendingCount === 0 && !showDetails) {
+  // Only show sync indicator if app is installed
+  if (!isInstalled || (pendingCount === 0 && !showDetails)) {
     return null;
   }
 
