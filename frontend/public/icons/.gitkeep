@@ -1,0 +1,8 @@
+# PWA Icons
+
+Upload 2 icons here:
+- icon-192x192.png (minimum required)
+- icon-512x512.png (minimum required)
+
+These are the only icons needed for PWA functionality.
+The browser will automatically scale them as needed.

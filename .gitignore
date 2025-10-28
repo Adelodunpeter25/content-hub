@@ -31,3 +31,6 @@ dist-ssr
 *.sln
 *.sw?
 frontend/.env
+
+# Others
+.gitcli-config.json
