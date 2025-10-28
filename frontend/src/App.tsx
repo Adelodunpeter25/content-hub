@@ -9,6 +9,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import LoadingSpinner from './components/LoadingSpinner';
 import InstallPrompt from './components/InstallPrompt';
 import OfflineIndicator from './components/OfflineIndicator';
+import SyncIndicator from './components/SyncIndicator';
 
 // Scroll to top on route change
 function ScrollToTop() {
@@ -53,6 +54,7 @@ function App() {
               <AuthProvider>
                 <OfflineIndicator />
                 <InstallPrompt />
+                <SyncIndicator />
                 <Suspense fallback={
                   <div className="min-h-screen flex items-center justify-center">
                     <LoadingSpinner />
