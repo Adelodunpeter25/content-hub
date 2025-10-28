@@ -7,6 +7,9 @@ import { PreferencesProvider } from './context/PreferencesContext';
 import ErrorBoundary from './components/ErrorBoundary';
 import ProtectedRoute from './components/ProtectedRoute';
 import LoadingSpinner from './components/LoadingSpinner';
+import InstallPrompt from './components/InstallPrompt';
+import OfflineIndicator from './components/OfflineIndicator';
+import SyncIndicator from './components/SyncIndicator';
 
 // Scroll to top on route change
 function ScrollToTop() {
@@ -49,69 +52,72 @@ function App() {
             <ScrollToTop />
             <ToastProvider>
               <AuthProvider>
+                <OfflineIndicator />
+                <InstallPrompt />
+                <SyncIndicator />
                 <Suspense fallback={
                   <div className="min-h-screen flex items-center justify-center">
                     <LoadingSpinner />
                   </div>
                 }>
                   <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/feeds" element={<FeedsPage />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="/reset-password" element={<ResetPasswordPage />} />
-          <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />
-          <Route path="/privacy" element={<PrivacyPolicyPage />} />
-          <Route path="/terms" element={<TermsOfServicePage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/dashboard" element={
-            <ProtectedRoute>
-              <DashboardPage />
-            </ProtectedRoute>
-          } />
-          <Route path="/feed" element={
-            <ProtectedRoute>
-              <FeedPage />
-            </ProtectedRoute>
-          } />
-          <Route path="/bookmarks" element={
-            <ProtectedRoute>
-              <BookmarksPage />
-            </ProtectedRoute>
-          } />
-          <Route path="/settings" element={
-            <ProtectedRoute>
-              <SettingsPage />
-            </ProtectedRoute>
-          } />
-          <Route path="/stats" element={
-            <ProtectedRoute>
-              <StatsPage />
-            </ProtectedRoute>
-          } />
-          <Route path="/search" element={
-            <ProtectedRoute>
-              <SearchPage />
-            </ProtectedRoute>
-          } />
-          <Route path="/trending" element={
-            <ProtectedRoute>
-              <TrendingPage />
-            </ProtectedRoute>
-          } />
-          <Route path="/popular" element={
-            <ProtectedRoute>
-              <PopularPage />
-            </ProtectedRoute>
-          } />
-          <Route path="/history" element={
-            <ProtectedRoute>
-              <ReadHistoryPage />
-            </ProtectedRoute>
-          } />
-          <Route path="*" element={<NotFoundPage />} />
+                    <Route path="/" element={<LandingPage />} />
+                    <Route path="/feeds" element={<FeedsPage />} />
+                    <Route path="/contact" element={<ContactPage />} />
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/signup" element={<SignupPage />} />
+                    <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                    <Route path="/reset-password" element={<ResetPasswordPage />} />
+                    <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />
+                    <Route path="/privacy" element={<PrivacyPolicyPage />} />
+                    <Route path="/terms" element={<TermsOfServicePage />} />
+                    <Route path="/about" element={<AboutPage />} />
+                    <Route path="/dashboard" element={
+                      <ProtectedRoute>
+                        <DashboardPage />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/feed" element={
+                      <ProtectedRoute>
+                        <FeedPage />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/bookmarks" element={
+                      <ProtectedRoute>
+                        <BookmarksPage />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/settings" element={
+                      <ProtectedRoute>
+                        <SettingsPage />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/stats" element={
+                      <ProtectedRoute>
+                        <StatsPage />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/search" element={
+                      <ProtectedRoute>
+                        <SearchPage />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/trending" element={
+                      <ProtectedRoute>
+                        <TrendingPage />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/popular" element={
+                      <ProtectedRoute>
+                        <PopularPage />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/history" element={
+                      <ProtectedRoute>
+                        <ReadHistoryPage />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="*" element={<NotFoundPage />} />
                   </Routes>
                 </Suspense>
               </AuthProvider>
