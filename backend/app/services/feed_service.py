@@ -5,6 +5,7 @@ from app.utils.feed_aggregator import aggregate_feeds
 from app.utils.categorizer import add_categories_to_articles
 from app.utils.gemini_categorizer import batch_categorize
 from app.utils.personalization import filter_by_user_preferences
+from app.utils.content_filter import filter_articles
 from app.core.cache import cache_get, cache_set
 from app.core.config import Config
 from app.core.database import get_db
@@ -29,6 +30,9 @@ def get_all_feeds(source_filter=None, limit=None):
         rss_articles = fetch_rss_feeds(Config.RSS_FEEDS) if Config.RSS_FEEDS else []
         scraped_articles = scrape_websites(Config.SCRAPE_URLS) if Config.SCRAPE_URLS else []
         articles = aggregate_feeds(rss_articles, scraped_articles, source_filter, limit)
+        
+        # Filter out explicit and non-English content
+        articles = filter_articles(articles)
         
         # Use Gemini if API key exists, fallback to keyword categorization
         if os.getenv('GEMINI_API_KEY'):
