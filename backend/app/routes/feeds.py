@@ -12,7 +12,6 @@ from app.models.read_history import ReadHistory
 bp = Blueprint('feeds', __name__, url_prefix='/api')
 
 @bp.route('/feeds', methods=['GET'])
-@require_auth
 def get_unified_feeds():
     """
     Endpoint to get unified feed from all sources
@@ -65,18 +64,19 @@ def get_unified_feeds():
         if category:
             articles = [a for a in articles if category in a.get('categories', [])]
         
-        # Filter read articles based on user preference
-        user_id = g.user_id
-        with get_db() as db:
-            preferences = db.query(UserFeedPreferences).filter(
-                UserFeedPreferences.user_id == user_id
-            ).first()
-            
-            if preferences and not preferences.show_read_articles:
-                read_urls = {h.article_url for h in db.query(ReadHistory).filter(
-                    ReadHistory.user_id == user_id
-                ).all()}
-                articles = [a for a in articles if a.get('link') not in read_urls]
+        # Filter read articles based on user preference (only if authenticated)
+        user_id = g.get('user_id')
+        if user_id:
+            with get_db() as db:
+                preferences = db.query(UserFeedPreferences).filter(
+                    UserFeedPreferences.user_id == user_id
+                ).first()
+                
+                if preferences and not preferences.show_read_articles:
+                    read_urls = {h.article_url for h in db.query(ReadHistory).filter(
+                        ReadHistory.user_id == user_id
+                    ).all()}
+                    articles = [a for a in articles if a.get('link') not in read_urls]
         
         # Apply pagination
         paginated_data = paginate(articles, page, per_page)

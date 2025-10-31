@@ -224,21 +224,15 @@ def calculate_quality_score(article, source_tier='standard', user_tag_ids=None, 
     content_score = calculate_content_score(article.get('title', ''), article.get('summary', ''))
     freshness_score = calculate_freshness_score(article.get('published', ''))
     
-    # Optional scores
-    engagement_score = 0.5
-    if db:
-        engagement_score = calculate_engagement_score(article.get('link', ''), db)
-    
     relevance_score = 0.5
     if user_tag_ids and article.get('tags'):
         relevance_score = calculate_relevance_score(article.get('tags', []), user_tag_ids)
     
-    # Weighted final score
+    # Weighted final score (without engagement)
     final_score = (
-        source_score * 0.25 +
-        content_score * 0.25 +
-        freshness_score * 0.20 +
-        engagement_score * 0.15 +
+        source_score * 0.30 +
+        content_score * 0.30 +
+        freshness_score * 0.25 +
         relevance_score * 0.15
     )
     

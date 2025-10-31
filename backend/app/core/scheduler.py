@@ -9,12 +9,17 @@ scheduler = None
 
 def fetch_feeds_job():
     """Background job to fetch and cache feeds"""
+    from app.core.database import engine
     try:
         logger.info('Background job: Fetching feeds...')
         articles = get_all_feeds()
         logger.info(f'Background job: Cached {len(articles)} articles')
     except Exception as e:
         logger.error(f'Background job failed: {str(e)}')
+    finally:
+        # Dispose all connections in the pool after background job
+        if engine:
+            engine.dispose()
 
 def init_scheduler():
     """Initialize and start the background scheduler"""

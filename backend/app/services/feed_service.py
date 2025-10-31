@@ -50,13 +50,13 @@ def get_all_feeds(source_filter=None, limit=None, apply_quality_filter=True, min
         else:
             articles = add_categories_to_articles(articles)
         
-        # Add tags to articles
+        # Use single database connection for all DB operations
         with get_db() as db:
+            # Add tags to articles
             articles = add_tags_to_articles(articles, db)
-        
-        # Apply quality scoring and filtering
-        if apply_quality_filter:
-            with get_db() as db:
+            
+            # Apply quality scoring and filtering
+            if apply_quality_filter:
                 articles = filter_by_quality(
                     articles,
                     min_score=min_quality_score,
@@ -90,12 +90,13 @@ def get_personalized_feeds(user_preferences, user_id=None):
         user_preferences.feed_types
     )
     
-    # Apply tag-based filtering and relevance scoring
-    if user_preferences.selected_tags:
-        articles = filter_by_tags(articles, user_preferences.selected_tags)
-        
-        # Re-score with user tag relevance
-        with get_db() as db:
+    # Use single database connection for all DB operations
+    with get_db() as db:
+        # Apply tag-based filtering and relevance scoring
+        if user_preferences.selected_tags:
+            articles = filter_by_tags(articles, user_preferences.selected_tags)
+            
+            # Re-score with user tag relevance
             articles = filter_by_quality(
                 articles,
                 min_score=0.3,  # Lower threshold for personalized feeds
@@ -103,10 +104,9 @@ def get_personalized_feeds(user_preferences, user_id=None):
                 user_tag_ids=user_preferences.selected_tags,
                 db=db
             )
-    
-    # Filter out read articles if preference is disabled
-    if not user_preferences.show_read_articles and user_id:
-        with get_db() as db:
+        
+        # Filter out read articles if preference is disabled
+        if not user_preferences.show_read_articles and user_id:
             read_urls = db.query(ReadHistory.article_url).filter(
                 ReadHistory.user_id == user_id
             ).all()
