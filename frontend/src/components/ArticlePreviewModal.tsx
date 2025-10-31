@@ -35,7 +35,7 @@ export default function ArticlePreviewModal({
       <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-3xl max-h-[90vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
         <div className="p-6 border-b dark:border-gray-700 flex items-start justify-between">
           <div className="flex-1">
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-2 mb-2 flex-wrap">
               {article.categories && article.categories.length > 0 && (
                 <span className="text-xs px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300">
                   {article.categories[0]}
@@ -43,7 +43,18 @@ export default function ArticlePreviewModal({
               )}
               <span className="text-xs text-gray-500 dark:text-gray-400">{article.source}</span>
             </div>
-            <h2 className="text-2xl font-bold dark:text-white">{article.title}</h2>
+            <h2 className="text-2xl font-bold dark:text-white mb-3">{article.title}</h2>
+            
+            {/* Tags */}
+            {article.tags && article.tags.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mb-3">
+                {article.tags.map((tag: any) => (
+                  <span key={tag.id} className="text-xs px-2 py-1 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                    {tag.name}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
           <button onClick={onClose} className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-2xl ml-4">
             ×

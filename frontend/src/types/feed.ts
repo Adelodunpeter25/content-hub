@@ -5,6 +5,7 @@ export interface Article {
   source: string;
   type: string;
   categories?: string[];
+  tags?: { id: number; name: string; confidence?: number }[];
   published?: string;
   published_at?: string;
   summary?: string;
