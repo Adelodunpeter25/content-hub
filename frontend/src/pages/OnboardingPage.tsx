@@ -22,7 +22,7 @@ const STEPS = [
 
 export default function OnboardingPage() {
   const navigate = useNavigate();
-  const { user } = useAuthContext();
+  const { user, setUser } = useAuthContext();
   const { showToast } = useToast();
   const { getTemplates, completeOnboarding, skipOnboarding } = useOnboarding();
   const { getAllTags } = useTags();
@@ -40,8 +40,13 @@ export default function OnboardingPage() {
   const [selectedTagIds, setSelectedTagIds] = useState<number[]>([]);
 
   useEffect(() => {
+    // Redirect if already onboarded
+    if (user?.onboarding_completed) {
+      navigate('/dashboard');
+      return;
+    }
     loadData();
-  }, []);
+  }, [user]);
 
   const loadData = async () => {
     try {
@@ -83,6 +88,12 @@ export default function OnboardingPage() {
     try {
       setSubmitting(true);
       await skipOnboarding();
+      
+      // Update user object to reflect onboarding completion
+      if (user) {
+        setUser({ ...user, onboarding_completed: true });
+      }
+      
       showToast('Onboarding skipped', 'success');
       navigate('/dashboard');
     } catch (err: any) {
@@ -100,6 +111,11 @@ export default function OnboardingPage() {
         template: selectedTemplate || 'custom',
         tag_ids: selectedTagIds,
       });
+
+      // Update user object to reflect onboarding completion
+      if (user) {
+        setUser({ ...user, onboarding_completed: true });
+      }
 
       showToast('Onboarding completed! Welcome aboard! 🎉', 'success');
       

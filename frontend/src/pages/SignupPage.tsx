@@ -16,7 +16,13 @@ export default function SignupPage() {
     try {
       const response = await signup({ email, password, name });
       setUser(response.user);
-      navigate('/dashboard');
+      
+      // Redirect to onboarding if needed, otherwise dashboard
+      if (response.needs_onboarding) {
+        navigate('/onboarding');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err) {
       // Error handled by hook
     }

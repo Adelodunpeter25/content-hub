@@ -2,6 +2,7 @@ export interface User {
   id: number;
   email: string;
   name?: string;
+  onboarding_completed?: boolean;
   created_at?: string;
   last_login_at?: string;
   last_login_ip?: string;

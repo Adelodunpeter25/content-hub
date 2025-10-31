@@ -50,20 +50,19 @@ def get_all_feeds(source_filter=None, limit=None, apply_quality_filter=True, min
         else:
             articles = add_categories_to_articles(articles)
         
-        # Use single database connection for all DB operations
+        # Use single database connection for tags only
         with get_db() as db:
-            # Add tags to articles
             articles = add_tags_to_articles(articles, db)
-            
-            # Apply quality scoring and filtering
-            if apply_quality_filter:
-                articles = filter_by_quality(
-                    articles,
-                    min_score=min_quality_score,
-                    source_tier='standard',
-                    user_tag_ids=None,
-                    db=db
-                )
+        
+        # Apply quality scoring WITHOUT database connection
+        if apply_quality_filter:
+            articles = filter_by_quality(
+                articles,
+                min_score=min_quality_score,
+                source_tier='standard',
+                user_tag_ids=None,
+                db=None  # Don't pass db to avoid connection timeout
+            )
         
         cache_set(cache_key, articles)
     
@@ -90,23 +89,22 @@ def get_personalized_feeds(user_preferences, user_id=None):
         user_preferences.feed_types
     )
     
-    # Use single database connection for all DB operations
-    with get_db() as db:
-        # Apply tag-based filtering and relevance scoring
-        if user_preferences.selected_tags:
-            articles = filter_by_tags(articles, user_preferences.selected_tags)
-            
-            # Re-score with user tag relevance
-            articles = filter_by_quality(
-                articles,
-                min_score=0.3,  # Lower threshold for personalized feeds
-                source_tier='standard',
-                user_tag_ids=user_preferences.selected_tags,
-                db=db
-            )
+    # Apply tag-based filtering
+    if user_preferences.selected_tags:
+        articles = filter_by_tags(articles, user_preferences.selected_tags)
         
-        # Filter out read articles if preference is disabled
-        if not user_preferences.show_read_articles and user_id:
+        # Re-score with user tag relevance WITHOUT database
+        articles = filter_by_quality(
+            articles,
+            min_score=0.3,
+            source_tier='standard',
+            user_tag_ids=user_preferences.selected_tags,
+            db=None  # Don't pass db
+        )
+    
+    # Filter out read articles if preference is disabled
+    if not user_preferences.show_read_articles and user_id:
+        with get_db() as db:
             read_urls = db.query(ReadHistory.article_url).filter(
                 ReadHistory.user_id == user_id
             ).all()

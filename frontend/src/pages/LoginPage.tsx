@@ -15,7 +15,13 @@ export default function LoginPage() {
     try {
       const response = await login({ email, password });
       setUser(response.user);
-      navigate('/dashboard');
+      
+      // Redirect to onboarding if needed, otherwise dashboard
+      if (response.needs_onboarding) {
+        navigate('/onboarding');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err) {
       // Error handled by hook
     }
