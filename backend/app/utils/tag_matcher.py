@@ -169,21 +169,25 @@ def add_tags_to_articles(articles, db):
     from app.models.tag import Tag
     
     # Get all tags from database
-    all_tags = {tag.name: tag.id for tag in db.query(Tag).all()}
+    all_tags_dict = {tag.name: tag.id for tag in db.query(Tag).all()}
+    
+    # Filter TAG_KEYWORDS to only include tags that exist in database
+    available_keywords = {name: keywords for name, keywords in TAG_KEYWORDS.items() if name in all_tags_dict}
     
     for article in articles:
-        # Match tags
-        matched_tags = match_tags(
+        # Match tags using only available tags
+        matched_tags = match_tags_from_dict(
             article.get('title', ''),
-            article.get('summary', '')
+            article.get('summary', ''),
+            available_keywords
         )
         
         # Convert to tag objects with IDs
         article_tags = []
         for tag_name, confidence in matched_tags:
-            if tag_name in all_tags:
+            if tag_name in all_tags_dict:
                 article_tags.append({
-                    'id': all_tags[tag_name],
+                    'id': all_tags_dict[tag_name],
                     'name': tag_name,
                     'confidence': round(confidence, 2)
                 })
@@ -191,6 +195,62 @@ def add_tags_to_articles(articles, db):
         article['tags'] = article_tags
     
     return articles
+
+def match_tags_from_dict(title, summary='', keywords_dict=None, max_tags=3, min_confidence=0.5):
+    """
+    Match article to tags based on provided keywords dictionary
+    
+    Args:
+        title: Article title
+        summary: Article summary
+        keywords_dict: Dictionary of tag names to keywords
+        max_tags: Maximum number of tags to return
+        min_confidence: Minimum confidence threshold (increased to 0.5)
+        
+    Returns:
+        List of tuples (tag_name, confidence_score)
+    """
+    if keywords_dict is None:
+        keywords_dict = TAG_KEYWORDS
+    
+    title_lower = title.lower()
+    summary_lower = summary.lower()
+    full_text = f"{title} {summary}"
+    
+    tag_scores = {}
+    
+    for tag_name, keywords in keywords_dict.items():
+        score = 0.0
+        has_match = False
+        
+        for keyword in keywords:
+            keyword_lower = keyword.lower()
+            
+            # Check for negative context
+            if has_negative_context(full_text, keyword):
+                score -= 1.0  # Stronger penalty
+                continue
+            
+            # Title matches worth more (ONLY exact word boundary matches)
+            if keyword_lower in title_lower:
+                if re.search(rf'\b{re.escape(keyword_lower)}\b', title_lower):
+                    has_match = True
+                    score += 2.0  # Increased weight for title matches
+            
+            # Summary matches (ONLY exact word boundary matches)
+            if keyword_lower in summary_lower:
+                if re.search(rf'\b{re.escape(keyword_lower)}\b', summary_lower):
+                    has_match = True
+                    score += 0.5
+        
+        if has_match and score > 0:
+            # Stricter normalization
+            confidence = min(score / 3.0, 1.0)
+            if confidence >= min_confidence:
+                tag_scores[tag_name] = confidence
+    
+    sorted_tags = sorted(tag_scores.items(), key=lambda x: x[1], reverse=True)
+    return sorted_tags[:max_tags]
 
 def get_tag_names_from_ids(tag_ids, db):
     """

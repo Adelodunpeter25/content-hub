@@ -44,20 +44,6 @@ export default function ArticleCard({ article, onBookmark, onRead, onPreview, is
         </div>
         <h3 className="font-bold text-lg mb-3 line-clamp-2 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200">{article.title}</h3>
         
-        {/* Tags */}
-        {article.tags && article.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mb-3">
-            {article.tags.slice(0, 4).map((tag: any) => (
-              <span key={tag.id} className="text-xs px-2 py-0.5 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium">
-                {tag.name}
-              </span>
-            ))}
-            {article.tags.length > 4 && (
-              <span className="text-xs text-gray-400 dark:text-gray-500">+{article.tags.length - 4}</span>
-            )}
-          </div>
-        )}
-        
         {article.summary && (
           <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-3 leading-relaxed">{article.summary}</p>
         )}

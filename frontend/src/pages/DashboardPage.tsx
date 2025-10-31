@@ -1,29 +1,58 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../context/AuthContext';
 import { useFeeds } from '../hooks/useFeeds';
 import { useStats } from '../hooks/useStats';
 import { useBookmarks } from '../hooks/useBookmarks';
 import { useReadHistory } from '../hooks/useReadHistory';
+import { useTags } from '../hooks/useTags';
 import { useToast } from '../context/ToastContext';
 import DashboardLayout from '../components/DashboardLayout';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ArticlePreviewModal from '../components/ArticlePreviewModal';
-import { Flame, BookOpen, TrendingUp } from 'lucide-react';
+import ConfirmDialog from '../components/ConfirmDialog';
+import { Flame, BookOpen, TrendingUp, Settings } from 'lucide-react';
 import type { Article } from '../types/feed';
 
 export default function DashboardPage() {
+  const navigate = useNavigate();
   const { user } = useAuthContext();
   const { showToast } = useToast();
   const { getPersonalizedFeed } = useFeeds();
   const { getReadingStats } = useStats();
   const { addBookmark, getBookmarks } = useBookmarks();
   const { markAsRead } = useReadHistory();
+  const { getUserTags, updateUserTags } = useTags();
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ today: 0, streak: 0, total: 0 });
   const [weather] = useState({ temp: 28, location: 'Lagos, Nigeria', condition: 'Mostly sunny', feels: 31 });
   const [previewArticle, setPreviewArticle] = useState<Article | null>(null);
   const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
+  const [confirmDialog, setConfirmDialog] = useState<{ isOpen: boolean; tags: any[] }>({ isOpen: false, tags: [] });
+
+  const handleNotInterested = async (tags: any[]) => {
+    if (!tags || tags.length === 0) return;
+    setConfirmDialog({ isOpen: true, tags });
+  };
+
+  const confirmRemoveTags = async () => {
+    const tags = confirmDialog.tags;
+    const tagNames = tags.map(t => t.name).join(', ');
+    
+    try {
+      const { tag_ids } = await getUserTags();
+      const tagIdsToRemove = tags.map(t => t.id);
+      const newTagIds = tag_ids.filter(id => !tagIdsToRemove.includes(id));
+      await updateUserTags(newTagIds);
+      showToast(`Removed ${tagNames} from your interests`, 'success');
+      loadFeed();
+    } catch (err: any) {
+      showToast(err.message || 'Failed to update interests', 'error');
+    } finally {
+      setConfirmDialog({ isOpen: false, tags: [] });
+    }
+  };
 
   useEffect(() => {
     loadFeed();
@@ -109,8 +138,19 @@ export default function DashboardPage() {
     <DashboardLayout>
       <div className="space-y-6">
         <div className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white p-6 rounded-lg">
-          <h1 className="text-3xl font-bold">{getGreeting()}, {user?.name?.split(' ')[0]} 👋</h1>
-          <p className="text-lg mt-2">Here's what's happening today.</p>
+          <div className="flex items-start justify-between">
+            <div>
+              <h1 className="text-3xl font-bold">{getGreeting()}, {user?.name?.split(' ')[0]} 👋</h1>
+              <p className="text-lg mt-2">Here's what's happening today.</p>
+            </div>
+            <button
+              onClick={() => navigate('/settings')}
+              className="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors backdrop-blur-sm"
+            >
+              <Settings className="w-4 h-4" />
+              <span className="font-medium">Edit Interests</span>
+            </button>
+          </div>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-6">
@@ -186,6 +226,17 @@ export default function DashboardPage() {
           isBookmarked={previewArticle ? bookmarkedIds.has(previewArticle.link) : false}
         />
       </div>
+
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        title="Hide These Topics?"
+        message={`Remove ${confirmDialog.tags.map(t => t.name).join(', ')} from your interests? You'll see fewer articles about these topics.`}
+        confirmText="Remove"
+        cancelText="Cancel"
+        danger={true}
+        onConfirm={confirmRemoveTags}
+        onCancel={() => setConfirmDialog({ isOpen: false, tags: [] })}
+      />
     </DashboardLayout>
   );
 }

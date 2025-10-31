@@ -3,8 +3,9 @@ import { useToast } from '../context/ToastContext';
 import { useFeeds } from '../hooks/useFeeds';
 import { useBookmarks } from '../hooks/useBookmarks';
 import { useReadHistory } from '../hooks/useReadHistory';
+import { useTags } from '../hooks/useTags';
 import ArticleCard from '../components/ArticleCard';
-
+import ConfirmDialog from '../components/ConfirmDialog';
 import EmptyState from '../components/EmptyState';
 import type { Article } from '../types/feed';
 
@@ -18,6 +19,7 @@ export default function FeedPage() {
   const [source, setSource] = useState(() => localStorage.getItem('feedSource') || '');
   const [page, setPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState<{ isOpen: boolean; tags: any[] }>({ isOpen: false, tags: [] });
 
   useEffect(() => {
     setPage(1);
@@ -79,6 +81,33 @@ export default function FeedPage() {
   const { getPersonalizedFeed } = useFeeds();
   const { addBookmark, getBookmarks } = useBookmarks();
   const { markAsRead, getReadHistory } = useReadHistory();
+  const { getUserTags, updateUserTags } = useTags();
+
+  const handleNotInterested = async (tags: any[]) => {
+    if (!tags || tags.length === 0) return;
+    setConfirmDialog({ isOpen: true, tags });
+  };
+
+  const confirmRemoveTags = async () => {
+    const tags = confirmDialog.tags;
+    const tagNames = tags.map(t => t.name).join(', ');
+    
+    try {
+      const { tag_ids } = await getUserTags();
+      const tagIdsToRemove = tags.map(t => t.id);
+      const newTagIds = tag_ids.filter(id => !tagIdsToRemove.includes(id));
+      await updateUserTags(newTagIds);
+      
+      showToast(`Removed ${tagNames} from your interests`, 'success');
+      setPage(1);
+      setArticles([]);
+      loadFeed();
+    } catch (err: any) {
+      showToast(err.message || 'Failed to update interests', 'error');
+    } finally {
+      setConfirmDialog({ isOpen: false, tags: [] });
+    }
+  };
 
   useEffect(() => {
     loadBookmarks();
@@ -285,6 +314,7 @@ export default function FeedPage() {
                     article={article}
                     onBookmark={handleBookmark}
                     onRead={handleRead}
+                    onNotInterested={handleNotInterested}
                     onPreview={() => setPreviewArticle(article)}
                     isBookmarked={bookmarkedIds.has(article.link)}
                     isRead={readIds.has(article.link)}
@@ -315,6 +345,17 @@ export default function FeedPage() {
           isBookmarked={previewArticle ? bookmarkedIds.has(previewArticle.link) : false}
         />
       </div>
+
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        title="Hide These Topics?"
+        message={`Remove ${confirmDialog.tags.map(t => t.name).join(', ')} from your interests? You'll see fewer articles about these topics.`}
+        confirmText="Remove"
+        cancelText="Cancel"
+        danger={true}
+        onConfirm={confirmRemoveTags}
+        onCancel={() => setConfirmDialog({ isOpen: false, tags: [] })}
+      />
     </DashboardLayout>
   );
 }

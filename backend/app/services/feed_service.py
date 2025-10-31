@@ -7,7 +7,6 @@ from app.utils.categorizer import add_categories_to_articles
 from app.utils.gemini_categorizer import batch_categorize
 from app.utils.personalization import filter_by_user_preferences
 from app.utils.content_filter import filter_articles
-from app.utils.tag_matcher import add_tags_to_articles
 from app.utils.quality_scorer import filter_by_quality
 from app.core.cache import cache_get, cache_set
 from app.core.config import Config
@@ -26,7 +25,7 @@ def get_all_feeds(source_filter=None, limit=None, apply_quality_filter=True, min
         min_quality_score: Minimum quality score threshold (0.0-1.0)
         
     Returns:
-        List of articles with categories, tags, and quality scores
+        List of articles with categories and quality scores
     """
     cache_key = f'feeds:all:{source_filter}:{apply_quality_filter}'
     articles = cache_get(cache_key)
@@ -50,10 +49,6 @@ def get_all_feeds(source_filter=None, limit=None, apply_quality_filter=True, min
         else:
             articles = add_categories_to_articles(articles)
         
-        # Use single database connection for tags only
-        with get_db() as db:
-            articles = add_tags_to_articles(articles, db)
-        
         # Apply quality scoring WITHOUT database connection
         if apply_quality_filter:
             articles = filter_by_quality(
@@ -70,7 +65,7 @@ def get_all_feeds(source_filter=None, limit=None, apply_quality_filter=True, min
 
 def get_personalized_feeds(user_preferences, user_id=None):
     """
-    Get personalized feeds based on user preferences with tag-based filtering
+    Get personalized feeds based on user preferences with category-based filtering
     
     Args:
         user_preferences: UserFeedPreferences object
@@ -89,18 +84,9 @@ def get_personalized_feeds(user_preferences, user_id=None):
         user_preferences.feed_types
     )
     
-    # Apply tag-based filtering
-    if user_preferences.selected_tags:
-        articles = filter_by_tags(articles, user_preferences.selected_tags)
-        
-        # Re-score with user tag relevance WITHOUT database
-        articles = filter_by_quality(
-            articles,
-            min_score=0.3,
-            source_tier='standard',
-            user_tag_ids=user_preferences.selected_tags,
-            db=None  # Don't pass db
-        )
+    # Apply category-based filtering
+    if user_preferences.selected_categories:
+        articles = filter_by_categories(articles, user_preferences.selected_categories)
     
     # Filter out read articles if preference is disabled
     if not user_preferences.show_read_articles and user_id:
@@ -113,31 +99,30 @@ def get_personalized_feeds(user_preferences, user_id=None):
     
     return articles
 
-def filter_by_tags(articles, user_tag_ids):
+def filter_by_categories(articles, user_categories):
     """
-    Filter articles by user's selected tags
+    Filter articles by user's selected categories
     
     Args:
-        articles: List of articles with tags
-        user_tag_ids: List of user's selected tag IDs
+        articles: List of articles with categories
+        user_categories: List of user's selected categories
         
     Returns:
-        Filtered articles that match user's tags
+        Filtered articles that match user's categories
     """
-    if not user_tag_ids:
+    if not user_categories:
         return articles
     
-    user_tag_set = set(user_tag_ids)
+    user_category_set = set(user_categories)
     filtered = []
     
     for article in articles:
-        article_tags = article.get('tags', [])
-        if not article_tags:
+        article_categories = article.get('categories', [])
+        if not article_categories:
             continue
         
-        # Check if any article tag matches user tags
-        article_tag_ids = {tag['id'] for tag in article_tags}
-        if article_tag_ids.intersection(user_tag_set):
+        # Check if any article category matches user categories
+        if user_category_set.intersection(set(article_categories)):
             filtered.append(article)
     
     return filtered
