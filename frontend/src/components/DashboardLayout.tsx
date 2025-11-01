@@ -5,7 +5,7 @@ import { useTheme } from '../context/ThemeContext';
 import LazySearchModal from './LazySearchModal';
 import LazyCommandPalette from './LazyCommandPalette';
 import ScrollToTopButton from './ScrollToTop';
-import { Home, TrendingUp, Bookmark, History, BarChart3, Settings, LogOut, Menu, Search, Moon, Sun } from '../components/icons';
+import { Home, TrendingUp, Bookmark, History, BarChart3, Settings, LogOut, Menu, Search, Moon, Sun, Newspaper, Star } from '../components/icons';
 import type { ReactNode } from 'react';
 
 interface DashboardLayoutProps {

@@ -5,12 +5,13 @@ interface ArticleCardProps {
   article: Article;
   onBookmark?: (url: string, title: string, source: string) => void;
   onRead?: (url: string, title?: string, source?: string, category?: string) => void;
+  onNotInterested?: (tags: any[]) => void;
   onPreview?: () => void;
   isBookmarked?: boolean;
   isRead?: boolean;
 }
 
-const ArticleCard = memo(function ArticleCard({ article, onBookmark, onRead, onPreview, isBookmarked, isRead }: ArticleCardProps) {
+const ArticleCard = memo(function ArticleCard({ article, onBookmark, onRead, onNotInterested, onPreview, isBookmarked, isRead }: ArticleCardProps) {
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
       AI: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300',

@@ -72,10 +72,7 @@ export default function DashboardPage() {
     }
   }, [getBookmarks, isOnline]);
 
-  const handleNotInterested = useCallback(async (tags: any[]) => {
-    if (!tags || tags.length === 0) return;
-    setConfirmDialog({ isOpen: true, tags });
-  }, []);
+
 
   const confirmRemoveTags = useCallback(async () => {
     const tags = confirmDialog.tags;

@@ -1,30 +1,33 @@
-// Individual icon imports to reduce bundle size
-export { Flame } from 'lucide-react/dist/esm/icons/flame';
-export { BookOpen } from 'lucide-react/dist/esm/icons/book-open';
-export { TrendingUp } from 'lucide-react/dist/esm/icons/trending-up';
-export { Settings } from 'lucide-react/dist/esm/icons/settings';
-export { Search } from 'lucide-react/dist/esm/icons/search';
-export { User } from 'lucide-react/dist/esm/icons/user';
-export { Menu } from 'lucide-react/dist/esm/icons/menu';
-export { X } from 'lucide-react/dist/esm/icons/x';
-export { Home } from 'lucide-react/dist/esm/icons/home';
-export { Bookmark } from 'lucide-react/dist/esm/icons/bookmark';
-export { History } from 'lucide-react/dist/esm/icons/history';
-export { BarChart3 } from 'lucide-react/dist/esm/icons/bar-chart-3';
-export { LogOut } from 'lucide-react/dist/esm/icons/log-out';
-export { Moon } from 'lucide-react/dist/esm/icons/moon';
-export { Sun } from 'lucide-react/dist/esm/icons/sun';
-export { ExternalLink } from 'lucide-react/dist/esm/icons/external-link';
-export { Share2 } from 'lucide-react/dist/esm/icons/share-2';
-export { Eye } from 'lucide-react/dist/esm/icons/eye';
-export { Clock } from 'lucide-react/dist/esm/icons/clock';
-export { Calendar } from 'lucide-react/dist/esm/icons/calendar';
-export { Filter } from 'lucide-react/dist/esm/icons/filter';
-export { ChevronDown } from 'lucide-react/dist/esm/icons/chevron-down';
-export { ChevronUp } from 'lucide-react/dist/esm/icons/chevron-up';
-export { Plus } from 'lucide-react/dist/esm/icons/plus';
-export { Minus } from 'lucide-react/dist/esm/icons/minus';
-export { Check } from 'lucide-react/dist/esm/icons/check';
-export { AlertCircle } from 'lucide-react/dist/esm/icons/alert-circle';
-export { Info } from 'lucide-react/dist/esm/icons/info';
-export { Loader2 } from 'lucide-react/dist/esm/icons/loader-2';
+export {
+  Flame,
+  BookOpen,
+  TrendingUp,
+  Settings,
+  Search,
+  User,
+  Menu,
+  X,
+  Home,
+  Bookmark,
+  History,
+  BarChart3,
+  LogOut,
+  Moon,
+  Sun,
+  ExternalLink,
+  Share2,
+  Eye,
+  Clock,
+  Calendar,
+  Filter,
+  ChevronDown,
+  ChevronUp,
+  Plus,
+  Minus,
+  Check,
+  AlertCircle,
+  Info,
+  Loader2,
+  Newspaper,
+  Star
+} from 'lucide-react';
