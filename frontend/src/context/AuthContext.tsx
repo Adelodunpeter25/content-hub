@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import type { ReactNode } from 'react';
 import { request } from '../services/api';
 import type { User } from '../types';
@@ -17,11 +17,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
-  const checkAuth = async () => {
+  const checkAuth = useCallback(async () => {
     const token = localStorage.getItem('access_token');
     if (!token) {
       setIsLoading(false);
@@ -38,16 +34,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  const logout = () => {
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
+  const logout = useCallback(() => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     setUser(null);
-  };
+  }, []);
+
+  const value = useMemo(() => ({
+    user,
+    isAuthenticated: !!user,
+    isLoading,
+    setUser,
+    logout
+  }), [user, isLoading, logout]);
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, setUser, logout }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

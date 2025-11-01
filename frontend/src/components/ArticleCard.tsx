@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import type { Article } from '../types/feed';
 
 interface ArticleCardProps {
@@ -9,7 +10,7 @@ interface ArticleCardProps {
   isRead?: boolean;
 }
 
-export default function ArticleCard({ article, onBookmark, onRead, onPreview, isBookmarked, isRead }: ArticleCardProps) {
+const ArticleCard = memo(function ArticleCard({ article, onBookmark, onRead, onPreview, isBookmarked, isRead }: ArticleCardProps) {
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
       AI: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300',
@@ -87,4 +88,6 @@ export default function ArticleCard({ article, onBookmark, onRead, onPreview, is
       </div>
     </div>
   );
-}
+});
+
+export default ArticleCard;

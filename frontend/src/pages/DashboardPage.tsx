@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../context/AuthContext';
 import { useFeeds } from '../hooks/useFeeds';
@@ -6,12 +6,13 @@ import { useStats } from '../hooks/useStats';
 import { useBookmarks } from '../hooks/useBookmarks';
 import { useReadHistory } from '../hooks/useReadHistory';
 import { useTags } from '../hooks/useTags';
+import { useNetworkStatus } from '../hooks/useNetworkStatus';
 import { useToast } from '../context/ToastContext';
 import DashboardLayout from '../components/DashboardLayout';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ArticlePreviewModal from '../components/ArticlePreviewModal';
 import ConfirmDialog from '../components/ConfirmDialog';
-import { Flame, BookOpen, TrendingUp, Settings } from 'lucide-react';
+import { Flame, BookOpen, TrendingUp, Settings } from '../components/icons';
 import type { Article } from '../types/feed';
 
 export default function DashboardPage() {
@@ -23,6 +24,7 @@ export default function DashboardPage() {
   const { addBookmark, getBookmarks } = useBookmarks();
   const { markAsRead } = useReadHistory();
   const { getUserTags, updateUserTags } = useTags();
+  const { isOnline } = useNetworkStatus();
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ today: 0, streak: 0, total: 0 });
@@ -31,12 +33,51 @@ export default function DashboardPage() {
   const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
   const [confirmDialog, setConfirmDialog] = useState<{ isOpen: boolean; tags: any[] }>({ isOpen: false, tags: [] });
 
-  const handleNotInterested = async (tags: any[]) => {
+  const loadFeed = useCallback(async () => {
+    if (!isOnline) return;
+    try {
+      setLoading(true);
+      const data = await getPersonalizedFeed();
+      setArticles(data);
+    } catch (err: any) {
+      showToast(err.message || 'Failed to load feed', 'error');
+    } finally {
+      setLoading(false);
+    }
+  }, [getPersonalizedFeed, showToast, isOnline]);
+
+  const loadStats = useCallback(async () => {
+    if (!isOnline) return;
+    try {
+      const data = await getReadingStats();
+      if (data) {
+        setStats({
+          today: data.reads?.today || 0,
+          streak: data.reading_streak || 0,
+          total: data.reads?.total || 0
+        });
+      }
+    } catch (err) {
+      console.error('Failed to load stats');
+    }
+  }, [getReadingStats, isOnline]);
+
+  const loadBookmarks = useCallback(async () => {
+    if (!isOnline) return;
+    try {
+      const data = await getBookmarks({ page: 1, limit: 100 });
+      if (data) setBookmarkedIds(new Set(data.bookmarks.map((b: any) => b.article_url)));
+    } catch (err) {
+      console.error('Failed to load bookmarks');
+    }
+  }, [getBookmarks, isOnline]);
+
+  const handleNotInterested = useCallback(async (tags: any[]) => {
     if (!tags || tags.length === 0) return;
     setConfirmDialog({ isOpen: true, tags });
-  };
+  }, []);
 
-  const confirmRemoveTags = async () => {
+  const confirmRemoveTags = useCallback(async () => {
     const tags = confirmDialog.tags;
     const tagNames = tags.map(t => t.name).join(', ');
     
@@ -52,48 +93,26 @@ export default function DashboardPage() {
     } finally {
       setConfirmDialog({ isOpen: false, tags: [] });
     }
-  };
+  }, [confirmDialog.tags, getUserTags, updateUserTags, showToast, loadFeed]);
 
   useEffect(() => {
     loadFeed();
     loadStats();
     loadBookmarks();
-  }, []);
+  }, [loadFeed, loadStats, loadBookmarks]);
 
-  const loadFeed = async () => {
-    try {
-      const data = await getPersonalizedFeed({ page: 1, limit: 5 });
-      if (data) setArticles(data.articles);
-    } catch (err) {
-      console.error('Failed to load feed');
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Handle network reconnection
+  useEffect(() => {
+    const handleReconnection = () => {
+      loadFeed();
+      loadStats();
+      loadBookmarks();
+      showToast('Back online! Refreshing content...', 'success');
+    };
 
-  const loadStats = async () => {
-    try {
-      const data = await getReadingStats();
-      if (data) {
-        setStats({
-          today: data.reads?.today || 0,
-          streak: data.reading_streak || 0,
-          total: data.reads?.total || 0
-        });
-      }
-    } catch (err) {
-      console.error('Failed to load stats');
-    }
-  };
-
-  const loadBookmarks = async () => {
-    try {
-      const data = await getBookmarks({ page: 1, limit: 100 });
-      if (data) setBookmarkedIds(new Set(data.bookmarks.map((b: any) => b.article_url)));
-    } catch (err) {
-      // Silent fail
-    }
-  };
+    window.addEventListener('network-reconnected', handleReconnection);
+    return () => window.removeEventListener('network-reconnected', handleReconnection);
+  }, [loadFeed, loadStats, loadBookmarks, showToast]);
 
   const handleBookmark = async (url: string, title: string, source: string) => {
     if (bookmarkedIds.has(url)) {

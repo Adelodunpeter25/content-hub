@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthContext } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import SearchModal from './SearchModal';
+import LazySearchModal from './LazySearchModal';
+import LazyCommandPalette from './LazyCommandPalette';
 import ScrollToTopButton from './ScrollToTop';
-import CommandPalette from './CommandPalette';
-import { Home, Newspaper, TrendingUp, Star, Bookmark, History, BarChart3, Settings, LogOut, Menu, Search, Moon, Sun } from 'lucide-react';
+import { Home, TrendingUp, Bookmark, History, BarChart3, Settings, LogOut, Menu, Search, Moon, Sun } from '../components/icons';
 import type { ReactNode } from 'react';
 
 interface DashboardLayoutProps {
@@ -193,8 +193,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </div>
       </div>
 
-      <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
-      <CommandPalette isOpen={isCommandPaletteOpen} onClose={() => setIsCommandPaletteOpen(false)} />
+      <LazySearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      <LazyCommandPalette isOpen={isCommandPaletteOpen} onClose={() => setIsCommandPaletteOpen(false)} />
       <ScrollToTopButton />
     </div>
   );
