@@ -7,12 +7,20 @@ class OnboardingCompleteRequest(BaseModel):
     template: Optional[str] = Field(None, description="Selected template (frontend, backend, ai_ml, devops, mobile, fullstack, custom)")
     tag_ids: List[int] = Field(..., min_length=3, max_length=20, description="Selected tag IDs (3-20 tags)")
     source_names: Optional[List[str]] = Field(None, description="Optional custom source names")
+    content_preference: Optional[str] = Field('tech', description="Content preference: tech, general, both")
     
     @field_validator('template')
     @classmethod
     def validate_template(cls, v):
         if v and v not in ['frontend', 'backend', 'ai_ml', 'devops', 'mobile', 'fullstack', 'custom']:
             raise ValueError('Invalid template')
+        return v
+    
+    @field_validator('content_preference')
+    @classmethod
+    def validate_content_preference(cls, v):
+        if v and v not in ['tech', 'general', 'both']:
+            raise ValueError('Invalid content preference')
         return v
 
 class UpdateTagsRequest(BaseModel):

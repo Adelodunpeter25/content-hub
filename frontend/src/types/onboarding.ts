@@ -11,6 +11,7 @@ export interface OnboardingData {
   template?: string;
   tag_ids: number[];
   source_names?: string[];
+  content_preference?: 'tech' | 'general' | 'both';
 }
 
 export interface OnboardingStep {

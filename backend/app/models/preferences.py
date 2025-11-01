@@ -13,6 +13,7 @@ class UserFeedPreferences(Base):
     feed_types = Column(ARRAY(String), default=list)
     selected_categories = Column(ARRAY(String), default=list)  # Category names
     feed_template = Column(String(20), default='custom')  # custom, frontend, backend, ai_ml, devops, mobile, fullstack
+    content_preference = Column(String(10), default='tech')  # tech, general, both
     show_read_articles = Column(Boolean, default=True)
     font_size = Column(String(10), default='medium')
     view_mode = Column(String(15), default='comfortable')
@@ -31,6 +32,7 @@ class UserFeedPreferences(Base):
             'feed_types': self.feed_types or [],
             'selected_categories': self.selected_categories or [],
             'feed_template': self.feed_template or 'custom',
+            'content_preference': self.content_preference or 'tech',
             'show_read_articles': self.show_read_articles if self.show_read_articles is not None else True,
             'font_size': self.font_size or 'medium',
             'view_mode': self.view_mode or 'comfortable',

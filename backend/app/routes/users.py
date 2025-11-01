@@ -83,6 +83,8 @@ def update_user_preferences():
                     preferences.font_size = pref_data.font_size
                 if pref_data.view_mode is not None:
                     preferences.view_mode = pref_data.view_mode
+                if pref_data.content_preference is not None:
+                    preferences.content_preference = pref_data.content_preference
             
             db.flush()
             

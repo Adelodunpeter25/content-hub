@@ -62,6 +62,7 @@ def complete_onboarding():
             # Update preferences
             preferences.selected_tags = tag_ids
             preferences.feed_template = onboarding_data.template or 'custom'
+            preferences.content_preference = onboarding_data.content_preference or 'tech'
             
             # If custom sources provided, update feed_sources
             if onboarding_data.source_names:

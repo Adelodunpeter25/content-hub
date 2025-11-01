@@ -4,40 +4,29 @@ import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { useAuthContext } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { useOnboarding } from '../hooks/useOnboarding';
-import { useTags } from '../hooks/useTags';
 import WelcomeStep from '../components/onboarding/WelcomeStep';
-import TemplateStep from '../components/onboarding/TemplateStep';
-import TagSelector from '../components/TagSelector';
+import ContentPreferenceStep from '../components/onboarding/ContentPreferenceStep';
 import CompletionStep from '../components/onboarding/CompletionStep';
 import LoadingSpinner from '../components/LoadingSpinner';
-import type { FeedTemplate } from '../types/onboarding';
-import type { TagCategory } from '../types/tag';
 
 const STEPS = [
   { id: 1, title: 'Welcome', description: 'Get started' },
-  { id: 2, title: 'Template', description: 'Choose your path' },
-  { id: 3, title: 'Interests', description: 'Select tags' },
-  { id: 4, title: 'Complete', description: 'All set!' },
+  { id: 2, title: 'Content', description: 'Choose your interests' },
+  { id: 3, title: 'Complete', description: 'All set!' },
 ];
 
 export default function OnboardingPage() {
   const navigate = useNavigate();
   const { user, setUser } = useAuthContext();
   const { showToast } = useToast();
-  const { getTemplates, completeOnboarding, skipOnboarding } = useOnboarding();
-  const { getAllTags } = useTags();
+  const { completeOnboarding, skipOnboarding } = useOnboarding();
 
   const [currentStep, setCurrentStep] = useState(1);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  // Data
-  const [templates, setTemplates] = useState<FeedTemplate[]>([]);
-  const [tagCategories, setTagCategories] = useState<TagCategory[]>([]);
-
   // User selections
-  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
-  const [selectedTagIds, setSelectedTagIds] = useState<number[]>([]);
+  const [contentPreference, setContentPreference] = useState<'tech' | 'general' | 'both'>('tech');
 
   useEffect(() => {
     // Redirect if already onboarded
@@ -45,32 +34,8 @@ export default function OnboardingPage() {
       navigate('/dashboard');
       return;
     }
-    loadData();
+    setLoading(false);
   }, [user]);
-
-  const loadData = async () => {
-    try {
-      const [templatesData, tagsData] = await Promise.all([
-        getTemplates(),
-        getAllTags(),
-      ]);
-
-      setTemplates(templatesData.templates);
-      setTagCategories(tagsData.categories);
-    } catch (err: any) {
-      showToast(err.message || 'Failed to load onboarding data', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleTagToggle = (tagId: number) => {
-    setSelectedTagIds((prev) =>
-      prev.includes(tagId)
-        ? prev.filter((id) => id !== tagId)
-        : [...prev, tagId]
-    );
-  };
 
   const handleNext = () => {
     if (currentStep < STEPS.length) {
@@ -108,8 +73,9 @@ export default function OnboardingPage() {
       setSubmitting(true);
 
       await completeOnboarding({
-        template: selectedTemplate || 'custom',
-        tag_ids: selectedTagIds,
+        template: 'custom',
+        tag_ids: [],
+        content_preference: contentPreference,
       });
 
       // Update user object to reflect onboarding completion
@@ -130,18 +96,7 @@ export default function OnboardingPage() {
   };
 
   const canProceed = () => {
-    switch (currentStep) {
-      case 1:
-        return true;
-      case 2:
-        return selectedTemplate !== null;
-      case 3:
-        return selectedTagIds.length >= 3;
-      case 4:
-        return true;
-      default:
-        return false;
-    }
+    return true; // Always allow proceeding in simplified flow
   };
 
   if (loading) {
@@ -212,27 +167,18 @@ export default function OnboardingPage() {
           {currentStep === 1 && <WelcomeStep userName={user?.name} />}
           
           {currentStep === 2 && (
-            <TemplateStep
-              templates={templates}
-              selectedTemplate={selectedTemplate}
-              onSelectTemplate={setSelectedTemplate}
+            <ContentPreferenceStep
+              contentPreference={contentPreference}
+              onContentPreferenceChange={setContentPreference}
+              onNext={() => setCurrentStep(3)}
+              onBack={() => setCurrentStep(1)}
             />
           )}
           
           {currentStep === 3 && (
-            <TagSelector
-              categories={tagCategories}
-              selectedTagIds={selectedTagIds}
-              onTagToggle={handleTagToggle}
-              minTags={3}
-              maxTags={20}
-            />
-          )}
-          
-          {currentStep === 4 && (
             <CompletionStep
-              tagCount={selectedTagIds.length}
-              template={selectedTemplate || 'custom'}
+              tagCount={0}
+              template="custom"
             />
           )}
         </div>
@@ -240,7 +186,7 @@ export default function OnboardingPage() {
         {/* Navigation */}
         <div className="flex items-center justify-between">
           <div>
-            {currentStep > 1 && currentStep < 4 && (
+            {currentStep > 1 && currentStep < 3 && currentStep !== 2 && (
               <button
                 onClick={handleBack}
                 disabled={submitting}
@@ -253,7 +199,7 @@ export default function OnboardingPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            {currentStep < 4 && (
+            {currentStep < 3 && currentStep !== 2 && (
               <button
                 onClick={handleSkip}
                 disabled={submitting}
@@ -263,13 +209,13 @@ export default function OnboardingPage() {
               </button>
             )}
 
-            {currentStep < 4 ? (
+            {currentStep < 3 && currentStep !== 2 ? (
               <button
                 onClick={handleNext}
                 disabled={!canProceed() || submitting}
                 className="flex items-center gap-2 px-8 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
               >
-                {currentStep === 3 ? 'Finish' : 'Continue'}
+                {currentStep === 4 ? 'Finish' : 'Continue'}
                 <ChevronRight size={20} />
               </button>
             ) : (

@@ -12,12 +12,21 @@ class Config:
     DEBUG = os.getenv('FLASK_DEBUG', 'False') == 'True'
     SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'dev-secret-key')
     
-    # RSS feed URLs as a list
-    RSS_FEEDS = [
+    # RSS feed URLs as lists by category
+    RSS_FEEDS_TECH = [
         url.strip() 
-        for url in os.getenv('RSS_FEEDS', '').split(',') 
+        for url in os.getenv('RSS_FEEDS_TECH', '').split(',') 
         if url.strip()
     ]
+    
+    RSS_FEEDS_GENERAL = [
+        url.strip() 
+        for url in os.getenv('RSS_FEEDS_GENERAL', '').split(',') 
+        if url.strip()
+    ]
+    
+    # Backward compatibility - combine all feeds
+    RSS_FEEDS = RSS_FEEDS_TECH + RSS_FEEDS_GENERAL
     
     # Scraping target URLs as a list
     SCRAPE_URLS = [

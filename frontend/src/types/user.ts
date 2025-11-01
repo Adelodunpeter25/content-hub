@@ -13,6 +13,7 @@ export interface UserPreferences {
   user_id: number;
   feed_sources: string[];
   feed_types: string[];
+  content_preference: 'tech' | 'general' | 'both';
   created_at?: string;
   updated_at?: string;
 }
@@ -20,6 +21,7 @@ export interface UserPreferences {
 export interface PreferencesUpdate {
   feed_sources?: string[];
   feed_types?: string[];
+  content_preference?: 'tech' | 'general' | 'both';
   show_read_articles?: boolean;
   font_size?: string;
   view_mode?: string;

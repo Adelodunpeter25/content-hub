@@ -14,7 +14,7 @@ from app.core.database import get_db
 from app.models.read_history import ReadHistory
 import os
 
-def get_all_feeds(source_filter=None, limit=None, apply_quality_filter=True, min_quality_score=0.4):
+def get_all_feeds(source_filter=None, limit=None, apply_quality_filter=True, min_quality_score=0.4, content_preference='both'):
     """
     Get all feeds from cache or fetch from sources with quality scoring
     
@@ -23,16 +23,24 @@ def get_all_feeds(source_filter=None, limit=None, apply_quality_filter=True, min
         limit: Maximum number of articles
         apply_quality_filter: Whether to apply quality filtering
         min_quality_score: Minimum quality score threshold (0.0-1.0)
+        content_preference: 'tech', 'general', or 'both'
         
     Returns:
         List of articles with categories and quality scores
     """
-    cache_key = f'feeds:all:{source_filter}:{apply_quality_filter}'
+    cache_key = f'feeds:all:{source_filter}:{apply_quality_filter}:{content_preference}'
     articles = cache_get(cache_key)
     
     if articles is None:
-        # Fetch from all sources (Reddit now includes quality filtering)
-        rss_articles = fetch_rss_feeds(Config.RSS_FEEDS) if Config.RSS_FEEDS else []
+        # Select RSS feeds based on content preference
+        rss_feeds = []
+        if content_preference in ['tech', 'both']:
+            rss_feeds.extend(Config.RSS_FEEDS_TECH)
+        if content_preference in ['general', 'both']:
+            rss_feeds.extend(Config.RSS_FEEDS_GENERAL)
+        
+        # Fetch from sources
+        rss_articles = fetch_rss_feeds(rss_feeds) if rss_feeds else []
         scraped_articles = scrape_websites(Config.SCRAPE_URLS) if Config.SCRAPE_URLS else []
         social_articles = scrape_social_media(Config.REDDIT_SUBREDDITS, Config.YOUTUBE_CHANNELS) if (Config.REDDIT_SUBREDDITS or Config.YOUTUBE_CHANNELS) else []
         
@@ -74,8 +82,15 @@ def get_personalized_feeds(user_preferences, user_id=None):
     Returns:
         List of filtered and scored articles
     """
-    # Get all feeds with quality filtering
-    articles = get_all_feeds(apply_quality_filter=True, min_quality_score=0.4)
+    # Get content preference, default to 'tech' for backward compatibility
+    content_preference = getattr(user_preferences, 'content_preference', 'tech') or 'tech'
+    
+    # Get all feeds with quality filtering and content preference
+    articles = get_all_feeds(
+        apply_quality_filter=True, 
+        min_quality_score=0.4,
+        content_preference=content_preference
+    )
     
     # Apply traditional preference filtering (sources and types)
     articles = filter_by_user_preferences(
