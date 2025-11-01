@@ -28,7 +28,6 @@ export default function DashboardPage() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ today: 0, streak: 0, total: 0 });
-  const [weather] = useState({ temp: 28, location: 'Lagos, Nigeria', condition: 'Mostly sunny', feels: 31 });
   const [previewArticle, setPreviewArticle] = useState<Article | null>(null);
   const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
   const [confirmDialog, setConfirmDialog] = useState<{ isOpen: boolean; tags: any[] }>({ isOpen: false, tags: [] });
@@ -38,9 +37,12 @@ export default function DashboardPage() {
     try {
       setLoading(true);
       const data = await getPersonalizedFeed();
-      setArticles(data);
+      // Handle different response structures
+      const articlesArray = data?.articles || data || [];
+      setArticles(Array.isArray(articlesArray) ? articlesArray : []);
     } catch (err: any) {
       showToast(err.message || 'Failed to load feed', 'error');
+      setArticles([]);
     } finally {
       setLoading(false);
     }
@@ -96,7 +98,7 @@ export default function DashboardPage() {
     loadFeed();
     loadStats();
     loadBookmarks();
-  }, [loadFeed, loadStats, loadBookmarks]);
+  }, []); // Remove dependencies to run only once on mount
 
   // Handle network reconnection
   useEffect(() => {
@@ -169,39 +171,26 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-4">
-            <h2 className="text-2xl font-bold">Recent Articles</h2>
-            {loading ? (
-              <LoadingSpinner />
-            ) : (
-              <div className="space-y-4">
-                {articles.slice(0, 3).map((article, idx) => (
-                  <div 
-                    key={idx} 
-                    onClick={() => setPreviewArticle(article)}
-                    className="bg-white dark:bg-gray-800 p-4 rounded-lg border dark:border-gray-700 cursor-pointer hover:shadow-lg transition-shadow"
-                  >
-                    <span className="text-xs text-gray-500 dark:text-gray-400">{article.categories?.[0] || 'General'} • {article.source}</span>
-                    <h3 className="font-semibold mt-1 dark:text-white">{article.title}</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 line-clamp-2">{article.summary}</p>
-                  </div>
-                ))}
-                <a href="/feed" className="text-blue-500 hover:underline text-sm">View all articles →</a>
-              </div>
-            )}
-          </div>
-
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border dark:border-gray-700 h-fit">
-            <h3 className="font-semibold mb-4 dark:text-white">Weather</h3>
-            <div className="text-center">
-              <div className="text-5xl mb-2">🌤️</div>
-              <div className="text-3xl font-bold dark:text-white">{weather.temp}°C</div>
-              <div className="text-gray-600 dark:text-gray-400 mt-1">{weather.location}</div>
-              <div className="text-sm text-gray-500 dark:text-gray-400 mt-2">☀️ {weather.condition}</div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">💨 Feels like {weather.feels}°C</div>
+        <div className="space-y-4">
+          <h2 className="text-2xl font-bold">Recent Articles</h2>
+          {loading ? (
+            <LoadingSpinner />
+          ) : (
+            <div className="space-y-4">
+              {articles.slice(0, 3).map((article, idx) => (
+                <div 
+                  key={idx} 
+                  onClick={() => setPreviewArticle(article)}
+                  className="bg-white dark:bg-gray-800 p-4 rounded-lg border dark:border-gray-700 cursor-pointer hover:shadow-lg transition-shadow"
+                >
+                  <span className="text-xs text-gray-500 dark:text-gray-400">{article.categories?.[0] || 'General'} • {article.source}</span>
+                  <h3 className="font-semibold mt-1 dark:text-white">{article.title}</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 line-clamp-2">{article.summary}</p>
+                </div>
+              ))}
+              <a href="/feed" className="text-blue-500 hover:underline text-sm">View all articles →</a>
             </div>
-          </div>
+          )}
         </div>
 
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border dark:border-gray-700">
