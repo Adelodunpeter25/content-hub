@@ -59,7 +59,7 @@ def get_session():
 @contextmanager
 def get_db():
     """
-    Context manager for database sessions
+    Context manager for database sessions with proper error handling
     
     Usage:
         with get_db() as db:
@@ -74,6 +74,12 @@ def get_db():
         raise e
     finally:
         db.close()
+
+def cleanup_connections():
+    """Cleanup database connections for background jobs"""
+    global engine
+    if engine:
+        engine.dispose()
 
 def create_tables():
     """Create all tables in the database"""
