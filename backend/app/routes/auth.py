@@ -299,4 +299,6 @@ def google_callback():
         raise
     except Exception as e:
         current_app.logger.error(f'Error in Google callback: {str(e)}')
+        current_app.logger.error(f'Request args: {request.args}')
+        current_app.logger.error(f'Config - Client ID exists: {bool(Config.GOOGLE_CLIENT_ID)}')
         raise InternalServerError('Failed to complete Google login')
