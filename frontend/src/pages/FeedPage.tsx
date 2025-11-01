@@ -83,11 +83,6 @@ export default function FeedPage() {
   const { markAsRead, getReadHistory } = useReadHistory();
   const { getUserTags, updateUserTags } = useTags();
 
-  const handleNotInterested = async (tags: any[]) => {
-    if (!tags || tags.length === 0) return;
-    setConfirmDialog({ isOpen: true, tags });
-  };
-
   const confirmRemoveTags = async () => {
     const tags = confirmDialog.tags;
     const tagNames = tags.map(t => t.name).join(', ');
@@ -314,7 +309,6 @@ export default function FeedPage() {
                     article={article}
                     onBookmark={handleBookmark}
                     onRead={handleRead}
-                    onNotInterested={handleNotInterested}
                     onPreview={() => setPreviewArticle(article)}
                     isBookmarked={bookmarkedIds.has(article.link)}
                     isRead={readIds.has(article.link)}
