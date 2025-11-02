@@ -11,6 +11,7 @@ export default function GoogleCallbackPage() {
     const handleCallback = () => {
       const accessToken = searchParams.get('access_token');
       const refreshToken = searchParams.get('refresh_token');
+      const needsOnboarding = searchParams.get('needs_onboarding') === 'true';
       const error = searchParams.get('error');
 
       if (error) {
@@ -31,7 +32,12 @@ export default function GoogleCallbackPage() {
           .then(res => res.json())
           .then(userData => {
             setUser(userData);
-            navigate('/dashboard');
+            // Redirect based on onboarding status
+            if (needsOnboarding) {
+              navigate('/onboarding');
+            } else {
+              navigate('/dashboard');
+            }
           })
           .catch(() => {
             navigate('/login?error=auth_failed');

@@ -286,12 +286,13 @@ def google_callback():
             
             access_token = generate_access_token(user.id)
             refresh_token = create_refresh_token(user.id, db)
+            needs_onboarding = check_needs_onboarding(user.id, db)
             
             current_app.logger.info(f'User logged in via Google: {email}')
             
-            # Redirect to frontend with tokens
+            # Redirect to frontend with tokens and onboarding status
             frontend_url = Config.FRONTEND_URL
-            redirect_url = f"{frontend_url}/auth/google/callback?access_token={access_token}&refresh_token={refresh_token}"
+            redirect_url = f"{frontend_url}/auth/google/callback?access_token={access_token}&refresh_token={refresh_token}&needs_onboarding={needs_onboarding}"
             return redirect(redirect_url)
     
     except BadRequestError:
