@@ -302,9 +302,9 @@ export default function FeedPage() {
           />
         ) : (
           <>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 w-full overflow-hidden">
               {articles.map((article, index) => (
-                <div key={`${article.link}-${index}`} ref={index === articles.length - 1 ? lastArticleRef : null}>
+                <div key={`${article.link}-${index}`} ref={index === articles.length - 1 ? lastArticleRef : null} className="min-w-0">
                   <ArticleCard
                     article={article}
                     onBookmark={handleBookmark}

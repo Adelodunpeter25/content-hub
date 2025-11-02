@@ -1,4 +1,5 @@
 """Keyword-based tag matching for articles"""
+import re
 
 # Tag keyword mappings (more granular than categories)
 TAG_KEYWORDS = {
@@ -215,7 +216,6 @@ def match_tags_from_dict(title, summary='', keywords_dict=None, max_tags=3, min_
     
     title_lower = title.lower()
     summary_lower = summary.lower()
-    full_text = f"{title} {summary}"
     
     tag_scores = {}
     
@@ -225,11 +225,6 @@ def match_tags_from_dict(title, summary='', keywords_dict=None, max_tags=3, min_
         
         for keyword in keywords:
             keyword_lower = keyword.lower()
-            
-            # Check for negative context
-            if has_negative_context(full_text, keyword):
-                score -= 1.0  # Stronger penalty
-                continue
             
             # Title matches worth more (ONLY exact word boundary matches)
             if keyword_lower in title_lower:

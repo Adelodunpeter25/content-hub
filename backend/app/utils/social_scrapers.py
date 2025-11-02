@@ -62,6 +62,19 @@ def scrape_reddit(subreddits):
     
     return articles
 
+def truncate_at_third_fullstop(text):
+    """Truncate text at the third full stop"""
+    if not text:
+        return text
+    
+    fullstops = 0
+    for i, char in enumerate(text):
+        if char == '.':
+            fullstops += 1
+            if fullstops == 3:
+                return text[:i+1]
+    return text
+
 def scrape_youtube(channel_ids):
     """
     Scrape videos from YouTube channels via RSS
@@ -82,10 +95,15 @@ def scrape_youtube(channel_ids):
             channel_name = feed.feed.get('title', channel_id)
             
             for entry in feed.entries:
+                summary = entry.get('summary', '')
+                # Truncate YouTube descriptions at third full stop
+                if summary:
+                    summary = truncate_at_third_fullstop(summary)
+                
                 article = {
                     'title': entry.get('title', 'No Title'),
                     'link': entry.get('link', ''),
-                    'summary': entry.get('summary', ''),
+                    'summary': summary,
                     'source': channel_name,
                     'published': entry.get('published', ''),
                     'type': 'youtube',

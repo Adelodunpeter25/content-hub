@@ -9,8 +9,8 @@ import os
 backend_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, backend_dir)
 
-from sqlalchemy import text
-from app.core.database import get_db
+from sqlalchemy import text  # noqa: E402
+from app.core.database import get_db  # noqa: E402
 
 def add_content_preference_column():
     """Add content_preference column with default value 'tech'"""

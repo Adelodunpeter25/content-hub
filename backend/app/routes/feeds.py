@@ -3,7 +3,6 @@ from app.services.feed_service import get_all_feeds
 from app.utils.pagination import paginate
 from app.utils.search_filter import search_articles, filter_by_source, filter_by_date_range
 from app.core.errors import InternalServerError
-from app.core.auth import require_auth
 from app.core.database import get_db
 from app.models.preferences import UserFeedPreferences
 from app.models.read_history import ReadHistory

@@ -4,8 +4,7 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 from sqlalchemy import text
-from app.core.database import get_db, engine
-from app.models import Tag, UserTag, Source, ArticleFeedback
+from app.core.database import get_db
 
 def run_migration():
     """Run database migration for new features"""

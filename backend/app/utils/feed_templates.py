@@ -174,14 +174,13 @@ def get_recommended_sources_for_tags(tag_ids, db):
         List of source names
     """
     from app.models.source import Source
-    from sqlalchemy import func
     
     if not tag_ids:
         return []
     
     # Find sources that have overlapping tags
     sources = db.query(Source).filter(
-        Source.is_active == True,
+        Source.is_active,
         Source.tags.overlap(tag_ids)
     ).order_by(
         Source.quality_tier.desc(),
