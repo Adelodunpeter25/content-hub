@@ -32,8 +32,8 @@ export default function GoogleCallbackPage() {
           .then(res => res.json())
           .then(userData => {
             setUser(userData);
-            // Redirect based on onboarding status
-            if (needsOnboarding) {
+            // Redirect based on user's onboarding_completed status
+            if (!userData.onboarding_completed) {
               navigate('/onboarding');
             } else {
               navigate('/dashboard');

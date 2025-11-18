@@ -5,7 +5,7 @@ from typing import List, Optional
 class OnboardingCompleteRequest(BaseModel):
     """Request schema for completing onboarding"""
     template: Optional[str] = Field(None, description="Selected template (frontend, backend, ai_ml, devops, mobile, fullstack, custom)")
-    tag_ids: List[int] = Field(..., min_length=3, max_length=20, description="Selected tag IDs (3-20 tags)")
+    tag_ids: List[int] = Field(default_factory=list, max_length=20, description="Selected tag IDs (0-20 tags)")
     source_names: Optional[List[str]] = Field(None, description="Optional custom source names")
     content_preference: Optional[str] = Field('tech', description="Content preference: tech, general, both")
     
