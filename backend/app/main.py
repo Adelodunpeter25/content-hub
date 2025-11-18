@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, send_from_directory
 from flask_swagger_ui import get_swaggerui_blueprint
 from flask_cors import CORS
+from flask_compress import Compress
 from app.core.config import Config
 from app.core.errors import register_error_handlers
 from app.core.logging_config import setup_logging
@@ -20,6 +21,9 @@ app.config.from_object(Config)
 
 # Enable CORS
 CORS(app)
+
+# Enable response compression
+Compress(app)
 
 # Setup logging
 setup_logging(app)
