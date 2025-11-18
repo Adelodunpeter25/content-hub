@@ -20,9 +20,9 @@ def init_db():
     engine = create_engine(
         Config.DATABASE_URL,
         pool_pre_ping=True,
-        pool_size=8,
-        max_overflow=4,
-        pool_recycle=60,
+        pool_size=20,
+        max_overflow=10,
+        pool_recycle=3600,
         pool_timeout=30,
         connect_args={
             'sslmode': 'require',
