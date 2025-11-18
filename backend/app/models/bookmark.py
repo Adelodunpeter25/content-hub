@@ -14,6 +14,7 @@ class Bookmark(Base):
     
     __table_args__ = (
         Index('idx_bookmark_user_url', 'user_id', 'article_url'),
+        Index('idx_bookmark_user_date', 'user_id', 'saved_at'),
     )
     
     def to_dict(self):

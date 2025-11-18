@@ -140,15 +140,8 @@ def filter_by_categories(articles, user_categories):
         return articles
     
     user_category_set = set(user_categories)
-    filtered = []
-    
-    for article in articles:
-        article_categories = article.get('categories', [])
-        if not article_categories:
-            continue
-        
-        # Check if any article category matches user categories
-        if user_category_set.intersection(set(article_categories)):
-            filtered.append(article)
-    
-    return filtered
+    # Optimized list comprehension with set intersection
+    return [
+        article for article in articles
+        if article.get('categories') and user_category_set & set(article['categories'])
+    ]
