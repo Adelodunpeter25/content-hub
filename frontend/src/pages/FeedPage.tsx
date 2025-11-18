@@ -22,7 +22,9 @@ export default function FeedPage() {
   const [confirmDialog, setConfirmDialog] = useState<{ isOpen: boolean; tags: any[] }>({ isOpen: false, tags: [] });
 
   useEffect(() => {
-    setPage(1);
+    if (page !== 1) {
+      setPage(1);
+    }
     setArticles([]);
     localStorage.setItem('feedCategory', category);
     localStorage.setItem('feedSource', source);
@@ -114,6 +116,7 @@ export default function FeedPage() {
   }, [category, source, page]);
 
   const loadFeed = async () => {
+    if (loading) return;
     setLoading(true);
     try {
       const data = await getPersonalizedFeed({ category, source_name: source, page, limit: 20 });
