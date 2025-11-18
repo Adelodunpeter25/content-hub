@@ -85,7 +85,45 @@ export default function FeedPage() {
   const { markAsRead, getReadHistory } = useReadHistory();
   const { getUserTags, updateUserTags } = useTags();
 
-  const confirmRemoveTags = async () => {
+  const loadFeed = useCallback(async () => {
+    if (loading) return;
+    setLoading(true);
+    try {
+      const data = await getPersonalizedFeed({ category, source_name: source, page, limit: 20 });
+      if (data) {
+        if (page === 1) {
+          setArticles(data.articles);
+        } else {
+          setArticles(prev => [...prev, ...data.articles]);
+        }
+        setHasMore(data.articles.length === 20);
+      }
+    } catch (err: any) {
+      showToast(err.message || 'Failed to load feed', 'error');
+    } finally {
+      setLoading(false);
+    }
+  }, [loading, getPersonalizedFeed, category, source, page, showToast]);
+
+  const loadBookmarks = useCallback(async () => {
+    try {
+      const data = await getBookmarks({ page: 1, limit: 100 });
+      if (data) setBookmarkedIds(new Set(data.bookmarks.map((b: any) => b.article_url)));
+    } catch (err) {
+      // Silent fail for bookmarks
+    }
+  }, [getBookmarks]);
+
+  const loadReadHistory = useCallback(async () => {
+    try {
+      const data = await getReadHistory(1, 100);
+      if (data?.items) setReadIds(new Set(data.items.map((h: any) => h.article_url)));
+    } catch (err) {
+      // Silent fail for history
+    }
+  }, [getReadHistory]);
+
+  const confirmRemoveTags = useCallback(async () => {
     const tags = confirmDialog.tags;
     const tagNames = tags.map(t => t.name).join(', ');
     
@@ -104,56 +142,18 @@ export default function FeedPage() {
     } finally {
       setConfirmDialog({ isOpen: false, tags: [] });
     }
-  };
+  }, [confirmDialog.tags, getUserTags, updateUserTags, showToast, loadFeed]);
 
   useEffect(() => {
     loadBookmarks();
     loadReadHistory();
-  }, []);
+  }, [loadBookmarks, loadReadHistory]);
 
   useEffect(() => {
     loadFeed();
-  }, [category, source, page]);
+  }, [loadFeed]);
 
-  const loadFeed = async () => {
-    if (loading) return;
-    setLoading(true);
-    try {
-      const data = await getPersonalizedFeed({ category, source_name: source, page, limit: 20 });
-      if (data) {
-        if (page === 1) {
-          setArticles(data.articles);
-        } else {
-          setArticles(prev => [...prev, ...data.articles]);
-        }
-        setHasMore(data.articles.length === 20);
-      }
-    } catch (err: any) {
-      showToast(err.message || 'Failed to load feed', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadBookmarks = async () => {
-    try {
-      const data = await getBookmarks({ page: 1, limit: 100 });
-      if (data) setBookmarkedIds(new Set(data.bookmarks.map((b: any) => b.article_url)));
-    } catch (err) {
-      // Silent fail for bookmarks
-    }
-  };
-
-  const loadReadHistory = async () => {
-    try {
-      const data = await getReadHistory(1, 100);
-      if (data?.items) setReadIds(new Set(data.items.map((h: any) => h.article_url)));
-    } catch (err) {
-      // Silent fail for history
-    }
-  };
-
-  const handleBookmark = async (url: string, title: string, source: string) => {
+  const handleBookmark = useCallback(async (url: string, title: string, source: string) => {
     if (bookmarkedIds.has(url)) {
       setBookmarkedIds(prev => {
         const next = new Set(prev);
@@ -175,9 +175,9 @@ export default function FeedPage() {
         showToast(err.message || 'Failed to bookmark', 'error');
       }
     }
-  };
+  }, [bookmarkedIds, addBookmark, showToast]);
 
-  const handleRead = async (url: string, title?: string, source?: string, category?: string) => {
+  const handleRead = useCallback(async (url: string, title?: string, source?: string, category?: string) => {
     setReadIds(prev => new Set(prev).add(url));
     window.open(url, '_blank');
     try {
@@ -186,7 +186,7 @@ export default function FeedPage() {
     } catch (err: any) {
       showToast(err.message || 'Failed to mark as read', 'error');
     }
-  };
+  }, [markAsRead, showToast]);
 
   const categories = ['AI', 'Security', 'Cloud', 'Mobile', 'Web', 'Hardware', 'Gaming', 'Startup', 'Programming', 'Data Science', 'DevOps', 'Cybersecurity'];
   const sources = ['TechCrunch', 'The Verge', 'Ars Technica', 'Hacker News', 'MIT Technology Review', 'WIRED', 'Engadget', 'VentureBeat', 'ZDNet', 'TNW', 'Mashable', 'DEV Community', 'Stack Overflow Blog', 'Medium', 'Techmeme', 'reddit', 'YouTube'];
