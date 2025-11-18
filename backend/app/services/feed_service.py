@@ -105,12 +105,23 @@ def get_personalized_feeds(user_preferences, user_id=None):
     
     # Filter out read articles if preference is disabled
     if not user_preferences.show_read_articles and user_id:
-        with get_db() as db:
-            read_urls = db.query(ReadHistory.article_url).filter(
-                ReadHistory.user_id == user_id
-            ).all()
-            read_url_set = {url[0] for url in read_urls}
-            articles = [a for a in articles if a.get('link') not in read_url_set]
+        # Try to get from cache first
+        cache_key = f'read_urls:{user_id}'
+        read_url_set = cache_get(cache_key)
+        
+        if read_url_set is None:
+            with get_db() as db:
+                # Limit to last 1000 read articles for performance
+                read_urls = db.query(ReadHistory.article_url).filter(
+                    ReadHistory.user_id == user_id
+                ).order_by(ReadHistory.read_at.desc()).limit(1000).all()
+                read_url_set = {url[0] for url in read_urls}
+                # Cache for 5 minutes
+                cache_set(cache_key, list(read_url_set), ttl=300)
+        else:
+            read_url_set = set(read_url_set)
+        
+        articles = [a for a in articles if a.get('link') not in read_url_set]
     
     return articles
 

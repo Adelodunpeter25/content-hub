@@ -15,6 +15,7 @@ class ReadHistory(Base):
     
     __table_args__ = (
         Index('idx_history_user_url', 'user_id', 'article_url'),
+        Index('idx_history_user_date', 'user_id', 'read_at'),
     )
     
     def to_dict(self):

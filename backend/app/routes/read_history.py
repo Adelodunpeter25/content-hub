@@ -3,6 +3,7 @@ from app.core.database import get_db
 from app.models.read_history import ReadHistory
 from app.schemas.read_history import ReadHistoryCreate
 from app.core.auth import require_auth
+from app.core.cache import cache_delete
 from app.core.errors import BadRequestError, InternalServerError
 from pydantic import ValidationError
 
@@ -38,6 +39,9 @@ def mark_as_read():
             )
             db.add(history)
             db.flush()
+            
+            # Invalidate read URLs cache
+            cache_delete(f'read_urls:{g.user_id}')
             
             return jsonify(history.to_dict()), 201
     
