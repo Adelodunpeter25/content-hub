@@ -107,7 +107,8 @@ export default function FeedPage() {
 
   const loadBookmarks = useCallback(async () => {
     try {
-      const data = await getBookmarks({ page: 1, limit: 100 });
+      // Only fetch recent 50 bookmarks for status checking
+      const data = await getBookmarks({ page: 1, limit: 50 });
       if (data) setBookmarkedIds(new Set(data.bookmarks.map((b: any) => b.article_url)));
     } catch (err) {
       // Silent fail for bookmarks
@@ -116,7 +117,8 @@ export default function FeedPage() {
 
   const loadReadHistory = useCallback(async () => {
     try {
-      const data = await getReadHistory(1, 100);
+      // Only fetch recent 50 reads for status checking
+      const data = await getReadHistory(1, 50);
       if (data?.items) setReadIds(new Set(data.items.map((h: any) => h.article_url)));
     } catch (err) {
       // Silent fail for history
