@@ -11,7 +11,6 @@ export default function GoogleCallbackPage() {
     const handleCallback = () => {
       const accessToken = searchParams.get('access_token');
       const refreshToken = searchParams.get('refresh_token');
-      const needsOnboarding = searchParams.get('needs_onboarding') === 'true';
       const error = searchParams.get('error');
 
       if (error) {
