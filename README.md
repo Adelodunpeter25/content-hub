@@ -124,7 +124,35 @@ Before you begin, ensure you have the following installed:
 
 ## Quick Start
 
-### Backend Setup
+### Option 1: Docker (Recommended)
+
+1. **Configure environment**
+```bash
+cp backend/.env.example backend/.env
+# Edit backend/.env with your credentials
+```
+
+2. **Run with Docker Compose**
+```bash
+docker-compose up --build
+```
+
+3. **Initialize database** (first time only)
+```bash
+docker-compose exec backend uv run python -m app.scripts.init_db
+```
+
+4. **Run database migrations** (first time only)
+```bash
+docker-compose exec backend uv run python -m app.scripts.migrate_add_indexes
+```
+
+- Frontend: `http://localhost:5173`
+- Backend API: `http://localhost:5000`
+
+### Option 2: Local Development
+
+#### Backend Setup
 
 1. **Navigate to backend**
 ```bash
@@ -148,14 +176,19 @@ cp .env.example .env
 uv run python -m app.scripts.init_db
 ```
 
-5. **Run the backend**
+5. **Run database migrations**
+```bash
+uv run python -m app.scripts.migrate_add_indexes
+```
+
+6. **Run the backend**
 ```bash
 uv run python run.py
 ```
 
 API will be available at `http://localhost:5000`
 
-### Frontend Setup
+#### Frontend Setup
 
 1. **Navigate to frontend**
 ```bash
