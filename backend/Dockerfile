@@ -18,4 +18,4 @@ COPY . .
 EXPOSE 5000
 
 # Run the application
-CMD ["uv", "run", "python", "run.py"]
+CMD ["uv", "run", "python", "-c", "from app.main import app; app.run(host='0.0.0.0', port=5000)"]
